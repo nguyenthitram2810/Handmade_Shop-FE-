@@ -74,7 +74,9 @@ export default {
   styleResources: {
     // your settings here
     sass: [],
-    scss: [],
+    scss: [
+      '@/assets/scss/main.scss'
+    ],
    },
 
   /*
