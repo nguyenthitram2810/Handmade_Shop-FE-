@@ -1453,6 +1453,14 @@
     mustache "^2.3.0"
     stack-trace "0.0.10"
 
+"@simonwep/pickr@~1.7.0":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@simonwep/pickr/-/pickr-1.7.1.tgz#7bdcccca2041967434f9d7e18720e85598601008"
+  integrity sha512-ftbskrPKAkRLYVj8IhV4Bn86g16It9Uq/p4G0FdjRz36pKKjW0JdxdDWDIVuAev0Urg8604Ho98js6JmjXdiZQ==
+  dependencies:
+    core-js "^3.6.5"
+    nanopop "^1.3.0"
+
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
@@ -1952,13 +1960,14 @@ ansi-styles@^4.0.0, ansi-styles@^4.1.0:
     "@types/color-name" "^1.1.1"
     color-convert "^2.0.1"
 
-ant-design-vue@^1.1.10:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/ant-design-vue/-/ant-design-vue-1.5.1.tgz#e8bdcf69aa29492a875f028745561b7908d9f17e"
-  integrity sha512-d3ONYB0XfToRJfD0vJ1MquwIcS0SwX0v3NWqE2y4RZZ0VbK8hmCdPGeM2qO7q8D9ePqTeRow84BbPgQ/YZpm1Q==
+ant-design-vue@^1.6.2:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/ant-design-vue/-/ant-design-vue-1.6.3.tgz#48a16dfc2acd73cbd748a59a19bb6cedb45bfbea"
+  integrity sha512-Zt0z0SXzHCgow0chv4OA8lONxVOzXf7iLmZxdVHlsS3IaPn5n8QNPCzBUh3z0IXBdaDPiX9tjELQCXf9vdXdlw==
   dependencies:
     "@ant-design/icons" "^2.1.1"
     "@ant-design/icons-vue" "^2.0.0"
+    "@simonwep/pickr" "~1.7.0"
     add-dom-event-listener "^1.0.2"
     array-tree-filter "^2.1.0"
     async-validator "^3.0.3"
@@ -1984,7 +1993,7 @@ ant-design-vue@^1.1.10:
     resize-observer-polyfill "^1.5.1"
     shallow-equal "^1.0.0"
     shallowequal "^1.0.2"
-    vue-ref "^1.0.4"
+    vue-ref "^2.0.0"
     warning "^4.0.0"
 
 antd@^4.3.5:
@@ -3238,6 +3247,11 @@ core-js@^2.4.0, core-js@^2.6.5:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.11.tgz#38831469f9922bded8ee21c9dc46985e0399308c"
   integrity sha512-5wjnpaT/3dV+XB4borEsnAYQchn00XSgTAWKDkEqv+K8KevjbzmofK6hfJ9TZIlpj2N0xQpazy7PiRQiWHqzWg==
+
+core-js@^3.6.5:
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.6.5.tgz#7395dc273af37fb2e50e9bd3d9fe841285231d1a"
+  integrity sha512-vZVEEwZoIsI+vPEuoF9Iqf5H7/M3eeQqWlQnYa8FSKKePuYTf5MWnxb5SDAzCa60b3JBRS5g9b+Dq7b1y/RCrA==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -6841,6 +6855,11 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
+
+nanopop@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/nanopop/-/nanopop-1.3.0.tgz#831df018169fb0a699d55a8d70a2ecd82abe7d00"
+  integrity sha512-DQDhHyPhKLKrXOjVkChsAoWh/WpKuVINDKl4qvFbguqokRJWQBSNSlPzMS+Xy3yBQKeQ39rICMB2asDvdUiVxw==
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -10730,10 +10749,10 @@ vue-no-ssr@^1.1.1:
   resolved "https://registry.yarnpkg.com/vue-no-ssr/-/vue-no-ssr-1.1.1.tgz#875f3be6fb0ae41568a837f3ac1a80eaa137b998"
   integrity sha512-ZMjqRpWabMPqPc7gIrG0Nw6vRf1+itwf0Itft7LbMXs2g3Zs/NFmevjZGN1x7K3Q95GmIjWbQZTVerxiBxI+0g==
 
-vue-ref@^1.0.4:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/vue-ref/-/vue-ref-1.0.6.tgz#b9b3d7d0e290ee2fd3d50d5d7bdac520806cb265"
-  integrity sha512-UzD8t1CG+aoWVOOpGd5KcaCNtCgUc0byaKhJMH+6N7H/p1ThVkYl/VCt7DmCrdhUlzZK+hT5JPTKAdrbWi0nNw==
+vue-ref@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vue-ref/-/vue-ref-2.0.0.tgz#483084d732abed11da796778a8266a3af0ea1a9c"
+  integrity sha512-uKNKpFOVeWNqS2mrBZqnpLyXJo5Q+vnkex6JvpENvhXHFNBW/SJTP8vJywLuVT3DpxwXcF9N0dyIiZ4/NpTexQ==
 
 vue-router@^3.3.4:
   version "3.3.4"
