@@ -3,15 +3,16 @@
   <header>
     <a-row type="flex" justify="start" class="mx-3">
       <a-col :span="19">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
+        <a-row class="d-flex justify-content-between align-items-center">
+          <a-col :span="10" class="d-flex align-items-center">
             <img src="/images/LogoHandmade.png" class="logo" alt="">
-            <p class="font_brand ml-3">Alibabu</p>
-          </div>
-          <div class="search_product">
-            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 750px" @search="onSearch" />
-          </div>
-        </div>
+            <img class="ml-3" src="/images/logoName.png" alt="" width="100px" height="100px">
+          </a-col>
+
+          <a-col :span="14" class="search_product">
+            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 100%;" @search="onSearch" />
+          </a-col>
+        </a-row>
       </a-col>
 
       <a-col :span="4" :offset="1" class="my-auto">
