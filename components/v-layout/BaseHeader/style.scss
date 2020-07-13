@@ -25,3 +25,10 @@
 .user-dropdown {
   color: #000;
 }
+
+.notification >>> .ant-badge-count {
+  width: 19px;
+  height: 19px;
+  font-size: 11px;
+  padding: 1px;
+}

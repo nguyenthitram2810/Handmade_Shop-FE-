@@ -26,9 +26,9 @@
                   <nuxt-link to="/register">Đăng ký</nuxt-link>
               </div>
 
-              <form>
-                  <input class="form-control" type="text" name="email" placeholder="Địa chỉ Email" required>
-                  <input class="form-control" type="password" name="password" placeholder="Mật khẩu" required>
+              <form @submit="loginSubmit">
+                  <input v-model="username" class="form-control" type="text" placeholder="Địa chỉ Email" required>
+                  <input v-model="password" class="form-control" type="password" placeholder="Mật khẩu" required>
                   <input type="checkbox" id="chk1"><label for="chk1">Lưu đăng nhập</label>
                   <div class="form-button">
                       <button id="submit" type="submit" class="ibtn">Đăng nhập</button> 
@@ -47,8 +47,44 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   layout: 'fullpage',
+  data() {
+    return {
+      username: '',
+      password: '',
+      errors: [],
+    }
+  },
+
+  mounted() {
+    if(localStorage.getItem("token")) {
+      this.$root.$router.push("/");
+    }
+  },
+
+  methods: {
+    loginSubmit(event) {
+      event.preventDefault();
+      axios.post(`http://localhost:5000/api/v1/signin`, {
+        username: this.username,
+        name: this.name,
+        password: this.password,
+      })
+      .then(response => {
+        const user = JSON.stringify(response.data.results.userInfo);
+        localStorage.setItem('user', user);
+        localStorage.setItem('token', response.data.results.token)
+        this.$root.$router.push("/")
+       })
+      .catch(e => {
+        console.log(e.message);
+        this.errors.push(e)
+      })
+    }
+  },
 }
 </script>
 

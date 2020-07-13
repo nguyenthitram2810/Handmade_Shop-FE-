@@ -26,7 +26,7 @@
               <nuxt-link to="/register" class="active">Đăng ký</nuxt-link>
             </div>
 
-            <form @submit="handleSubmit">
+            <form @submit="registerSubmit">
               <input v-model="name" class="form-control" type="text" placeholder="Tên người dùng" required>
               <input v-model="username" class="form-control" type="email" placeholder="Địa chỉ Email" required>
               <input v-model="password" class="form-control" type="password" placeholder="Mật khẩu" required>
@@ -45,6 +45,10 @@
         </div>
       </div>
     </div>
+
+    <a-button ref="btnWarning" v-show="visible" @click="warning">
+      Warning
+    </a-button>
   </div>
 </template>
 
@@ -58,35 +62,39 @@ export default {
       name: '',
       username: '',
       password: '',
-      errors: []
+      errors: [], 
+      visible: false,
     }
   },
+
+  mounted() {
+    if(localStorage.getItem("token")) {
+      this.$root.$router.push("/");
+    }
+  },
+
   methods: {
-    handleSubmit(event) {
+    registerSubmit(event) {
+      this.errors = []
       event.preventDefault()
-      axios.post(`http://localhost:3001/api/v1/signup`, {
-        body: {
-          username: this.username,
-          name: this.name,
-          password: this.password,
-        }
+      axios.post(`http://localhost:5000/api/v1/signup`, {
+        username: this.username,
+        name: this.name,
+        password: this.password,
       })
       .then(response => {
-        if(response.status == 200) {
-          console.log("OK");
-          
-          this.$root.$router.push("/");
-
-        }
-        else {//đừng quan tam cái else này
-        console.log("fail");
-          this.error.push(response.error)
-        }
+        this.$refs.btnWarning.$el.click()
        })
       .catch(e => {
-        console.log(e.message);
+        console.log(e.message)
         this.errors.push(e)
       })
+    },
+    warning() {
+      this.$warning({
+        title: 'Verify',
+        content: 'Login email and verify account',
+      });
     },
   }
 }
