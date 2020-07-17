@@ -11,8 +11,6 @@
     <div class="row">
       <div class="img-holder">
           <div class="bg"></div>
-          <div class="info-holder">
-          </div>
       </div>
 
       <div class="form-holder">
@@ -26,14 +24,29 @@
               <nuxt-link to="/register" class="active">Đăng ký</nuxt-link>
             </div>
 
-            <form @submit="registerSubmit">
-              <input v-model="name" class="form-control" type="text" placeholder="Tên người dùng" required>
-              <input v-model="username" class="form-control" type="email" placeholder="Địa chỉ Email" required>
-              <input v-model="password" class="form-control" type="password" placeholder="Mật khẩu" required>
-              <div class="form-button">
-                <button id="submit" type="submit" class="ibtn">Đăng ký</button>
-              </div>
-            </form>
+            <a-form-model ref="registerForm" :model="registerForm" :rules="rules">
+              <a-form-model-item  has-feedback prop="name" class="m-0 form-validate">
+                <a-input :disabled="isDisabled" v-model="registerForm.name" autocomplete="off" placeholder="Tên người dùng"/>
+              </a-form-model-item>
+
+              <a-form-model-item has-feedback prop="username"  class="m-0 form-validate">
+                <a-input :disabled="isDisabled" v-model="registerForm.username" autocomplete="off" placeholder="Địa chỉ Email"/>
+              </a-form-model-item>
+
+              <a-form-model-item has-feedback prop="password" class="m-0 form-validate" >
+                <a-input :disabled="isDisabled" type="password" v-model="registerForm.password" autocomplete="off" placeholder="Mật khẩu"/>
+              </a-form-model-item>
+
+              <a-form-model-item has-feedback prop="checkPass" class="m-0 form-validate" >
+                <a-input :disabled="isDisabled" type="password" v-model="registerForm.checkPass" autocomplete="off" placeholder="Xác nhận mật khẩu"/>
+              </a-form-model-item>
+
+              <a-form-model-item  class="form-button mb-0 mt-2">
+                <a-button  :loading="isDisabled" class="ibtn" @click="registerSubmit">
+                  Đăng ký
+                </a-button>
+              </a-form-model-item>
+            </a-form-model>
 
             <div class="other-links">
                 <span>Đăng ký với</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
@@ -46,7 +59,7 @@
       </div>
     </div>
 
-    <a-button ref="btnWarning" v-show="visible" @click="warning">
+    <a-button ref="btnWarning" v-show="false" @click="warning">
       Warning
     </a-button>
   </div>
@@ -57,39 +70,103 @@ import axios from 'axios';
 
 export default {
   layout: 'fullpage',
+  middleware: 'auth',
   data() {
+    let validateName = (rule, value, callback) => {
+      if (value.trim() === '') {
+        callback(new Error('Nhập tên người dùng'));
+      } else {
+        callback();
+      }
+    };
+
+    let validatePass = (rule, value, callback) => {
+      if (value.trim() === '') {
+        callback(new Error('Nhập mật khẩu'));
+      } else {
+        if (this.registerForm.checkPass !== '') {
+          this.$refs.registerForm.validateField('checkPass');
+        }
+        callback();
+      }
+    };
+
+    let validatePass2 = (rule, value, callback) => {
+      if (value.trim() === '') {
+        callback(new Error('Nhập xác nhận mật khẩu'));
+      } else if (value !== (this.registerForm.password)) {
+        callback(new Error("Mật khẩu xác nhận sai"));
+      } else {
+        callback();
+      }
+    };
     return {
-      name: '',
-      username: '',
-      password: '',
+      loading: '',
       errors: [], 
-      visible: false,
+      isDisabled: false,
+      registerForm: {
+        name: '',
+        username: '',
+        password: '',
+        checkPass: '',
+      },
+      rules: {
+        name:  [{ required: true, validator: validateName }],
+        username:  [
+              {
+                type: 'email',
+                message: 'Email không hợp lệ',
+              },
+              {
+                required: true,
+                message: 'Nhập địa chỉ email',
+              },
+            ],
+        password: [
+              { 
+                required: true,
+                validator: validatePass, 
+              },
+              {
+                min: 10,
+                max: 15,
+                message: 'Độ dài mật khẩu 10 - 15 ký tự(không kể ký tự trắng)'
+              }
+            ],
+        checkPass: [
+              { 
+                required: true,
+                validator: validatePass2, 
+              },
+            ],
+      },
     }
   },
-
-  mounted() {
-    if(localStorage.getItem("token")) {
-      this.$root.$router.push("/");
-    }
-  },
-
   methods: {
     registerSubmit(event) {
-      this.errors = []
-      event.preventDefault()
-      axios.post(`http://localhost:5000/api/v1/signup`, {
-        username: this.username,
-        name: this.name,
-        password: this.password,
-      })
-      .then(response => {
-        this.$refs.btnWarning.$el.click()
-       })
-      .catch(e => {
-        console.log(e.message)
-        this.errors.push(e)
-      })
+      this.$refs.registerForm.validate(valid => {
+        if (valid) {
+          this.errors = []
+          event.preventDefault()
+          this.isDisabled = true
+          try {
+            const response = axios.post(`http://localhost:5000/api/v1/signup`, {
+              username: this.registerForm.username.trim(),
+              name: this.registerForm.name.trim(),
+              password: this.registerForm.password.trim(),
+            })
+            this.$refs.btnWarning.$el.click()
+          }
+          catch(e) {
+            console.log(e);
+            this.errors = e
+          }
+        } else {
+          return false;
+        }
+      });
     },
+
     warning() {
       this.$warning({
         title: 'Verify',
@@ -102,5 +179,4 @@ export default {
 
 <style lang='scss' scoped>
 @import url("./style.scss");
-@import url("./theme.scss");
 </style>

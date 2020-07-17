@@ -11,8 +11,6 @@
       <div class="row">
         <div class="img-holder">
             <div class="bg"></div>
-            <div class="info-holder">
-            </div>
         </div>
 
         <div class="form-holder">
@@ -51,6 +49,7 @@ import axios from "axios";
 
 export default {
   layout: 'fullpage',
+  middleware: 'auth',
   data() {
     return {
       username: '',
@@ -58,13 +57,6 @@ export default {
       errors: [],
     }
   },
-
-  mounted() {
-    if(localStorage.getItem("token")) {
-      this.$root.$router.push("/");
-    }
-  },
-
   methods: {
     loginSubmit(event) {
       event.preventDefault();
@@ -90,5 +82,4 @@ export default {
 
 <style lang='scss' scoped>
 @import url("./style.scss");
-@import url("./theme.scss");
 </style>

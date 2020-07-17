@@ -8,7 +8,6 @@
     <div v-else class="mt-3 al-text-center text-danger">
       <p>Verify fail! Try again!</p>
       <p>List errors:</p>
-      {{errors}}
     </div>
   </div>
 </template>
@@ -35,10 +34,11 @@ export default {
       localStorage.setItem('user', user);
       localStorage.setItem('token', response.data.results.token)
       this.$root.$router.push("/")
+      console.log(response.json());
      })
     .catch(e => {
       this.verify = false
-      this.errors.push(e)
+      console.log(e);
     })
   }, 
 }
