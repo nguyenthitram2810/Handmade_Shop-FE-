@@ -26,20 +26,19 @@ export default {
   },
 
   async mounted() {
-    this.errors = []
-    this.token = this.$route.query.token
-    await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${this.token}`)
-    .then(response => {
+    try {
+      this.errors = []
+      this.token = this.$route.query.token
+      const response = await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${this.token}`)
       const user = JSON.stringify(response.data.results.userInfo);
       localStorage.setItem('user', user);
       localStorage.setItem('token', response.data.results.token)
       this.$root.$router.push("/")
-      console.log(response.json());
-     })
-    .catch(e => {
+    }
+    catch(e) {
       this.verify = false
-      console.log(e);
-    })
+      console.log(e.message);
+    }
   }, 
 }
 </script>
