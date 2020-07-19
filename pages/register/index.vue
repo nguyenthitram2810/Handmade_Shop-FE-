@@ -51,9 +51,10 @@
             <div class="other-links">
                 <span>Đăng ký với</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
             </div>
-            <li style="color:white;" v-for="error of errors" v-bind:key="error">
+
+            <p style="color:red;" class="mt-3 font-15">
               {{error}}
-            </li>
+            </p>
           </div>
         </div>
       </div>
@@ -70,7 +71,7 @@ import axios from 'axios';
 
 export default {
   layout: 'fullpage',
-  middleware: 'auth',
+  middleware: 'notAuthentication',
   data() {
     let validateName = (rule, value, callback) => {
       if (value.trim() === '') {
@@ -102,7 +103,7 @@ export default {
     };
     return {
       loading: '',
-      errors: [], 
+      error: '', 
       isDisabled: false,
       registerForm: {
         name: '',
@@ -144,13 +145,13 @@ export default {
   },
   methods: {
     registerSubmit(event) {
-      this.$refs.registerForm.validate(valid => {
+      this.$refs.registerForm.validate( async valid => {
         if (valid) {
-          this.errors = []
+          this.errors = ''
           event.preventDefault()
           this.isDisabled = true
           try {
-            const response = axios.post(`http://localhost:5000/api/v1/signup`, {
+            const response = await axios.post(`http://localhost:5000/api/v1/signup`, {
               username: this.registerForm.username.trim(),
               name: this.registerForm.name.trim(),
               password: this.registerForm.password.trim(),
@@ -158,8 +159,7 @@ export default {
             this.$refs.btnWarning.$el.click()
           }
           catch(e) {
-            console.log(e);
-            this.errors = e
+            this.error = e.response.data.error
           }
         } else {
           return false;

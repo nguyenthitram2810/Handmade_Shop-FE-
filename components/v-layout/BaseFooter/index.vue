@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-3">
+  <footer>
     <div class="bg-footer al-w-100">
       <a-row type="flex" justify="space-around" class="mx-3 color-white py-3">
         <a-col :span="5" class="pl-5">

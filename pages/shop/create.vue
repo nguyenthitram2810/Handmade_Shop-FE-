@@ -6,32 +6,32 @@
     </div>
 
     <div class="container">   
-      <a-form-model ref="ruleForm" :model="ruleForm" :rules="rules" v-bind="layout">
+      <a-form-model ref="createForm" :model="createForm" :rules="rules" v-bind="layout">
         <a-form-model-item :wrapper-col="{ ul: 14, offset: 4 }">
           <ul style="color:red; list-style-type: none;" v-for="item in errors" v-bind:key="item">
-            <li>{{item.message}}</li>
+            <li>{{ item }}</li>
           </ul>
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Tên cửa hàng" prop="nameShop">
-          <a-input v-model="ruleForm.nameShop" type="text" />
+          <a-input v-model="createForm.nameShop" type="text" />
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Mô tả" prop="description">
-          <a-input v-model="ruleForm.description" type="textarea" />
+          <a-input v-model="createForm.description" type="textarea" />
         </a-form-model-item>
 
-        <div class="al-text-center mt-5">
+        <div class="al-text-center mt-5 mb-5">
           <h3>THÔNG TIN THANH TOÁN</h3>
           <p>Thông tin thanh toán chính xác</p>
         </div>
 
         <a-form-model-item  has-feedback label="Họ và tên" prop="name">
-          <a-input v-model="ruleForm.name" type="text" />
+          <a-input v-model="createForm.name" type="text" />
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Tên ngân hàng" prop="bank">
-          <a-select v-model="ruleForm.bank">
+          <a-select v-model="createForm.bank">
             <a-select-option v-for="bank in listBank" :key="bank.id" :value="`${bank.id}`">
               {{bank.name}}
             </a-select-option>
@@ -39,11 +39,11 @@
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Mã số thẻ" prop="code">
-          <a-input v-model="ruleForm.code" type="number" />
+          <a-input v-model="createForm.code" type="number" />
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Khu vực" prop="area">
-          <a-select  v-model="ruleForm.area" @change="handleChange">
+          <a-select  v-model="createForm.area" @change="handleChange">
             <a-select-option v-for="area in listArea" v-bind:key="area" :value="`${area.id}`">
               {{area.name}}
             </a-select-option>
@@ -51,7 +51,7 @@
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Chi nhánh" prop="branch">
-          <a-select  v-model="ruleForm.branch">
+          <a-select  v-model="createForm.branch">
             <a-select-option v-for="branch in listBranch" v-bind:key="branch" :value="`${branch.id}`">
               {{branch.name}}
             </a-select-option>
@@ -59,12 +59,8 @@
         </a-form-model-item>
 
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-          <a-button type="primary" @click="submitForm('ruleForm')">
+          <a-button type="primary" @click="submitForm('createForm')">
             Submit
-          </a-button>
-
-          <a-button style="margin-left: 10px" @click="resetForm('ruleForm')">
-            Reset
           </a-button>
         </a-form-model-item>
       </a-form-model>
@@ -73,8 +69,10 @@
 </template>
 <script>
 import axios from "axios"
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  middleware: ['authentication', 'checkShopActive'],
   data() {
     return {
       user: {},
@@ -82,7 +80,7 @@ export default {
       listArea: [],
       listBank: [],
       errors:[],
-      ruleForm: {
+      createForm: {
         nameShop: '',
         description: '',
         name: '',
@@ -117,22 +115,20 @@ export default {
 
   methods: {
     async submitForm(formName) {
-      this.user = JSON.parse(localStorage.getItem("user"))
-      const token = localStorage.getItem("token")
-      console.log(this.user);
-      console.log(this.user.avatar);
-      console.log(token);
+      this.errors = []
+      this.user = JSON.parse(Cookie.get('user'))
+      const token = Cookie.get("token")
       
       await this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
             const response = await axios.post(`http://localhost:5000/api/v1/users/shop`, {
-              name: this.ruleForm.nameShop,
-              description: this.ruleForm.description,
-              bankAccount: this.ruleForm.name,
-              bankId: this.ruleForm.bank,
-              cardNumber: this.ruleForm.code,
-              districtId: this.ruleForm.branch,
+              name: this.createForm.nameShop,
+              description: this.createForm.description,
+              bankAccount: this.createForm.name,
+              bankId: this.createForm.bank,
+              cardNumber: this.createForm.code,
+              districtId: this.createForm.branch,
               thumbnail: this.user.avatar,
             }, 
             {
@@ -140,55 +136,48 @@ export default {
                 Authorization: 'Bearer ' + token,
               }
             })
-            console.log(response.data.results);
-            console.log();
-            this.$root.$router.push(`/${this.user.id}/shop/product/list`)
+            this.user.shopActive = true
+            Cookie.remove('user')
+            this.$store.dispatch('auth/setUser', { user: this.user })
+            this.$router.push("/shop/product/list")
           }
           catch(e) {
-            this.errors.push(e)
+            this.errors.push(e.response.data.error)
           }
         } else {
-          alert("Shop tạo rồi")
-          console.log('error submit!!');
           return false;
         }
       });
     },
 
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-    },
-
     async getListBank() {
-      this.errors = []
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/payments/banks`)
         this.listBank = response.data.results
       }
       catch(e) {
-        this.errors.push(e)
+        this.errors.push(e.response.data.error)
       }
     },
 
     async getListArea() {
-      this.errors = []
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/cities`)
         this.listArea = response.data.results
       }
       catch(e) {
-        this.errors.push(e)
+        this.errors.push(e.response.data.error)
       }
     },
 
     async handleChange() {
       this.errors = []
       try {
-        const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.ruleForm.area}/districts`)
+        const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.createForm.area}/districts`)
         this.listBranch = response.data.results
       }
       catch(e) {
-        this.errors.push(e)
+        this.errors.push(e.response.data.error)
       }
     }
   },

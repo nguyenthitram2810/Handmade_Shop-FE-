@@ -5,39 +5,35 @@
       <p>Verifying, wait some seconds...</p>
     </div>
 
-    <div v-else class="mt-3 al-text-center text-danger">
+    <div v-else class="mt-3 al-text-center text-danger" style="color:red;">
       <p>Verify fail! Try again!</p>
-      <p>List errors:</p>
+      <p>Error: {{error}}</p>
     </div>
   </div>
 </template>
 <script>
-import axios from "axios"
+
 
 export default {
   layout: "fullpage",
-
   data() {
     return {
       token: '', 
       verify: true,
-      errors: []
+      error: ''
     }
-  },
-
+  }, 
   async mounted() {
     try {
-      this.errors = []
+      this.errors = ''
       this.token = this.$route.query.token
-      const response = await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${this.token}`)
-      const user = JSON.stringify(response.data.results.userInfo);
-      localStorage.setItem('user', user);
-      localStorage.setItem('token', response.data.results.token)
+      await this.$store.dispatch('auth/verifyRegister', { token: this.token })
       this.$root.$router.push("/")
+      // this.$store.state.auth.us
     }
     catch(e) {
       this.verify = false
-      console.log(e.message);
+      this.error = e
     }
   }, 
 }

@@ -12,7 +12,7 @@
           </a-col>
 
           <a-col :span="18" class="search_product">
-            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 100%;" @search="onSearch" />
+            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 100%;" />
           </a-col>
         </a-row>
       </a-col>
@@ -20,7 +20,7 @@
       <a-col  v-if="login" :span="4" :offset="1" class="my-auto">
         <div class="d-flex justify-content-between align-items-center">
           <a-dropdown>
-            <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu slot="overlay">
               <a-menu-item key="1"> <a-icon type="user" />1st menu item </a-menu-item>
               <a-menu-item key="2"> <a-icon type="user" />2nd menu item </a-menu-item>
               <a-menu-item key="3"> <a-icon type="user" />3rd item </a-menu-item>
@@ -33,12 +33,16 @@
             </div>
           </a-dropdown>
 
-          <div>
-            <nuxt-link :to="`/${user.id}/shop/create`" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
+          <div v-if="user.shopActive">
+            <nuxt-link to="/shop/manage/product/list" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
+          </div>
+
+          <div v-else>
+            <nuxt-link to="/shop/create" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
           </div>
 
           <a-dropdown>
-            <a-menu slot="overlay" @click="handleMenuClick">
+            <a-menu slot="overlay">
               <a-menu-item key="1"> <a-icon type="user" />{{user.name}} </a-menu-item>
               <a-menu-item key="3" @click="loggOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
             </a-menu>
@@ -104,6 +108,8 @@
 </style>
 
 <script>
+const Cookie = process.client ? require('js-cookie') : undefined
+
 export default {
   name: 'BaseHeader',
   data() {
@@ -113,21 +119,27 @@ export default {
     }
   },
 
-  mounted() {
-    if(localStorage.getItem("token")) {
+  created() {
+    if(Cookie.get('token') || Cookie.get('user')) {
       this.login = true
-    }
-    if(localStorage.getItem("user")) {  
-      this.user = JSON.parse(localStorage.getItem("user"))
+      this.user = JSON.parse(Cookie.get('user'))
     }
   },
 
-  props: {},
+  watch: {
+    '$store.state.auth.userNow' : function(value) {
+      if(value == null) {
+        this.login = false
+        this.$router.push(this.$route.query.redirect || '/');
+      }
+    }
+  },
 
   methods: {
-    loggOut () {
-      localStorage.clear()
-      this.$root.$router.push("/")
+    async loggOut () {
+      Cookie.remove('user')
+      Cookie.remove('token')
+      await this.$store.dispatch('auth/removeUser')
     }
   }
 }
