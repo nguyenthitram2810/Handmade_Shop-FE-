@@ -139,7 +139,7 @@ export default {
             this.user.shopActive = true
             Cookie.remove('user')
             this.$store.dispatch('auth/setUser', { user: this.user })
-            this.$router.push("/shop/product/list")
+            this.$router.push("/shop/manage/product/list/all")
           }
           catch(e) {
             this.errors.push(e.response.data.error)
@@ -153,7 +153,8 @@ export default {
     async getListBank() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/payments/banks`)
-        this.listBank = response.data.results
+        console.log(response)
+        this.listBank = response.data.data
       }
       catch(e) {
         this.errors.push(e.response.data.error)
@@ -163,7 +164,7 @@ export default {
     async getListArea() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/cities`)
-        this.listArea = response.data.results
+        this.listArea = response.data.data
       }
       catch(e) {
         this.errors.push(e.response.data.error)
@@ -174,7 +175,8 @@ export default {
       this.errors = []
       try {
         const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.createForm.area}/districts`)
-        this.listBranch = response.data.results
+        console.log(response.data.data);
+        this.listBranch = response.data.data
       }
       catch(e) {
         this.errors.push(e.response.data.error)

@@ -22,24 +22,25 @@ export const actions = {
   async verifyRegister({ commit }, { token }) {
     try {
       const response = await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${token}`)
-      Cookie.set('user', JSON.stringify(response.data.results.userInfo))
-      Cookie.set('token', response.data.results.token)
+      console.log(response)
+      console.log(response.data.data.userInfo);
+      Cookie.set('user', JSON.stringify(response.data.data.userInfo))
+      Cookie.set('token', response.data.data.token)
       await commit('setUser', JSON.parse(Cookie.get('user')))
     }
     catch (e) {
-      throw e.response.data.error
+      throw e
     }
   },
   
-  async login({ commit }, {name = 'abc', password, username}) {
+  async login({ commit }, {password, username}) {
     try {
       const response = await axios.post(`http://localhost:5000/api/v1/signin`, {
         username: username,
         password: password,
-        name: name
       })
-      Cookie.set('user', JSON.stringify(response.data.results.userInfo))
-      Cookie.set('token', response.data.results.token)
+      Cookie.set('user', JSON.stringify(response.data.data.userInfo))
+      Cookie.set('token', response.data.data.token)
       await commit('setUser', JSON.parse(Cookie.get('user')))
     }
     catch(e) {

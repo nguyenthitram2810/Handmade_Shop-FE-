@@ -1,41 +1,11 @@
-.ant-carousel >>> .slick-slide {
-    text-align: center;
-    height: 240px;
-    line-height: 240px;
-    background: #364d79;
-    overflow: hidden;
-  }
-  
-  .ant-carousel >>> .slick-slide h3 {
-    color: #fff;
-  }
+.product >>> .ant-tabs-tab-active {
+  color: #f77f00;
+}
 
-  .popular_recommend .ant-carousel >>> .slick-slide {
-    text-align: left;
-    height: 285px;
-    line-height: 285px;
-    background: #f1faee;
-    overflow: hidden;
-  }
-  
-  .popular_recommend .ant-carousel >>> .custom-slick-arrow {
-    width: 25px;
-    height: 25px;
-    font-size: 25px;
-    color: #1d3557;
-    opacity: 0.3;
-  }
-  .popular_recommend .ant-carousel >>> .custom-slick-arrow:before {
-    display: none;
-  }
-  .popular_recommend .ant-carousel >>> .custom-slick-arrow:hover {
-    opacity: 0.5;
-  }
-  
-  .ant-carousel >>> .slick-slide h3 {
-    color: #fff;
-  }
+.product >>> .ant-tabs-ink-bar {
+  background-color: #f77f00;
+}
 
-  .pop-card >>> .ant-card-body {
-    padding: 8px;
-  }
+.product >>> .ant-tabs-tab:hover {
+  color: #FAAC58;
+}

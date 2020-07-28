@@ -4,24 +4,24 @@
       <a-menu
         style="width: 200px; min-height: 100vh;"
         :default-selected-keys="['1']"
-        :open-keys.sync="openKeys"
         mode="inline"
         theme="light"
         @click="handleClick"
       >
-        <a-sub-menu key="product" @titleClick="titleClick">
+        <a-sub-menu key="product">
           <span slot="title"><a-icon type="shopping" /><span>Quản lý sản phẩm</span></span>
           <a-menu-item key="1">
             Tất cả sản phẩm
           </a-menu-item>
           <a-menu-item key="2">
-            Thêm sản phẩm
+            <nuxt-link to="/shop/manage/product/create"> Thêm sản phẩm</nuxt-link>
+            
           </a-menu-item>
           <a-menu-item key="3">
             Sản phẩm vi phạm
           </a-menu-item>
         </a-sub-menu>
-        <a-sub-menu key="order" @titleClick="titleClick">
+        <a-sub-menu key="order">
           <span slot="title"><a-icon type="snippets" /><span>Quản lý đơn hàng</span></span>
           <a-menu-item key="5">
             Tất cả
@@ -67,20 +67,14 @@ export default {
       openKeys: ['product'],
     };
   },
-  created() {
-        console.log(this.$route.params.id);
-    },
-  watch: {
-    openKeys(val) {
-      console.log('openKeys', val);
-    },
-  },
   methods: {
     handleClick(e) {
-      console.log('click', e);
-    },
-    titleClick(e) {
-      console.log('titleClick', e);
+      if(e.key == 1) {
+        this.$router.push('/shop/manage/product/list/all')
+      }
+      if(e.key == 2) {
+        this.$router.push('/shop/manage/product/create')
+      }
     },
   },
 };

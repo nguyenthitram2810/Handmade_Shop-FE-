@@ -34,7 +34,7 @@
           </a-dropdown>
 
           <div v-if="user.shopActive">
-            <nuxt-link to="/shop/manage/product/list" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
+            <nuxt-link to="/shop/manage/product/list/all" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
           </div>
 
           <div v-else>
@@ -43,6 +43,7 @@
 
           <a-dropdown>
             <a-menu slot="overlay">
+              <a-menu-item key="1" @click="showShop"> <a-icon type="user" />Xem shop</a-menu-item>
               <a-menu-item key="1"> <a-icon type="user" />{{user.name}} </a-menu-item>
               <a-menu-item key="3" @click="loggOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
             </a-menu>
@@ -76,7 +77,7 @@
     </a-row>
     
     <a-menu
-      class="al-bg-color al-w-100"
+      class="al-bg-color al-w-100 category"
       mode="horizontal"
       :default-selected-keys="['2']"
       :style="{ lineHeight: '30px' }"
@@ -120,6 +121,7 @@ export default {
   },
 
   created() {
+    
     if(Cookie.get('token') || Cookie.get('user')) {
       this.login = true
       this.user = JSON.parse(Cookie.get('user'))
@@ -140,6 +142,9 @@ export default {
       Cookie.remove('user')
       Cookie.remove('token')
       await this.$store.dispatch('auth/removeUser')
+    },
+    showShop() {
+      this.$router.push(`/shop/${this.user.id}`)
     }
   }
 }
