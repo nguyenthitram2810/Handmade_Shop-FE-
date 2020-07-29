@@ -7,8 +7,8 @@
     <div class="container">   
       <a-form-model ref="productForm" :model="productForm" :rules="rules" v-bind="layout">
         <a-form-model-item :wrapper-col="{ ul: 14, offset: 4 }">
-          <ul style="color:red; list-style-type: none;" v-for="item in errors" v-bind:key="item">
-            <li>{{item}}</li>
+          <ul style="color:red; list-style-type: none;">
+            <li>{{error}}</li>
           </ul>
         </a-form-model-item>
 
@@ -26,7 +26,7 @@
 
         <a-form-model-item has-feedback label="Vật liệu" prop="material">
           <a-select v-model="productForm.material">
-            <a-select-option v-for="item in listMaterial" :key="item.id" :value="`${item.id}`">
+            <a-select-option v-for="(item, index) in listMaterial" :key="index" :value="`${item.id}`">
               {{ item.name }}
             </a-select-option>
           </a-select>
@@ -58,7 +58,7 @@
 
         <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
           <a-select v-model="productForm.ship">
-            <a-select-option v-for="item in listTransport" :key="item.id" :value="`${item.id}`">
+            <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
               {{ item.brand }}
             </a-select-option>
           </a-select>
@@ -81,7 +81,7 @@ import axios from "axios"
 export default {
   data() {
     return {
-      errors:[],
+      error:'',
       images: [],
       listCate: [],
       listMaterial: [],
@@ -148,48 +148,45 @@ export default {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/categories`)
         console.log(response)
-        this.listCate = this.mappingData(response.data.data)
-      }
-      catch(e) {
-        if(!e.response.data){
-          this.errors.push(e.response.data.error)
+        if(response.data.status == "200") {
+          this.listCate = this.mappingData(response.data.data)
         }
         else {
-          this.errors = []
-          this.errors.push(e.message)
+          this.error = response.data.message
         }
+      }
+      catch(e) {
+        this.error = e.message
       }
     },
 
     async getListMaterial() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/materials`)
+        if(response.data.status == "200") {
         this.listMaterial = response.data.data
-      }
-      catch(e) {
-        if(!e.response.data){
-          this.errors.push(e.response.data.error)
         }
         else {
-          this.errors = []
-          this.errors.push(e.message)
+          this.error = response.data.message
         }
+      }
+      catch(e) {
+        this.error = e.message
       }
     },
 
     async getListTransport() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/transports`)
-        this.listTransport = response.data.data
-      }
-      catch(e) {
-        if(!e.response.data){
-          this.errors.push(e.response.data.error)
+        if(response.data.status == "200") {
+          this.listTransport = response.data.data
         }
         else {
-          this.errors = []
-          this.errors.push(e.message)
+          this.error = response.data.message
         }
+      }
+      catch(e) {
+        this.error = e.message
       }
     },
 

@@ -8,8 +8,8 @@
     <div class="container">   
       <a-form-model ref="createForm" :model="createForm" :rules="rules" v-bind="layout">
         <a-form-model-item :wrapper-col="{ ul: 14, offset: 4 }">
-          <ul style="color:red; list-style-type: none;" v-for="item in errors" v-bind:key="item">
-            <li>{{ item }}</li>
+          <ul style="color:red; list-style-type: none;">
+            <li>{{ error }}</li>
           </ul>
         </a-form-model-item>
 
@@ -32,7 +32,7 @@
 
         <a-form-model-item has-feedback label="Tên ngân hàng" prop="bank">
           <a-select v-model="createForm.bank">
-            <a-select-option v-for="bank in listBank" :key="bank.id" :value="`${bank.id}`">
+            <a-select-option v-for="(bank, index) in listBank" :key="index" :value="`${bank.id}`">
               {{bank.name}}
             </a-select-option>
           </a-select>
@@ -44,7 +44,7 @@
 
         <a-form-model-item has-feedback label="Khu vực" prop="area">
           <a-select  v-model="createForm.area" @change="handleChange">
-            <a-select-option v-for="area in listArea" v-bind:key="area" :value="`${area.id}`">
+            <a-select-option v-for="(area, index) in listArea" :key="index" :value="`${area.id}`">
               {{area.name}}
             </a-select-option>
           </a-select>
@@ -52,7 +52,7 @@
 
         <a-form-model-item has-feedback label="Chi nhánh" prop="branch">
           <a-select  v-model="createForm.branch">
-            <a-select-option v-for="branch in listBranch" v-bind:key="branch" :value="`${branch.id}`">
+            <a-select-option v-for="(branch, index) in listBranch" :key="index" :value="`${branch.id}`">
               {{branch.name}}
             </a-select-option>
           </a-select>
@@ -79,7 +79,7 @@ export default {
       listBranch: [],
       listArea: [],
       listBank: [],
-      errors:[],
+      error:'',
       createForm: {
         nameShop: '',
         description: '',
@@ -115,7 +115,6 @@ export default {
 
   methods: {
     async submitForm(formName) {
-      this.errors = []
       this.user = JSON.parse(Cookie.get('user'))
       const token = Cookie.get("token")
       
@@ -136,13 +135,19 @@ export default {
                 Authorization: 'Bearer ' + token,
               }
             })
-            this.user.shopActive = true
-            Cookie.remove('user')
-            this.$store.dispatch('auth/setUser', { user: this.user })
-            this.$router.push("/shop/manage/product/list/all")
+            console.log(response)
+            if(response.data.status == "200") {
+              this.user.shopActive = true
+              Cookie.remove('user')
+              this.$store.dispatch('auth/setUser', { user: this.user })
+              this.$router.push("/shop/manage/product/list/all")
+            }
+            else {
+              this.error = response.data.message
+            }
           }
           catch(e) {
-            this.errors.push(e.response.data.error)
+            this.error = e.message
           }
         } else {
           return false;
@@ -154,32 +159,45 @@ export default {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/payments/banks`)
         console.log(response)
-        this.listBank = response.data.data
+        if(response.data.status == "200") {
+          this.listBank = response.data.data
+        }
+        else {
+          this.error = response.data.message
+        }
       }
       catch(e) {
-        this.errors.push(e.response.data.error)
+        this.error = e.message
       }
     },
 
     async getListArea() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/cities`)
-        this.listArea = response.data.data
+        if(response.data.status == "200") {
+          this.listArea = response.data.data
+        }
+        else {
+          this.error = response.data.message
+        }
       }
       catch(e) {
-        this.errors.push(e.response.data.error)
+        this.error = e.message
       }
     },
 
     async handleChange() {
-      this.errors = []
       try {
         const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.createForm.area}/districts`)
-        console.log(response.data.data);
+        if(response.data.status == "200") {
         this.listBranch = response.data.data
+        }
+        else {
+          this.error = response.data.message
+        }
       }
       catch(e) {
-        this.errors.push(e.response.data.error)
+        this.error = e.message
       }
     }
   },

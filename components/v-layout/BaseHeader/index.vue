@@ -121,8 +121,7 @@ export default {
   },
 
   created() {
-    
-    if(Cookie.get('token') || Cookie.get('user')) {
+    if(Cookie.get('token')) {
       this.login = true
       this.user = JSON.parse(Cookie.get('user'))
     }
