@@ -122,6 +122,7 @@ export default {
     this.getListCate()
     this.getListMaterial()
     this.getListTransport()
+    this.getProduct()
   },
    methods: {
     submitForm(formName) {
@@ -265,6 +266,22 @@ export default {
         this.error = e.message
       }
     },
+
+    async getProduct() {
+        try {
+        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+        if(response.data.status == "200") {
+          this.listTransport = response.data.data
+        }
+        else {
+          this.error = response.data.message
+        }
+      }
+      catch(e) {
+        this.error = e.message
+      }
+    },
+
     mappingData(data) {
       var reformattedArray = data.map(obj =>{ 
         var rObj = {};

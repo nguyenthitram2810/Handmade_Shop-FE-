@@ -4,7 +4,7 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
         <a-tabs default-active-key="1" @change="callback">
-          <a-tab-pane to="/" key="1" tab="Tất cả">
+          <a-tab-pane key="1" tab="Tất cả">
           </a-tab-pane>
           <a-tab-pane key="2" tab="Còn hàng" force-render>
           </a-tab-pane>

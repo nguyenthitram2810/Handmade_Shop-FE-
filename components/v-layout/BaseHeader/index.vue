@@ -43,7 +43,7 @@
 
           <a-dropdown>
             <a-menu slot="overlay">
-              <a-menu-item key="1" @click="showShop"> <a-icon type="user" />Xem shop</a-menu-item>
+              <a-menu-item v-if="user.shop != null" key="1" @click="showShop"> <a-icon type="user" />Xem shop</a-menu-item>
               <a-menu-item key="1"> <a-icon type="user" />{{user.name}} </a-menu-item>
               <a-menu-item key="3" @click="loggOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
             </a-menu>
@@ -144,7 +144,7 @@ export default {
       await this.$store.dispatch('auth/removeUser')
     },
     showShop() {
-      this.$router.push(`/shop/${this.user.id}`)
+      this.$router.push(`/shop/${this.user.shop.slug}`)
     }
   }
 }
