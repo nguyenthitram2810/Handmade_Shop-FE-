@@ -156,10 +156,18 @@ export default {
               name: this.registerForm.name.trim(),
               password: this.registerForm.password.trim(),
             })
-            this.$refs.btnWarning.$el.click()
+            console.log(response);
+            if(response.data.status == "200") {
+              this.$refs.btnWarning.$el.click()
+            }
+            else {
+              this.error = response.data.message
+              this.isDisabled = false
+            }
           }
           catch(e) {
-            this.error = e.response.data.error
+            this.isDisabled = false
+            this.error = e.message
           }
         } else {
           return false;

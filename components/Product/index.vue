@@ -1,9 +1,9 @@
 <template>
-    <div class="col-lg-4 col-md-4 col-12 ">
+    <div class="col-lg-3 col-md-3 col-12 ">
         <article class="single_product">
             <figure>
                 <div class="product_thumb">
-                    <a class="primary_img" href="product-details.html"><img src="/images/img1.jpg" alt=""></a>
+                    <a class="primary_img" href="product-details.html"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU" width="100%" alt=""></a>
                     <div class="label_product">
                         <span class="label_sale">-7%</span>
                     </div>

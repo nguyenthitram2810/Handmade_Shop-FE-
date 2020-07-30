@@ -2,47 +2,32 @@
   <div class="mt-3 mb-3">
     <div class="container-fluid">
       <div class="user-profile pl-2">
-				<figure>
-					<div class="edit-pp">
-						<label class="fileContainer">
-							<i class="fa fa-camera"></i>
-							<input type="file">
-						</label>
-					</div>
-					<img src="/images/profile-image.jpg" alt="">
-					<ul class="profile-controls">
-						<li><a href="#" title="Add friend" data-toggle="tooltip"><i class="fa fa-user-plus"></i></a></li>
-						<li><a href="#" title="Follow" data-toggle="tooltip"><i class="fa fa-star"></i></a></li>
-						<li><a class="send-mesg" href="#" title="Send Message" data-toggle="tooltip"><i class="fa fa-comment"></i></a></li>
-						<li>
-							<div class="edit-seting" title="Edit Profile image"><i class="fa fa-sliders"></i>
-								<ul class="more-dropdown">
-									<li><a href="setting.html" title="">Update Profile Photo</a></li>
-									<li><a href="setting.html" title="">Update Header Photo</a></li>
-									<li><a href="setting.html" title="">Account Settings</a></li>
-									<li><a href="support-and-help.html" title="">Find Support</a></li>
-									<li><a class="bad-report" href="#" title="">Report Profile</a></li>
-									<li><a href="#" title="">Block Profile</a></li>
-								</ul>
-							</div>
-						</li>
-					</ul>
-					<ol class="pit-rate">
-						<li class="rated"><i class="fa fa-star"></i></li>
-						<li class="rated"><i class="fa fa-star"></i></li>
-						<li class="rated"><i class="fa fa-star"></i></li>
-						<li class="rated"><i class="fa fa-star"></i></li>
-						<li class=""><i class="fa fa-star"></i></li>
-						<li><span>4.7/5</span></li>
-					</ol>
-				</figure>
+		    <figure>
+		    	<div class="edit-pp">
+		    		<label class="fileContainer">
+		    			<i class="fa fa-camera"></i>
+		    			<input type="file">
+		    		</label>
+		    	</div>
+
+		    	<img src="/images/profile-image.jpg" alt="">
+
+		    	<ol class="pit-rate">
+		    		<li class="rated"><i class="fa fa-star"></i></li>
+		    		<li class="rated"><i class="fa fa-star"></i></li>
+		    		<li class="rated"><i class="fa fa-star"></i></li>
+		    		<li class="rated"><i class="fa fa-star"></i></li>
+		    		<li class=""><i class="fa fa-star"></i></li>
+		    		<li><span>4.7/5</span></li>
+		    	</ol>
+		    </figure>
 				
 				<div class="profile-section">
 					<div class="row">
 						<div class="col-lg-2 col-md-3">
 							<div class="profile-author">
 								<div class="profile-author-thumb">
-									<img alt="author" src="images/resources/author.jpg">
+									<img alt="author" :src="shop.thumbnail">
 									<div class="edit-dp">
 										<label class="fileContainer">
 											<i class="fa fa-camera"></i>
@@ -52,46 +37,33 @@
 								</div>
 									
 								<div class="author-content">
-									<a class="h4 author-name" href="about.html">Jack Carter</a>
-									<div class="country">Ontario, CA</div>
+									<a class="h4 author-name" href="about.html">{{ shop.name }}</a>
 								</div>
 							</div>
 						</div>
+
 						<div class="col-lg-10 col-md-9">
 							<ul class="profile-menu">
 								<li>
-									<a class="" href="timeline.html">Timeline</a>
+									<a class="" href="#">Timeline</a>
 								</li>
 								<li>
-									<a class="active" href="about.html">About</a>
+									<a class="active" href="#">About</a>
 								</li>
 								<li>
-									<a class="" href="timeline-friends.html">Friends</a>
+									<a class="" href="#">Friends</a>
 								</li>
 								<li>
-									<a class="" href="timeline-photos.html">Photos</a>
+									<a class="" href="#">Photos</a>
 								</li>
 								<li>
-									<a class="" href="timeline-videos.html">Videos</a>
-								</li>
-								<li>
-									<div class="more">
-										<i class="fa fa-ellipsis-h"></i>
-										<ul class="more-dropdown">
-											<li>
-												<a href="timeline-groups.html">Profile Groups</a>
-											</li>
-											<li>
-												<a href="statistics.html">Profile Analytics</a>
-											</li>
-										</ul>
-									</div>
+									<a class="" href="#">Videos</a>
 								</li>
 							</ul>
 							<ol class="folw-detail">
-								<li><span>Posts</span><ins>101</ins></li>
-								<li><span>Followers</span><ins>1.3K</ins></li>
-								<li><span>Following</span><ins>22</ins></li>
+								<li><span>Sản phẩm</span><ins>101</ins></li>
+								<li><span>Đánh giá</span><ins>4.7/5</ins></li>
+								<li><span>Số đánh giá</span><ins>127</ins></li>
 							</ol>
 						</div>
 					</div>
@@ -108,8 +80,8 @@
             <Product />
           </div>
         </div>
-
-        <div class="col-lg-3 col-md-12">
+		
+		<div class="col-lg-3 col-md-12">
           <!--sidebar widget start-->
           <aside class="sidebar_widget">
               <div class="widget_inner">
@@ -187,10 +159,30 @@
 
 <script>
 import Product from '~/components/Product'
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   components: {
     Product,
+  },
+  data() {
+    return {
+      shop: {
+        id: 1,
+        thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
+        description: 'Shop thời trang cute',
+        name: 'SHT_Life',
+        slug: 'sht_life',
+      }
+    }
+  },
+  mounted() {
+    this.getInfoShop()
+  },
+  methods: {
+    getInfoShop() {
+      console.log(this.$route.params.id);
+    }
   }
 }
 </script>

@@ -23,13 +23,18 @@ export const actions = {
     try {
       const response = await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${token}`)
       console.log(response)
-      console.log(response.data.data.userInfo);
-      Cookie.set('user', JSON.stringify(response.data.data.userInfo))
-      Cookie.set('token', response.data.data.token)
-      await commit('setUser', JSON.parse(Cookie.get('user')))
+      if(response.data.status == "200") {
+        Cookie.set('user', JSON.stringify(response.data.data.userInfo))
+        Cookie.set('token', response.data.data.token)
+        await commit('setUser', JSON.parse(Cookie.get('user')))
+      }
+      else {
+        throw response.data
+      }
     }
     catch (e) {
-      throw e
+      console.log(e);
+      throw e.message
     }
   },
   
@@ -39,12 +44,18 @@ export const actions = {
         username: username,
         password: password,
       })
-      Cookie.set('user', JSON.stringify(response.data.data.userInfo))
-      Cookie.set('token', response.data.data.token)
-      await commit('setUser', JSON.parse(Cookie.get('user')))
+      console.log(response);
+      if(response.data.status == "200") {
+        Cookie.set('user', JSON.stringify(response.data.data.userInfo))
+        Cookie.set('token', response.data.data.token)
+        await commit('setUser', JSON.parse(Cookie.get('user')))
+      }
+      else {
+        throw response.data
+      }
     }
     catch(e) {
-      throw e.response.data.error
+      throw e.message
     }
   },
 
