@@ -121,7 +121,7 @@ export default {
   },
 
   created() {
-    if(Cookie.get('token')) {
+    if(Cookie.get('token') || Cookie.get('user')) {
       this.login = true
       this.user = JSON.parse(Cookie.get('user'))
     }
@@ -140,6 +140,7 @@ export default {
     async loggOut () {
       Cookie.remove('user')
       Cookie.remove('token')
+      Cookie.remove('shop')
       await this.$store.dispatch('auth/removeUser')
     },
     showShop() {

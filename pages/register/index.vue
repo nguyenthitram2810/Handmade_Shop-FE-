@@ -157,7 +157,7 @@ export default {
               password: this.registerForm.password.trim(),
             })
             console.log(response);
-            if(!response.data.status) {
+            if(response.data.status == "200") {
               this.$refs.btnWarning.$el.click()
             }
             else {
@@ -166,6 +166,7 @@ export default {
             }
           }
           catch(e) {
+            this.isDisabled = false
             this.error = e.message
           }
         } else {

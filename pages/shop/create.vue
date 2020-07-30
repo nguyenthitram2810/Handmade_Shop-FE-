@@ -117,7 +117,6 @@ export default {
     async submitForm(formName) {
       this.user = JSON.parse(Cookie.get('user'))
       const token = Cookie.get("token")
-      
       await this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
@@ -137,8 +136,10 @@ export default {
             })
             console.log(response)
             if(response.data.status == "200") {
+              console.log(response);
               this.user.shopActive = true
               Cookie.remove('user')
+              Cookie.set('shop', JSON.stringify(response.data.data))
               this.$store.dispatch('auth/setUser', { user: this.user })
               this.$router.push("/shop/manage/product/list/all")
             }

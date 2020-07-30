@@ -12,8 +12,8 @@
           </ul>
         </a-form-model-item>
 
-        <a-form-model-item  has-feedback label="Tên sản phẩm" prop="nameProduct">
-          <a-input v-model="productForm.nameProduct" type="text" />
+        <a-form-model-item  has-feedback label="Tên sản phẩm" prop="name">
+          <a-input v-model="productForm.name" type="text" />
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Loại sản phẩm" prop="productType">
@@ -24,8 +24,8 @@
           <a-input v-model="productForm.description" type="textarea" />
         </a-form-model-item>
 
-        <a-form-model-item has-feedback label="Vật liệu" prop="material">
-          <a-select v-model="productForm.material">
+        <a-form-model-item has-feedback label="Vật liệu" prop="material" >
+          <a-select v-model="productForm.material" mode="multiple">
             <a-select-option v-for="(item, index) in listMaterial" :key="index" :value="`${item.id}`">
               {{ item.name }}
             </a-select-option>
@@ -40,24 +40,24 @@
           <a-input v-model="productForm.quantity" type="number" />
         </a-form-model-item>
 
-        <a-form-model-item has-feedback label="Ảnh sản phẩm" prop="image">
+        <a-form-model-item label="Ảnh sản phẩm" prop="images">
           <div class="row pl-3">
-            <div v-for="(img, index) in images" :key="index" class="p-0 previewImg mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" :style="{backgroundImage: 'url(' + img + ')', backgroundSize: 'cover', backgroundRepeat: 'no-repeat'}">
+            <div v-for="(img, index) in showImages" :key="index" class="p-0 previewImg mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" :style="{backgroundImage: 'url(' + img + ')', backgroundSize: 'cover', backgroundRepeat: 'no-repeat'}">
               <div class="iconTrash d-flex align-items-center justify-content-center">
                 <a-icon class="icon d-flex align-items-center justify-content-center" @click="removeImage(index)" type="delete" />
               </div>
             </div>
-            <div v-if="images.length < 8" class="uploadImg d-flex align-items-center justify-content-center mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" @click="$refs.myFile.click()">
+            <div v-if="showImages.length < 5" class="uploadImg d-flex align-items-center justify-content-center mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" @click="$refs.image.click()">
               <a-icon type="plus" />
               <input
-                ref="myFile" type="file" class="mt-3 d-none" multiple @change="previewFiles"
+                ref="image" name="image" type="file" class="mt-3 d-none" multiple @change="previewFiles"
               >
             </div>
           </div>
         </a-form-model-item>
 
         <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
-          <a-select v-model="productForm.ship">
+          <a-select v-model="productForm.ship" mode="multiple">
             <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
               {{ item.brand }}
             </a-select-option>
@@ -77,25 +77,29 @@
 </template>
 <script>
 import axios from "axios"
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  middleware: 'authentication',
   data() {
     return {
       error:'',
-      images: [],
       listCate: [],
       listMaterial: [],
       listTransport: [],
+      showImages:[],
       productForm: {
-        nameProduct: '',
+        name: '',
         productType: '',
         description: '',
-        material: '',
+        material: [],
         price: '',
         quantity: '',
+        images: [],
+        ship: [],
       },
       rules: {
-        nameProduct: [
+        name: [
           { required: true, message: 'Nhập tên sản phẩm', trigger: 'change' },
           {max: 40, message: 'Độ dài tên sản phẩm nhỏ hơn 40', trigger: 'change'}       
         ],
@@ -104,6 +108,8 @@ export default {
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
+        ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
+        //images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
       },
       layout: {
         labelCol: { span: 4 },
@@ -119,35 +125,103 @@ export default {
   },
    methods: {
     submitForm(formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
-          console.log(this.productForm.productType);
+          try {
+            const token = Cookie.get("token")
+            const shop = JSON.parse(Cookie.get("shop"))
+            const response = await axios.post(`http://localhost:5000/api/v1/users/shop/products`, 
+            {
+              shopId: shop.id,
+              name: this.productForm.name,
+              categoryId: this.productForm.productType[this.productForm.productType.length - 1],
+              description: this.productForm.description,
+              price: this.productForm.price,
+              amount: this.productForm.quantity,
+              materialIds: this.productForm.material,
+              transportIds: this.productForm.ship,
+              gallery: this.productForm.images,
+            }, 
+            {
+              headers: {
+                Authorization: 'Bearer ' + token,
+              }
+            })
+            if(response.data.status == "200") {
+              this.$router.push("/shop/manage/product/list/all")
+            }
+            else {
+              this.error = response.data.message
+            }
+          }
+          catch(e) {
+            this.error = e.message
+          }
         } else {
-          console.log('error submit!!');
           return false;
         }
       });
     },
-    //api get link image
-    previewFiles(event) { 
-      for(let i = 0; i < event.target.files.length; i++) {
-        let reader = new FileReader()
-        reader.readAsDataURL(event.target.files[`${i}`])
-        reader.onload = event => {
-        this.images.push(event.target.result)
+    
+    async previewFiles(event) { 
+      const data = new FormData()
+      let imgValid = true
+      try {
+        for( let i = 0; i < event.target.files.length; i++ ){
+          if(i < (5 - this.productForm.images.length)) {
+            data.append('image', event.target.files[i]);
+          }
+          else {
+            imgValid = false
+          }
+        }
+        const token = Cookie.get("token")
+        const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
+        {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          }
+        })
+        if(response.data.status == "200") {
+          const listImg = response.data.data
+          listImg.forEach(img => {
+            let obj = {}
+            obj["kind"] = "image"
+            obj["src"] = img
+            this.productForm.images.push(obj)
+            this.showImages.push(img)
+          });
+          if(!imgValid) {
+            throw {
+                message: "The number of images is less than 5"
+              }
+          }
+        }
+        else {
+          this.$notification["error"]({
+            message: 'Upload Image Error',
+            description:
+              response.data.message
+          });
+        }
       }
-      }
-      
+      catch(e) {
+        this.$notification["error"]({
+          message: 'Upload Image Error',
+          description:
+            e.message
+        });
+       }
     },
   
     removeImage(index) {
-      this.images.splice(index, 1)
+      this.productForm.images.splice(index, 1)
+      this.showImages.splice(index, 1)
     },
 
     async getListCate() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/categories`)
-        console.log(response)
         if(response.data.status == "200") {
           this.listCate = this.mappingData(response.data.data)
         }
@@ -189,19 +263,18 @@ export default {
         this.error = e.message
       }
     },
-
     mappingData(data) {
       var reformattedArray = data.map(obj =>{ 
         var rObj = {};
         rObj["value"] = obj.id
         rObj["label"] = obj.name
-        if(obj.children.length > 0) {
+        if(obj.children) {
           rObj["children"] = this.mappingData(obj.children)
         }
         return rObj;
       });
       return reformattedArray
-    }
+    },
   },
 }
 </script>
