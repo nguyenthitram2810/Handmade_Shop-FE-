@@ -32,3 +32,8 @@
   font-size: 11px;
   padding: 1px;
 }
+
+.category >>> .ant-menu-item-selected, .category >>> .ant-menu-item:hover {
+  color: #f77f00;
+  border-bottom: 2px solid #f77f00;
+}
