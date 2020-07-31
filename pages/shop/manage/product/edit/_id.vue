@@ -64,7 +64,7 @@
           </a-select>
         </a-form-model-item>
 
-        
+        <a-button @click="test">Test</a-button>
 
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="submitForm('productForm')">
@@ -84,6 +84,7 @@ export default {
   data() {
     return {
       error:'',
+      token: Cookie.get("token"),
       listCate: [],
       listMaterial: [],
       listTransport: [],
@@ -129,7 +130,6 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
-            const token = Cookie.get("token")
             const user = JSON.parse(Cookie.get("user"))
             console.log(user);
             console.log(user.shop);
@@ -147,7 +147,7 @@ export default {
             }, 
             {
               headers: {
-                Authorization: 'Bearer ' + token,
+                Authorization: 'Bearer ' + this.token,
               }
             })
             if(response.data.status == "200") {
@@ -178,11 +178,10 @@ export default {
             imgValid = false
           }
         }
-        const token = Cookie.get("token")
         const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
         {
           headers: {
-            Authorization: 'Bearer ' + token,
+            Authorization: 'Bearer ' + this.token,
           }
         })
         if(response.data.status == "200") {
@@ -225,6 +224,7 @@ export default {
     async getListCate() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        console.log(response);
         if(response.data.status == "200") {
           this.listCate = this.mappingData(response.data.data)
         }
@@ -268,10 +268,24 @@ export default {
     },
 
     async getProduct() {
-        try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products/${this.$route.params.id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
         if(response.data.status == "200") {
-          this.listTransport = response.data.data
+          const data = response.data.data
+          this.productForm.name = data.name
+          console.log(this.getIdParentCate(data.categoryId));
+          this.productForm.productType = this.getIdParentCate(data.categoryId)
+          this.productForm.description = data.description
+          this.productForm.material = this.getID(data.materials)
+          this.productForm.quantity = data.amount
+          this.productForm.price = data.price
+          this.productForm.images = data.gallery
+          this.productForm.ship = this.getID(data.transports)
+          this.getSource(data.gallery)
         }
         else {
           this.error = response.data.message
@@ -294,6 +308,37 @@ export default {
       });
       return reformattedArray
     },
+
+    getID(data) {
+      const arr = []
+      data.forEach(item => {
+        arr.push(item.id.toString())
+      })
+      return arr
+    },
+
+    getSource(data) {
+      data.forEach(img => {
+        this.showImages.push(img.src)
+      })
+    },
+    getIdParentCate(id) {
+      const arr = []
+      this.listCate.forEach(item => {
+        if(item.children) {
+          item.children.forEach(i => {
+            if( i.value == id) {
+              arr.push(item.value)
+              arr.push(id)
+            }
+          })
+        }
+      })
+      return arr
+    },
+    test() {
+      console.log(this.productForm.productType);
+    }
   },
 }
 </script>

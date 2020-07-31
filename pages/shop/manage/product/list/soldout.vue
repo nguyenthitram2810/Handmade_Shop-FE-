@@ -13,28 +13,36 @@
         </a-tabs>
         <div class="d-flex justify-content-between">
           <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px"/>
-          <a-button icon="plus" class="bg-button-orange al-color-white">
-            Thêm sản phẩm
-          </a-button>
+          <nuxt-link to="/shop/manage/product/create">
+            <a-button  icon="plus" class="bg-button-orange al-color-white">
+              Thêm sản phẩm
+            </a-button>
+          </nuxt-link>
         </div>
         <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
-          <a slot="name" slot-scope="text">{{ text }}</a>
-          <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
-          <span slot="tags" slot-scope="tags">
-            <a-tag
-              v-for="tag in tags"
-              :key="tag"
-              :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-            >
-              {{ tag.toUpperCase() }}
-            </a-tag>
+          <span slot="soldAmount" slot-scope="text, record">
+            <p>{{ record.restAmount -  record.amount }}</p>
           </span>
-          <span slot="action" slot-scope="text, record">
-            <a>Invite 一 {{ record.name }}</a>
-            <a-divider type="vertical" />
-            <a>Delete</a>
-            <a-divider type="vertical" />
-            <a class="ant-dropdown-link"> More actions <a-icon type="down" /> </a>
+          <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
+            <a-popconfirm
+              title="Are you sure delete this task?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="confirm(record.id)"
+            >
+              <a-button type="danger">
+                Delete
+              </a-button>
+            </a-popconfirm>
+
+            <nuxt-link :to="`/shop/manage/product/edit/${record.id}`"> 
+              <a-button class="al-btn-success">
+                Edit
+              </a-button>
+            </nuxt-link>
+            <a-button type="primary">
+              View Detail
+            </a-button>
           </span>
         </a-table>
       </a-layout-content>
@@ -42,73 +50,122 @@
 </template>
 
 <script>
+import axios from "axios"
+const Cookie = process.client ? require('js-cookie') : undefined
+
 export default {
     layout: 'layoutSidebar',
     middleware: ['authentication'],
     data() {
       return {
+        token: Cookie.get("token"),
         columns: [
           {
-          dataIndex: 'name',
-          key: 'name',
-          slots: { title: 'customTitle' },
-          scopedSlots: { customRender: 'name' },
+            title: 'Tên sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
           },
           {
-          title: 'Age',
-          dataIndex: 'age',
-          key: 'age',
+            title: 'Mô tả sản phẩm',
+            dataIndex: 'description',
+            key: 'description',
           },
           {
-          title: 'Address',
-          dataIndex: 'address',
-          key: 'address',
+            title: 'Giá',
+            dataIndex: 'price',
+            key: 'price',
           },
           {
-          title: 'Tags',
-          key: 'tags',
-          dataIndex: 'tags',
-          scopedSlots: { customRender: 'tags' },
+            title: 'Kho hàng',
+            key: 'restAmount',
+            dataIndex: 'restAmount',
           },
           {
-          title: 'Action',
-          key: 'action',
-          scopedSlots: { customRender: 'action' },
+            title: 'Đã bán',
+            key: 'soldAmount',
+            scopedSlots: { customRender: 'soldAmount' },
+          },
+          {
+            title: '',
+            key: 'action',
+            scopedSlots: { customRender: 'action' },
           },
         ],
 
-        data: [
-          {
-          key: '1',
-          name: 'John Brown',
-          age: 32,
-          address: 'New York No. 1 Lake Park',
-          tags: ['nice', 'developer'],
-          },
-          {
-          key: '2',
-          name: 'Jim Green',
-          age: 42,
-          address: 'London No. 1 Lake Park',
-          tags: ['loser'],
-          },
-          {
-          key: '3',
-          name: 'Joe Black',
-          age: 32,
-          address: 'Sidney No. 1 Lake Park',
-          tags: ['cool', 'teacher'],
-          },
-        ]
+        data: [],
       };
+  },
+  mounted() {
+    this.getAllproduct();
   },
   methods: {
     callback(key) {
+      if(key == 2) {
+        this.$router.push('/shop/manage/product/list/active')
+      }
       if(key == 1) {
         this.$router.push('/shop/manage/product/list/all')
       }
-      if(key == 2) {
-        this.$router.push('/shop/manage/product/list/active')
+    },
+
+    async getAllproduct() {
+      try {
+        const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?key=sold-out&page=1&amount=10', 
+        {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response);
+        if(response.data.status == "200") {
+          this.data = response.data.data
+        }
+        else {
+          this.$notification["error"]({
+          message: 'GET PRODUCT ERROR',
+          description:
+            response.data.message
+        });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET PRODUCT ERROR',
+          description:
+            e.message
+        });
+      }
+    },
+    async confirm(id) {
+      try {
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        if(response.data.status == "200") {
+          const index = this.data.findIndex(x => x.id == id)
+          this.data.splice(index, 1)
+          this.$notification['success']({
+            message: 'DELETE PRODUCT',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'DELETE PRODUCT',
+            description:
+              `Error! ${response.data.message}`,
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+          message: 'DELETE PRODUCT',
+          description:
+            `Error! ${e.message}`,
+        });
       }
     },
   },
