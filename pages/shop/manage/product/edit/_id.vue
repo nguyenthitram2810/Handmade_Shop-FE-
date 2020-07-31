@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="al-text-center mt-5">
-      <h3>THÊM SẢN PHẨM MỚI</h3>
+      <h3>CHỈNH SỬA SẢN PHẨM</h3>
     </div>
 
     <div class="container">   
@@ -36,7 +36,7 @@
           <a-input addon-before="VNĐ" v-model="productForm.price" type="number" />
         </a-form-model-item>
 
-        <a-form-model-item  has-feedback label="Số lượng" prop="quantity">
+        <a-form-model-item  has-feedback label="Tồn kho" prop="quantity">
           <a-input v-model="productForm.quantity" type="number" />
         </a-form-model-item>
 
@@ -64,8 +64,6 @@
           </a-select>
         </a-form-model-item>
 
-        <a-button @click="test">Test</a-button>
-
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="submitForm('productForm')">
             Submit
@@ -89,6 +87,7 @@ export default {
       listMaterial: [],
       listTransport: [],
       showImages:[],
+      amount: 0,
       productForm: {
         name: '',
         productType: '',
@@ -98,6 +97,7 @@ export default {
         quantity: '',
         images: [],
         ship: [],
+        restAmount: '',
       },
       rules: {
         name: [
@@ -110,7 +110,7 @@ export default {
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
         ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
-        //images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
+        images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
       },
       layout: {
         labelCol: { span: 4 },
@@ -131,19 +131,19 @@ export default {
         if (valid) {
           try {
             const user = JSON.parse(Cookie.get("user"))
-            console.log(user);
-            console.log(user.shop);
-            const response = await axios.post(`http://localhost:5000/api/v1/users/shop/products`, 
+            console.log(this.productForm);
+            const response = await axios.put(`http://localhost:5000/api/v1/users/shop/products/${this.$route.params.id}`, 
             {
               shopId: user.shop.id,
               name: this.productForm.name,
               categoryId: this.productForm.productType[this.productForm.productType.length - 1],
               description: this.productForm.description,
               price: this.productForm.price,
-              amount: this.productForm.quantity,
+              restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
               transportIds: this.productForm.ship,
               gallery: this.productForm.images,
+              amount: this.amount,
             }, 
             {
               headers: {
@@ -190,9 +190,14 @@ export default {
             let obj = {}
             obj["kind"] = "image"
             obj["src"] = img
+            obj["status"] = true
+            obj["id"] = null
             this.productForm.images.push(obj)
             this.showImages.push(img)
+            
           });
+          console.log(this.productForm.images);
+          console.log(this.showImages);
           if(!imgValid) {
             throw {
                 message: "The number of images is less than 5"
@@ -217,7 +222,13 @@ export default {
     },
   
     removeImage(index) {
-      this.productForm.images.splice(index, 1)
+      if(this.productForm.images[index].id != null) {
+        this.productForm.images[index].status = false
+      }
+      else {
+        this.productForm.images.splice(index, 1)
+      }
+      console.log( this.productForm.images);
       this.showImages.splice(index, 1)
     },
 
@@ -274,6 +285,7 @@ export default {
             Authorization: 'Bearer ' + this.token,
           }
         })
+        console.log(response);
         if(response.data.status == "200") {
           const data = response.data.data
           this.productForm.name = data.name
@@ -281,11 +293,12 @@ export default {
           this.productForm.productType = this.getIdParentCate(data.categoryId)
           this.productForm.description = data.description
           this.productForm.material = this.getID(data.materials)
-          this.productForm.quantity = data.amount
+          this.productForm.quantity = data.restAmount
           this.productForm.price = data.price
           this.productForm.images = data.gallery
           this.productForm.ship = this.getID(data.transports)
           this.getSource(data.gallery)
+          this.amount = data.amount
         }
         else {
           this.error = response.data.message
@@ -336,9 +349,6 @@ export default {
       })
       return arr
     },
-    test() {
-      console.log(this.productForm.productType);
-    }
   },
 }
 </script>

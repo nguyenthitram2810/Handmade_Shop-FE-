@@ -71,7 +71,7 @@ export default {
             key: 'description',
           },
           {
-            title: 'Giá',
+            title: 'Giá (VNĐ)',
             dataIndex: 'price',
             key: 'price',
           },
