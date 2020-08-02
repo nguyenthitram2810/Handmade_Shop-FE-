@@ -117,14 +117,16 @@ export default {
         })
         console.log(response);
         if(response.data.status == "200") {
-          this.data = response.data.data
+          if(response.data.data[0]) {
+            this.data = response.data.data[0].products
+          }
         }
         else {
           this.$notification["error"]({
-          message: 'GET PRODUCT ERROR',
-          description:
-            response.data.message
-        });
+            message: 'GET PRODUCT ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {

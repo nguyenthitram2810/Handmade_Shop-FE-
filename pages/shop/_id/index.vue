@@ -27,7 +27,7 @@
 						<div class="col-lg-2 col-md-3">
 							<div class="profile-author">
 								<div class="profile-author-thumb">
-									<img alt="author" :src="user.shop.thumbnail">
+									<img alt="author" :src="shop.thumbnail">
 									<div class="edit-dp">
 										<label class="fileContainer">
 											<i class="fa fa-camera"></i>
@@ -37,7 +37,7 @@
 								</div>
 									
 								<div class="author-content">
-									<a class="h4 author-name" href="about.html">{{ user.shop.name }}</a>
+									<a class="h4 author-name" href="about.html">{{ shop.name }}</a>
 								</div>
 							</div>
 						</div>
@@ -73,11 +73,11 @@
       <div class="row pl-2">
         <div class="col-lg-9 col-md-12"> 
           <div class="row shop_wrapper">
-            <div v-for="product in products" :key="product.id" class="col-lg-3 col-md-3 col-12 ">
+            <div v-for="product in shop.products" :key="product.id" class="col-lg-3 col-md-3 col-12 ">
               <article class="single_product">
                 <figure>
                   <div class="product_thumb">
-                    <a class="primary_img" href="product-details.html"><img src="http://res.cloudinary.com/dhbk/image/upload/v1596178101/gallery/io2wmnkohk47x7iiizcj.jpg" width="100%" alt=""></a>
+                    <a class="primary_img" href="product-details.html"><img :src="product.thumbnail" width="100%" alt=""></a>
                     <div class="label_product">
                         <span class="label_sale">-7%</span>
                     </div>
@@ -159,8 +159,7 @@ export default {
   },
   data() {
     return {
-      user: JSON.parse(Cookie.get('user')),
-      products: [],
+      shop: {},
       listCate: [],
     }
   },
@@ -173,8 +172,8 @@ export default {
         const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
         console.log(response);
         if(response.data.status == "200") {
-          this.products = response.data.data
-          this.getListCate(response.data.data)
+          this.shop =  response.data.data[0]
+          this.getListCate(this.shop.products)
         }
         else {
           this.$notification["error"]({

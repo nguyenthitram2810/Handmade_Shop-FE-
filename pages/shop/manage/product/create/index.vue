@@ -6,12 +6,6 @@
 
     <div class="container">   
       <a-form-model ref="productForm" :model="productForm" :rules="rules" v-bind="layout">
-        <a-form-model-item :wrapper-col="{ ul: 14, offset: 4 }">
-          <ul style="color:red; list-style-type: none;">
-            <li>{{error}}</li>
-          </ul>
-        </a-form-model-item>
-
         <a-form-model-item  has-feedback label="Tên sản phẩm" prop="name">
           <a-input v-model="productForm.name" type="text" />
         </a-form-model-item>
@@ -48,7 +42,10 @@
               </div>
             </div>
             <div v-if="showImages.length < 5" class="uploadImg d-flex align-items-center justify-content-center mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" @click="$refs.image.click()">
-              <a-icon type="plus" />
+              <a-icon v-if="upload" type="plus" />
+              <a-spin v-else>
+                <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+              </a-spin>
               <input
                 ref="image" name="image" type="file" class="mt-3 d-none" multiple @change="previewFiles"
               >
@@ -66,8 +63,8 @@
 
         
 
-        <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
-          <a-button type="primary" @click="submitForm('productForm')">
+        <a-form-model-item  :wrapper-col="{ span: 14, offset: 4 }">
+          <a-button :loading="isLoading" :disabled="isDisabled" type="primary" @click="submitForm('productForm')">
             Submit
           </a-button>
         </a-form-model-item>
@@ -77,13 +74,16 @@
 </template>
 <script>
 import axios from "axios"
+import upload from 'ant-design-vue/lib/upload';
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   middleware: 'authentication',
   data() {
     return {
-      error:'',
+      isLoading: false,
+      isDisabled: false,
+      upload: true,
       listCate: [],
       listMaterial: [],
       listTransport: [],
@@ -109,7 +109,7 @@ export default {
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
         ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
-        //images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
+        
       },
       layout: {
         labelCol: { span: 4 },
@@ -128,13 +128,19 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
+            this.isLoading = true
+            if(this.productForm.images.length == 0) {
+              throw {
+                message: "Bạn chưa chọn hình ảnh sản phẩm!"
+              }
+            }
             const token = Cookie.get("token")
             const user = JSON.parse(Cookie.get("user"))
             console.log(user);
             console.log(user.shop);
             const response = await axios.post(`http://localhost:5000/api/v1/users/shop/products`, 
             {
-              shopId: user.shop.id,
+              shopId: parseInt(user.shop.id),
               name: this.productForm.name,
               categoryId: this.productForm.productType[this.productForm.productType.length - 1],
               description: this.productForm.description,
@@ -153,11 +159,21 @@ export default {
               this.$router.push("/shop/manage/product/list/all")
             }
             else {
-              this.error = response.data.message
+              this.isLoading = false
+              this.$notification["error"]({
+                message: 'CREATE PRODUCT ERROR',
+                description:
+                  response.data.message
+              });
             }
           }
           catch(e) {
-            this.error = e.message
+            this.isLoading = false
+            this.$notification["error"]({
+              message: 'CREATE PRODUCT ERROR',
+              description:
+                e.message
+            });
           }
         } else {
           return false;
@@ -166,16 +182,17 @@ export default {
     },
     
     async previewFiles(event) { 
+      this.isDisabled = true
+      this.upload = false
       const data = new FormData()
-      let imgValid = true
       try {
+        if(this.productForm.images.length + event.target.files.length > 5) {
+          throw {
+                message: "The number of images is less than 6"
+              }
+        }
         for( let i = 0; i < event.target.files.length; i++ ){
-          if(i < (5 - this.productForm.images.length)) {
-            data.append('image', event.target.files[i]);
-          }
-          else {
-            imgValid = false
-          }
+          data.append('image', event.target.files[i]);
         }
         const token = Cookie.get("token")
         const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
@@ -193,11 +210,8 @@ export default {
             this.productForm.images.push(obj)
             this.showImages.push(img)
           });
-          if(!imgValid) {
-            throw {
-                message: "The number of images is less than 5"
-              }
-          }
+          this.isDisabled = false
+          this.upload = true
         }
         else {
           this.$notification["error"]({
@@ -208,6 +222,8 @@ export default {
         }
       }
       catch(e) {
+        this.isDisabled = false
+        this.upload = true
         this.$notification["error"]({
           message: 'Upload Image Error',
           description:
@@ -228,11 +244,19 @@ export default {
           this.listCate = this.mappingData(response.data.data)
         }
         else {
-          this.error = response.data.message
+          this.$notification["error"]({
+            message: 'GET LIST CATEGORIES ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {
-        this.error = e.message
+        this.$notification["error"]({
+          message: 'GET LIST CATEGORIES ERROR',
+          description:
+            e.message
+        });
       }
     },
 
@@ -243,11 +267,19 @@ export default {
         this.listMaterial = response.data.data
         }
         else {
-          this.error = response.data.message
+          this.$notification["error"]({
+            message: 'GET LIST MATERIALS ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {
-        this.error = e.message
+        this.$notification["error"]({
+          message: 'GET LIST MATERIALS ERROR',
+          description:
+            e.message
+        });
       }
     },
 
@@ -258,11 +290,19 @@ export default {
           this.listTransport = response.data.data
         }
         else {
-          this.error = response.data.message
+          this.$notification["error"]({
+            message: 'GET LIST TRANSPORTS ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {
-        this.error = e.message
+        this.$notification["error"]({
+          message: 'GET LIST TRANSPORTS ERROR',
+          description:
+            e.message
+        });
       }
     },
     mappingData(data) {

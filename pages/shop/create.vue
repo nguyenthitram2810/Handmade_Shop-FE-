@@ -138,7 +138,7 @@ export default {
             if(response.data.status == "200") {
               console.log(response);
               this.user.shopActive = true
-              this.user.shop = response.data.data.id
+              this.user.shop = response.data.data
               Cookie.remove('user')
               this.$store.dispatch('auth/setUser', { user: this.user })
               this.$router.push("/shop/manage/product/list/all")

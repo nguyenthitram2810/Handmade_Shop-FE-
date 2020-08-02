@@ -48,7 +48,10 @@
               </div>
             </div>
             <div v-if="showImages.length < 5" class="uploadImg d-flex align-items-center justify-content-center mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" @click="$refs.image.click()">
-              <a-icon type="plus" />
+              <a-icon v-if="upload" type="plus" />
+              <a-spin v-else>
+                <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+              </a-spin>
               <input
                 ref="image" name="image" type="file" class="mt-3 d-none" multiple @change="previewFiles"
               >
@@ -82,6 +85,7 @@ export default {
   data() {
     return {
       error:'',
+      upload: true,
       token: Cookie.get("token"),
       listCate: [],
       listMaterial: [],
@@ -167,6 +171,7 @@ export default {
     },
     
     async previewFiles(event) { 
+      this.upload = false
       const data = new FormData()
       let imgValid = true
       try {
@@ -196,6 +201,7 @@ export default {
             this.showImages.push(img)
             
           });
+          this.upload = true
           console.log(this.productForm.images);
           console.log(this.showImages);
           if(!imgValid) {
@@ -205,6 +211,7 @@ export default {
           }
         }
         else {
+          this.upload = true
           this.$notification["error"]({
             message: 'Upload Image Error',
             description:
