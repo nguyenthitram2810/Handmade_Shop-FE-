@@ -23,6 +23,27 @@
           <span slot="soldAmount" slot-scope="text, record">
             <p>{{ record.restAmount -  record.amount }}</p>
           </span>
+          <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
+            <a-popconfirm
+              title="Are you sure delete this task?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="confirm(record.id)"
+            >
+              <a-button type="danger">
+                Delete
+              </a-button>
+            </a-popconfirm>
+
+            <nuxt-link :to="`/shop/manage/product/edit/${record.id}`"> 
+              <a-button class="al-btn-success">
+                Edit
+              </a-button>
+            </nuxt-link>
+            <a-button type="primary">
+              View Detail
+            </a-button>
+          </span>
         </a-table>
       </a-layout-content>
     </a-layout>
@@ -37,6 +58,7 @@ export default {
     middleware: ['authentication'],
     data() {
       return {
+        token: Cookie.get("token"),
         columns: [
           {
             title: 'Tên sản phẩm',
@@ -49,7 +71,7 @@ export default {
             key: 'description',
           },
           {
-            title: 'Giá',
+            title: 'Giá (VNĐ)',
             dataIndex: 'price',
             key: 'price',
           },
@@ -66,6 +88,7 @@ export default {
           {
             title: '',
             key: 'action',
+            scopedSlots: { customRender: 'action' },
           },
         ],
 
@@ -87,16 +110,17 @@ export default {
 
     async getAllproduct() {
       try {
-        const token = Cookie.get("token")
-        console.log(token);
         const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?page=1&amount=10', 
         {
           headers: {
-            Authorization: 'Bearer ' + token,
+            Authorization: 'Bearer ' + this.token,
           }
         })
+        console.log(response);
         if(response.data.status == "200") {
-          this.data = response.data.data
+          if(response.data.data[0]) {
+            this.data = response.data.data[0].products
+          }
         }
         else {
           this.$notification["error"]({
@@ -113,7 +137,40 @@ export default {
             e.message
         });
       }
-    }
+    },
+    async confirm(id) {
+      try {
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response);
+        if(response.data.status == "200") {
+          const index = this.data.findIndex(x => x.id == id)
+          this.data.splice(index, 1)
+          this.$notification['success']({
+            message: 'DELETE PRODUCT',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'DELETE PRODUCT',
+            description:
+              `Error! ${response.data.message}`,
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+          message: 'DELETE PRODUCT',
+          description:
+            `Error! ${e.message}`,
+        });
+      }
+    },
   },
 }
 </script>

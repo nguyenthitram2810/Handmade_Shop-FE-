@@ -58,7 +58,7 @@ export default {
     middleware: ['authentication'],
     data() {
       return {
-        visible: false,
+        token: Cookie.get("token"),
         columns: [
           {
             title: 'Tên sản phẩm',
@@ -71,7 +71,7 @@ export default {
             key: 'description',
           },
           {
-            title: 'Giá',
+            title: 'Giá (VNĐ)',
             dataIndex: 'price',
             key: 'price',
           },
@@ -109,23 +109,24 @@ export default {
     },
     async getAllproduct() {
       try {
-        const token = Cookie.get("token")
         const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?key=inventory&page=1&amount=10', 
         {
           headers: {
-            Authorization: 'Bearer ' + token,
+            Authorization: 'Bearer ' + this.token,
           }
         })
         console.log(response);
         if(response.data.status == "200") {
-          this.data = response.data.data
+          if(response.data.data[0]) {
+            this.data = response.data.data[0].products
+          }
         }
         else {
           this.$notification["error"]({
-          message: 'GET PRODUCT ERROR',
-          description:
-            response.data.message
-        });
+            message: 'GET PRODUCT ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {
@@ -136,8 +137,38 @@ export default {
         });
       }
     },
-    confirm(id) {
-      console.log(id);
+    async confirm(id) {
+      try {
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response);
+        if(response.data.status == "200") {
+          const index = this.data.findIndex(x => x.id == id)
+          this.data.splice(index, 1)
+          this.$notification['success']({
+            message: 'DELETE PRODUCT',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'DELETE PRODUCT',
+            description:
+              `Error! ${response.data.message}`,
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+          message: 'DELETE PRODUCT',
+          description:
+            `Error! ${e.message}`,
+        });
+      }
     },
   },
 }

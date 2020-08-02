@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="al-text-center mt-5">
-      <h3>THÊM SẢN PHẨM MỚI</h3>
+      <h3>CHỈNH SỬA SẢN PHẨM</h3>
     </div>
 
     <div class="container">   
@@ -36,7 +36,7 @@
           <a-input addon-before="VNĐ" v-model="productForm.price" type="number" />
         </a-form-model-item>
 
-        <a-form-model-item  has-feedback label="Số lượng" prop="quantity">
+        <a-form-model-item  has-feedback label="Tồn kho" prop="quantity">
           <a-input v-model="productForm.quantity" type="number" />
         </a-form-model-item>
 
@@ -48,7 +48,10 @@
               </div>
             </div>
             <div v-if="showImages.length < 5" class="uploadImg d-flex align-items-center justify-content-center mb-3 col-5 col-md-2 col-sm-3 col-xs-6 mr-2" @click="$refs.image.click()">
-              <a-icon type="plus" />
+              <a-icon v-if="upload" type="plus" />
+              <a-spin v-else>
+                <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+              </a-spin>
               <input
                 ref="image" name="image" type="file" class="mt-3 d-none" multiple @change="previewFiles"
               >
@@ -63,8 +66,6 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-
-        
 
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="submitForm('productForm')">
@@ -84,10 +85,13 @@ export default {
   data() {
     return {
       error:'',
+      upload: true,
+      token: Cookie.get("token"),
       listCate: [],
       listMaterial: [],
       listTransport: [],
       showImages:[],
+      amount: 0,
       productForm: {
         name: '',
         productType: '',
@@ -97,6 +101,7 @@ export default {
         quantity: '',
         images: [],
         ship: [],
+        restAmount: '',
       },
       rules: {
         name: [
@@ -109,7 +114,7 @@ export default {
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
         ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
-        //images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
+        images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
       },
       layout: {
         labelCol: { span: 4 },
@@ -129,25 +134,24 @@ export default {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
-            const token = Cookie.get("token")
             const user = JSON.parse(Cookie.get("user"))
-            console.log(user);
-            console.log(user.shop);
-            const response = await axios.post(`http://localhost:5000/api/v1/users/shop/products`, 
+            console.log(this.productForm);
+            const response = await axios.put(`http://localhost:5000/api/v1/users/shop/products/${this.$route.params.id}`, 
             {
               shopId: user.shop.id,
               name: this.productForm.name,
               categoryId: this.productForm.productType[this.productForm.productType.length - 1],
               description: this.productForm.description,
               price: this.productForm.price,
-              amount: this.productForm.quantity,
+              restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
               transportIds: this.productForm.ship,
               gallery: this.productForm.images,
+              amount: this.amount,
             }, 
             {
               headers: {
-                Authorization: 'Bearer ' + token,
+                Authorization: 'Bearer ' + this.token,
               }
             })
             if(response.data.status == "200") {
@@ -167,6 +171,7 @@ export default {
     },
     
     async previewFiles(event) { 
+      this.upload = false
       const data = new FormData()
       let imgValid = true
       try {
@@ -178,11 +183,10 @@ export default {
             imgValid = false
           }
         }
-        const token = Cookie.get("token")
         const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
         {
           headers: {
-            Authorization: 'Bearer ' + token,
+            Authorization: 'Bearer ' + this.token,
           }
         })
         if(response.data.status == "200") {
@@ -191,9 +195,15 @@ export default {
             let obj = {}
             obj["kind"] = "image"
             obj["src"] = img
+            obj["status"] = true
+            obj["id"] = null
             this.productForm.images.push(obj)
             this.showImages.push(img)
+            
           });
+          this.upload = true
+          console.log(this.productForm.images);
+          console.log(this.showImages);
           if(!imgValid) {
             throw {
                 message: "The number of images is less than 5"
@@ -201,6 +211,7 @@ export default {
           }
         }
         else {
+          this.upload = true
           this.$notification["error"]({
             message: 'Upload Image Error',
             description:
@@ -218,13 +229,20 @@ export default {
     },
   
     removeImage(index) {
-      this.productForm.images.splice(index, 1)
+      if(this.productForm.images[index].id != null) {
+        this.productForm.images[index].status = false
+      }
+      else {
+        this.productForm.images.splice(index, 1)
+      }
+      console.log( this.productForm.images);
       this.showImages.splice(index, 1)
     },
 
     async getListCate() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        console.log(response);
         if(response.data.status == "200") {
           this.listCate = this.mappingData(response.data.data)
         }
@@ -268,10 +286,26 @@ export default {
     },
 
     async getProduct() {
-        try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products/${this.$route.params.id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response);
         if(response.data.status == "200") {
-          this.listTransport = response.data.data
+          const data = response.data.data
+          this.productForm.name = data.name
+          console.log(this.getIdParentCate(data.categoryId));
+          this.productForm.productType = this.getIdParentCate(data.categoryId)
+          this.productForm.description = data.description
+          this.productForm.material = this.getID(data.materials)
+          this.productForm.quantity = data.restAmount
+          this.productForm.price = data.price
+          this.productForm.images = data.gallery
+          this.productForm.ship = this.getID(data.transports)
+          this.getSource(data.gallery)
+          this.amount = data.amount
         }
         else {
           this.error = response.data.message
@@ -293,6 +327,34 @@ export default {
         return rObj;
       });
       return reformattedArray
+    },
+
+    getID(data) {
+      const arr = []
+      data.forEach(item => {
+        arr.push(item.id.toString())
+      })
+      return arr
+    },
+
+    getSource(data) {
+      data.forEach(img => {
+        this.showImages.push(img.src)
+      })
+    },
+    getIdParentCate(id) {
+      const arr = []
+      this.listCate.forEach(item => {
+        if(item.children) {
+          item.children.forEach(i => {
+            if( i.value == id) {
+              arr.push(item.value)
+              arr.push(id)
+            }
+          })
+        }
+      })
+      return arr
     },
   },
 }
