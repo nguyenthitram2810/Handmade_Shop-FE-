@@ -40,9 +40,11 @@
                 Edit
               </a-button>
             </nuxt-link>
-            <a-button type="primary">
-              View Detail
-            </a-button>
+           <nuxt-link :to="`/shop/product/detail/${record.slug}`"> 
+              <a-button type="primary">
+                View Detail
+              </a-button>
+            </nuxt-link>
           </span>
         </a-table>
       </a-layout-content>

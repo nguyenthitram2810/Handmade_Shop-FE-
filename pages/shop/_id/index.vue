@@ -76,8 +76,8 @@
             <div v-for="product in shop.products" :key="product.id" class="col-lg-3 col-md-3 col-12 ">
               <article class="single_product">
                 <figure>
-                  <div class="product_thumb">
-                    <a class="primary_img" href="product-details.html"><img :src="product.thumbnail" width="100%" alt=""></a>
+                  <div  class="product_thumb">
+                    <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
                     <div class="label_product">
                         <span class="label_sale">-7%</span>
                     </div>
@@ -86,7 +86,7 @@
                         <ul>
                             <li class="add_to_cart"><a href="#" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
                              <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
-                            <li class="quick_button"><a href="#" data-toggle="modal" data-target="#modal_box"  title="quick view"> <i class="icon-eye"></i></a></li>
+                            <li class="quick_button"><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                         </ul>
                     </div>
 
@@ -107,7 +107,7 @@
                             <li><a href="#"><i class="icon-star"></i></a></li>
                           </ul>
                         </div>
-                        <h4 class="product_name"><a href="product-details.html">{{product.name}}</a></h4>
+                        <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                         <div class="price_box"> 
                           <span class="current_price">₫ {{product.price}}</span>
                           <!-- <span class="old_price">£74.00</span> -->

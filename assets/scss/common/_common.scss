@@ -431,3 +431,89 @@ label {
 	color: white;
 	border-color: #52c41a;
 }
+
+.al-bg-white {
+	background-color:white;
+	border-radius: 5px;
+}
+
+.al-text-space {
+	letter-spacing: 1px;
+}
+
+.al-color-price {
+	color: #D0011B;
+}
+
+.al-margin-7 {
+	margin: 0 4rem;
+}
+
+.al-bg-price {
+	background-color: #F5F5F5;
+}
+
+.al-radius-0 {
+	border-radius: 0;
+}
+
+.al-borderx-0 {
+	border-left: 0;
+	border-right: 0;
+}
+
+.al-input-quantity:focus, .al-input-quantity:hover {
+	border-top: 1px solid #d9d9d9;
+	border-bottom: 1px solid #d9d9d9;
+	box-shadow: 0 0 0 0 #d9d9d9;
+}
+
+.al-border-left-radius {
+	border-top-left-radius: 5px!important;
+	border-bottom-left-radius: 5px!important;
+}
+
+.al-border-right-radius {
+	border-top-right-radius: 5px!important;
+	border-bottom-right-radius: 5px!important;
+}
+
+.al-button-cart {
+	border: 1px solid #EE4D2D;
+	background-color: #FFEEE8;
+	color: #F04D2D;
+}
+
+.al-button-cart:hover {
+	border: 1px solid #EE4D2D;
+	background-color: #FFE6DE;
+	color: #F04D2D;
+}
+
+.al-button-buy {
+	background-color: #EE4D2D;
+	color:white;
+	border: 1px solid #EE4D2D;
+}
+
+.al-button-buy:hover {
+	background-color: #f05d40;
+	color:white;
+	border: 1px solid #EE4D2D;
+}
+
+.al-height-detail {
+	min-height: 575px;
+}
+
+.al-height-description {
+	min-height: 70px;
+}
+
+.al-border-right {
+	border-right: 1px solid #d9d9d9;
+}
+
+.al-color-orange {
+	color: #F04D2D;
+}
