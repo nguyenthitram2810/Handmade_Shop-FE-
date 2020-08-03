@@ -75,7 +75,6 @@
     <a-menu
       class="al-w-100 category header"
       mode="horizontal"
-      :default-selected-keys="['2']"
       :style="{ lineHeight: '30px' }"
     >
       <template v-for="(category, index) in categories">
@@ -88,7 +87,7 @@
         </a-menu-item>
         <a-menu-item
           :key="index"
-          class="al-text-color first-menu-item"
+          class="al-text-color first-menu-item ant-menu-item-selected"
           v-else
         >
           {{ category }}
