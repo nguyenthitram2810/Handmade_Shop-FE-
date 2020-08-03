@@ -1,10 +1,10 @@
 <template>
-  <div  style="background-color: #f1faee;">
+  <div class="cover-cart">
     <div class="container my-5">
-      <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" class="border-cover white-theme">
+      <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" class="border-cover white-theme cover-shadow--cart">
         <span slot="nameAndThumbnail"  slot-scope="data">
-          <a>{{ data.name }}</a>
-          <img v-bind:src="data.thumbnail">
+          <span class="cart-name">{{ data.name }}</span>
+          <img v-bind:src="data.thumbnail" class="cart-thumbnail">
         </span>
         <span slot="action">
           <a>Xóa</a>

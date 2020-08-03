@@ -6,6 +6,24 @@
     background-color: #fff;
 }
 
+.cover-cart {
+
+}
+.cover-shadow--cart {
+    box-shadow: 12px 10px 12px 5px rgba(0, 0, 0, 0.1) !important;
+}
+
+.cart-name {
+    width: 100px;
+    margin-right: 20px;
+}
+
+.cart-thumbnail {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    
+}
 table {
     .ant-table-thead {
         tr {

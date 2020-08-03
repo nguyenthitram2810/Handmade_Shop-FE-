@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import BaseHeaderCart from '~/components/v-layout/BaseHeaderCart'
+import BaseHeaderCart from '~/components/v-layout/BaseHeader/cart'
 import BaseFooter from '~/components/v-layout/BaseFooter'
 
 export default {

@@ -1,5 +1,9 @@
 <template>
-    <Header v-bind:isSignIn=isSignIn v-bind:items=items v-bind:user=user>
+    <Header 
+      v-bind:isSignIn=isSignIn 
+      v-bind:user=user
+      v-bind:categories=categories
+    >
     </Header>
 </template>
 
@@ -15,6 +19,14 @@ export default {
     return {
       isSignIn: false,
       user: {},
+      categories: [
+          "Thời trang nam",
+          "Thời trang nữ",
+          "Túi ví",
+          "Giày",
+          "Mỹ phẩm",
+          "Thủ công mỹ nghệ"
+      ]
     }
   },
   created() {
