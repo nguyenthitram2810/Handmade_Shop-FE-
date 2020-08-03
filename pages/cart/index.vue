@@ -1,6 +1,12 @@
 <template>
   <div class="cover-cart">
     <div class="container my-5">
+
+      <a-page-header
+        class="header"
+        title="CART"
+      />
+
       <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" class="border-cover white-theme cover-shadow--cart">
         <span slot="nameAndThumbnail"  slot-scope="data">
           <span class="cart-name">{{ data.name }}</span>
@@ -10,6 +16,7 @@
           <a>Xóa</a>
         </span>
       </a-table>
+      <!-- Table -->
     </div>
   </div>
 </template>
