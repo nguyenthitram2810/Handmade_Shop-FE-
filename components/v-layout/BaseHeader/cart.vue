@@ -31,7 +31,7 @@ export default {
   },
   created() {
     if(Cookie.get('token') || Cookie.get('user')) {
-      this.login = true
+      this.isSignIn = true
       this.user = JSON.parse(Cookie.get('user'))
     }
   }
