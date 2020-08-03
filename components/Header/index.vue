@@ -1,13 +1,11 @@
-/* eslint-disable vue/html-self-closing */
 <template>
-  <header>
-    <a-row type="flex" justify="start" class="mx-3">
+      <a-row type="flex" justify="start" class="px-3">
       <a-col :span="18">
         <a-row class="d-flex justify-content-between align-items-center">
           <a-col :span="6" class="d-flex align-items-center">
             <nuxt-link to="/" style="cursor:pointer;">
               <img src="/images/LogoHandmade.png" class="logo" alt="">
-              <img class="ml-3" src="/images/logoName.png" alt="" width="100px" height="100px">
+              <div class="cart">CART</div>
             </nuxt-link>
           </a-col>
 
@@ -17,7 +15,7 @@
         </a-row>
       </a-col>
 
-      <a-col  v-if="login" :span="4" :offset="1" class="my-auto">
+      <a-col  v-if="isSignIn" :span="4" :offset="1" class="my-auto">
         <div class="d-flex justify-content-between align-items-center">
           <a-dropdown>
             <a-menu slot="overlay">
@@ -45,7 +43,7 @@
             <a-menu slot="overlay">
               <a-menu-item v-if="user.shop != null" key="1" @click="showShop"> <a-icon type="user" />Xem shop</a-menu-item>
               <a-menu-item key="1"> <a-icon type="user" />{{user.name}} </a-menu-item>
-              <a-menu-item key="3" @click="loggOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
+              <a-menu-item key="3" @click="logOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
             </a-menu>
 
             <div>
@@ -73,35 +71,8 @@
         </div>
       </a-col>
 
-      
+      <slot></slot>
     </a-row>
-    
-    <a-menu
-      class="al-bg-color al-w-100 category"
-      mode="horizontal"
-      :default-selected-keys="['2']"
-      :style="{ lineHeight: '30px', margin: '0 25px' }"
-    >
-      <a-menu-item key="1" class="al-text-color cover-menu-item">
-        Thời trang nam
-      </a-menu-item>
-      <a-menu-item key="2" class="al-text-color cover-menu-item">
-        Thời trang nữ
-      </a-menu-item>
-      <a-menu-item key="3" class="al-text-color cover-menu-item">
-        Túi ví
-      </a-menu-item>
-      <a-menu-item key="4" class="al-text-color cover-menu-item">
-        Giày
-      </a-menu-item>
-      <a-menu-item key="5" class="al-text-color cover-menu-item">
-        Mỹ phẩm
-      </a-menu-item>
-      <a-menu-item key="6" class="al-text-color cover-menu-item">
-        Thủ công mỹ nghệ
-      </a-menu-item>
-    </a-menu>
-  </header>
 </template>
 
 <style scoped>
@@ -110,42 +81,27 @@
 
 <script>
 const Cookie = process.client ? require('js-cookie') : undefined
-
 export default {
-  name: 'BaseHeader',
-  data() {
-    return {
-      login: false,
-      user: {},
-    }
-  },
-
-  created() {
-    if(Cookie.get('token') || Cookie.get('user')) {
-      this.login = true
-      this.user = JSON.parse(Cookie.get('user'))
-    }
-  },
-
-  watch: {
-    '$store.state.auth.userNow' : function(value) {
-      if(value == null) {
-        this.login = false
-        this.$router.push(this.$route.query.redirect || '/');
+    name: "header",
+    props: ['isSignIn', 'user'],
+    watch: {
+      '$store.state.auth.userNow' : function(value) {
+        if(value == null) {
+          this.login = false
+          this.$router.push(this.$route.query.redirect || '/');
+        }
+      }
+    },
+    methods: {
+      async logOut () {
+        Cookie.remove('user')
+        Cookie.remove('token')
+        Cookie.remove('shop')
+        await this.$store.dispatch('auth/removeUser')
+      },
+      showShop() {
+        this.$router.push(`/shop/${this.user.shop.slug}`)
       }
     }
-  },
-
-  methods: {
-    async loggOut () {
-      Cookie.remove('user')
-      Cookie.remove('token')
-      Cookie.remove('shop')
-      await this.$store.dispatch('auth/removeUser')
-    },
-    showShop() {
-      this.$router.push(`/shop/${this.user.shop.slug}`)
-    }
-  }
 }
 </script>
