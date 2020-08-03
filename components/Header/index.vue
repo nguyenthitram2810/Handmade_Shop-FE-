@@ -1,11 +1,11 @@
 <template>
-      <a-row type="flex" justify="start" class="px-3">
+      <a-row type="flex" justify="start">
       <a-col :span="18">
-        <a-row class="d-flex justify-content-between align-items-center">
+        <a-row class="d-flex justify-content-between align-items-center px-3">
           <a-col :span="6" class="d-flex align-items-center">
             <nuxt-link to="/" style="cursor:pointer;">
               <img src="/images/LogoHandmade.png" class="logo" alt="">
-              <div class="cart">CART</div>
+              <img class="ml-3" src="/images/logoName.png" alt="" width="100px" height="100px">
             </nuxt-link>
           </a-col>
 
@@ -60,6 +60,7 @@
       <a-col v-else :span="4" :offset="1" class="my-auto">
         <div class="d-flex justify-content-between align-items-center">
           <div>
+            <i class="fas fa-sign-in-alt"></i>
             <nuxt-link to="/login"  class="al-text-color">Đăng nhập</nuxt-link>
           </div>
           <div>
@@ -70,6 +71,29 @@
           </div>
         </div>
       </a-col>
+
+    <a-menu
+      class="al-w-100 category header"
+      mode="horizontal"
+      :style="{ lineHeight: '30px' }"
+    >
+      <template v-for="(category, index) in categories">
+        <a-menu-item
+          :key="index"
+          class="al-text-color cover-menu-item"
+          v-if="index !== 0"
+        >
+          {{ category }}
+        </a-menu-item>
+        <a-menu-item
+          :key="index"
+          class="al-text-color first-menu-item ant-menu-item-selected"
+          v-else
+        >
+          {{ category }}
+        </a-menu-item>
+      </template>
+    </a-menu>
 
       <slot></slot>
     </a-row>
@@ -83,7 +107,10 @@
 const Cookie = process.client ? require('js-cookie') : undefined
 export default {
     name: "header",
-    props: ['isSignIn', 'user'],
+    props: ['isSignIn', 'user', 'categories'],
+    created() {
+      console.log(this.categories)
+    },
     watch: {
       '$store.state.auth.userNow' : function(value) {
         if(value == null) {
