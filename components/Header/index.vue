@@ -75,7 +75,7 @@
     <a-menu
       class="al-w-100 category header"
       mode="horizontal"
-      :style="{ lineHeight: '30px' }"
+      :style="{ lineHeight: '30px', 'z-index': '2' }"
     >
       <template v-for="(category, index) in categories">
         <a-menu-item

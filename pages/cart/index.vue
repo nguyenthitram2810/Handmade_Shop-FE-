@@ -3,17 +3,26 @@
     <div class="container my-5">
 
       <a-page-header
-        class="header"
+        class="header white-theme"
         title="CART"
       />
 
-      <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" class="border-cover white-theme cover-shadow--cart">
-        <span slot="nameAndThumbnail"  slot-scope="data">
-          <span class="cart-name">{{ data.name }}</span>
-          <img v-bind:src="data.thumbnail" class="cart-thumbnail">
+      <a-table :columns="columns" :data-source="dataSource" :row-selection="rowSelection" class="border-cover white-theme">
+        <span slot="nameAndThumbnail"  slot-scope="dataSource">
+          <span class="cart-name">{{ dataSource.name }}</span>
+          <img v-bind:src="dataSource.thumbnail" class="cart-thumbnail">
         </span>
-        <span slot="action">
-          <a>Xóa</a>
+        <span slot="amount">
+          <a-input-number size="large" :min="1" :max="100000" :default-value="1" @change="amountChange" />
+        </span>
+        <span slot="action" slot-scope="text, record">
+          <a-popconfirm
+            v-if="dataSource.length"
+            title="Sure to delete?"
+            @confirm="() => deleteItem(record.key)"
+          >
+            <a href="javascript:;">Delete</a>
+          </a-popconfirm>
         </span>
       </a-table>
       <!-- Table -->
@@ -42,6 +51,7 @@ const columns = [
     title: 'Số lượng',
     dataIndex: 'amount',
     key: 'amount',
+    scopedSlots: { customRender: 'amount' }
   },
   {
     title: 'Số tiền',
@@ -54,7 +64,7 @@ const columns = [
     scopedSlots: { customRender: 'action' },
   },
 ];
-const data = [
+const dataSource = [
   {
     key: '1',
     nameAndThumbnail: {
@@ -91,9 +101,36 @@ export default {
   layout: "cart",
   data() {
     return {
-      data,
+      dataSource,
       columns,
-      rowSelection
+      rowSelection,
+      products: [],
+    }
+  },
+  mounted() {
+    this.fetchProductsInStorage();
+  },
+  methods: {
+    amountChange(value) {
+      console.log(value)
+    },
+    deleteItem(key) {
+      const dataSource = [...this.dataSource];
+      this.dataSource = dataSource.filter(item => item.key !== key);
+      // window.localStorage.setItem("products", this.dataSource)
+    },
+    fetchProductsInStorage() {
+      const products = window.localStorage.getItem('products');
+      if (!products) return;
+      this.products = products.map(({name, thumbnail, ...product}) => 
+        ({
+          nameAndThumbnail: {
+            name: name,
+            thumbnail: thumbnail,
+          },
+          ...product
+        })
+      )
     }
   }
 }
