@@ -84,7 +84,7 @@
 
                     <div class="action_links">
                         <ul>
-                            <li class="add_to_cart"><a href="#" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
+                            <li class="add_to_cart"><a @click="addCart(product)" href="#" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
                              <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
                             <li class="quick_button"><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                         </ul>
@@ -203,6 +203,10 @@ export default {
         }
       });
       console.log(this.listCate);
+    },
+
+    addCart(product) {
+      
     }
   }
 }

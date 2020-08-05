@@ -88,14 +88,15 @@ const rowSelection = {
   },
 };
 export default {
-  layout: "cart",
+  layout: 'cart',
   data() {
     return {
       data,
       columns,
       rowSelection
     }
-  }
+  },
+  
 }
 </script>
 

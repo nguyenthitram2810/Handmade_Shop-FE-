@@ -12,7 +12,7 @@
           </a-tab-pane>
         </a-tabs>
         <div class="d-flex justify-content-between">
-          <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px"/>
+          <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px" @search="onSearch"/>
           <nuxt-link to="/shop/manage/product/create">
             <a-button  icon="plus" class="bg-button-orange al-color-white">
               Thêm sản phẩm
@@ -173,6 +173,37 @@ export default {
         });
       }
     },
+
+    async onSearch(value) {
+      try {
+        console.log(value)
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?key=search&value=${value}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        if(response.data.status == "200") {
+          if(response.data.data[0]) {
+            this.data = response.data.data[0].products
+          }
+        }
+        else {
+          this.$notification["error"]({
+            message: 'SEARCH PRODUCT ERROR',
+            description:
+              response.data.message
+          });
+        }
+        console.log(response)
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'SEARCH PRODUCT ERROR',
+          description:
+            e.message
+        });
+      }
+    }
   },
 }
 </script>

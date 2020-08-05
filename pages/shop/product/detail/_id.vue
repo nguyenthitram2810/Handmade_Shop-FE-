@@ -72,8 +72,8 @@
           <div class="col-4 d-flex align-items-center al-border-right">
             <a-avatar :size="64" src="http://res.cloudinary.com/dhbk/image/upload/v1596342616/gallery/yrpbv9tskrdnqiyitlrk.jpg" />
             <div class="d-flex flex-column pl-2 justify-content-between">
-              <h4>Tên shop</h4>
-              <nuxt-link to="">
+              <h4>{{shop.name}}</h4>
+              <nuxt-link :to="`/shop/${shop.slug}`">
                 <a-button class="mt-1" size="small">
                   Xem shop
                 </a-button>
@@ -215,11 +215,13 @@
 <script>
 import axios from "axios"
 import moment from 'moment'
+
 export default {
   data() {
     return {
       quantity: 1,
       product: {},
+      shop: {},
       category: '',
       comments: [],
       submitting: false,
@@ -251,6 +253,8 @@ export default {
         if(response.data.status == "200") {
           this.product = response.data.data
           this.category = response.data.data.category
+          this.shop = response.data.data.shop
+          console.log(this.shop)
         }
         else {
           this.$notification["error"]({
