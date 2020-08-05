@@ -80,7 +80,7 @@
       class="al-bg-color al-w-100 category"
       mode="horizontal"
       :default-selected-keys="['2']"
-      :style="{ lineHeight: '30px', margin: '0 25px' }"
+      :style="{ lineHeight: '30px' }"
     >
       <a-menu-item key="1" class="al-text-color cover-menu-item">
         Thời trang nam
