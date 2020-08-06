@@ -84,7 +84,7 @@
 
                     <div class="action_links">
                         <ul>
-                            <li class="add_to_cart"><a @click="addCart(product)" href="#" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
+                            <li class="add_to_cart"><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
                              <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
                             <li class="quick_button"><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                         </ul>
@@ -154,6 +154,7 @@ const Cookie = process.client ? require('js-cookie') : undefined
 import axios from "axios"
 
 export default {
+  middleware: 'getState',
   components: {
     Product,
   },
@@ -170,7 +171,6 @@ export default {
     async getInfoShop() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
-        console.log(response);
         if(response.data.status == "200") {
           this.shop =  response.data.data[0]
           this.getListCate(this.shop.products)
@@ -196,17 +196,34 @@ export default {
       let temp = new Set()
       data.forEach(e => {
         let i = temp.size
-        console.log(i);
         temp.add(e.category.id)
         if(i < temp.size) {
           this.listCate.push(e.category)
         }
       });
-      console.log(this.listCate);
     },
 
     addCart(product) {
-      
+      try {
+        if(Cookie.get('user')) {
+          this.$store.dispatch('cart/addCart', { product, quantity: 1 })
+        }
+        else {
+          this.$store.dispatch('cart/cartNoLogin', { product, quantity: 1 })
+        }
+        this.$notification["success"]({
+          message: 'ADD CART',
+          description:
+            "Add cart success!"
+        });
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'ADD CART ERROR',
+          description:
+            e.message
+        });
+      }
     }
   }
 }

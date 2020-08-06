@@ -33,11 +33,15 @@
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Giá cả" prop="price">
-          <a-input addon-before="VNĐ" v-model="productForm.price" type="number" />
+          <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
+        </a-form-model-item>
+
+        <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
+          <a-input :min="0" addon-before="gam" type="number" />
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Tồn kho" prop="quantity">
-          <a-input v-model="productForm.quantity" type="number" />
+          <a-input :min="0" v-model="productForm.quantity" type="number" />
         </a-form-model-item>
 
         <a-form-model-item label="Ảnh sản phẩm" prop="images">

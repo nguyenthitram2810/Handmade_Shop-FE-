@@ -27,11 +27,15 @@
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Giá cả" prop="price">
-          <a-input addon-before="VNĐ" v-model="productForm.price" type="number" />
+          <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
+        </a-form-model-item>
+
+        <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
+          <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Số lượng" prop="quantity">
-          <a-input v-model="productForm.quantity" type="number" />
+          <a-input :min="0" v-model="productForm.quantity" type="number" />
         </a-form-model-item>
 
         <a-form-model-item label="Ảnh sản phẩm" prop="images">
@@ -97,6 +101,7 @@ export default {
         quantity: '',
         images: [],
         ship: [],
+        weight: '',
       },
       rules: {
         name: [
@@ -109,7 +114,7 @@ export default {
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
         ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
-        
+        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -149,6 +154,7 @@ export default {
               materialIds: this.productForm.material,
               transportIds: this.productForm.ship,
               gallery: this.productForm.images,
+              weight: this.productForm.weight,
             }, 
             {
               headers: {

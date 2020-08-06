@@ -43,8 +43,8 @@
 
           <a-dropdown>
             <a-menu slot="overlay">
-              <a-menu-item v-if="user.shop != null" key="1" @click="showShop"> <a-icon type="user" />Xem shop</a-menu-item>
-              <a-menu-item key="1"> <a-icon type="user" />{{user.name}} </a-menu-item>
+              <a-menu-item v-if="user.shop != null" key="1" @click="showShop"> <a-icon type="shop" />Xem shop</a-menu-item>
+              <a-menu-item key="2" @click="showUser"> <a-icon type="user" />{{user.name}} </a-menu-item>
               <a-menu-item key="3" @click="loggOut"> <a-icon type="poweroff" />Đăng xuất </a-menu-item>
             </a-menu>
 
@@ -54,7 +54,9 @@
           </a-dropdown>
 
           <div>
-            <nuxt-link to="/cart"  class="al-text-color"><img src="/images/supermarket.svg" alt="" width="20px"></nuxt-link>
+            <a-badge :count="cart" :overflow-count="10" class="notification">
+              <nuxt-link to="/cart"  class="al-text-color"><img src="/images/supermarket.svg" alt="" width="20px"></nuxt-link>
+            </a-badge>
           </div>
         </div>
       </a-col>
@@ -68,7 +70,9 @@
             <nuxt-link to="/register"  class="al-text-color">Đăng ký</nuxt-link>
           </div>
           <div>
-            <nuxt-link to="/cart"  class="al-text-color"><img src="/images/supermarket.svg" alt="" width="20px"></nuxt-link> 
+            <a-badge :count="tempCart" :overflow-count="10" class="notification">
+              <nuxt-link to="/cart"  class="al-text-color"><img src="/images/supermarket.svg" alt="" width="20px"></nuxt-link>
+            </a-badge>
           </div>
         </div>
       </a-col>
@@ -117,6 +121,8 @@ export default {
     return {
       login: false,
       user: {},
+      cart: '',
+      tempCart: '',
     }
   },
 
@@ -124,6 +130,12 @@ export default {
     if(Cookie.get('token') || Cookie.get('user')) {
       this.login = true
       this.user = JSON.parse(Cookie.get('user'))
+    }
+    if(localStorage.getItem('product')) {
+      this.cart = this.$store.state.cart.listProduct.length
+    }
+    if(localStorage.getItem('productNoLogin')) {
+      this.tempCart = this.$store.state.cart.listProductNoLogin.length
     }
   },
 
@@ -133,6 +145,13 @@ export default {
         this.login = false
         this.$router.push(this.$route.query.redirect || '/');
       }
+    },
+    '$store.state.cart.listProduct' : function(value) {
+      console.log(value + "HEyyy");
+      this.cart = this.$store.state.cart.listProduct.length
+    },
+    '$store.state.cart.listProductNoLogin' : function(value) {
+      this.tempCart = this.$store.state.cart.listProductNoLogin.length
     }
   },
 
@@ -143,8 +162,13 @@ export default {
       Cookie.remove('shop')
       await this.$store.dispatch('auth/removeUser')
     },
+
     showShop() {
       this.$router.push(`/shop/${this.user.shop.slug}`)
+    },
+
+    showUser() {
+      this.$router.push('/user/account/profile')
     }
   }
 }

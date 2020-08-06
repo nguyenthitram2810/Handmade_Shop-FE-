@@ -121,6 +121,9 @@ export default {
           this.isDisabled = true
           try {
             await this.$store.dispatch('auth/login', {username: this.loginForm.username, password: this.loginForm.password})
+            if(localStorage.getItem('productNoLogin')) {
+              this.$store.dispatch('cart/mergeCart')
+            }
             this.$root.$router.push("/")
           }
           catch(e) {

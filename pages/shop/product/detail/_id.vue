@@ -51,7 +51,7 @@
             </a-button-group>
 
             <div >
-              <a-button size="large" class="al-button-cart mr-5" icon="shopping-cart">
+              <a-button size="large" class="al-button-cart mr-5" icon="shopping-cart" @click="addCart(product)">
                 Thêm vào giỏ hàng
               </a-button>
               <a-button size="large" class="al-button-buy px-5">
@@ -70,7 +70,7 @@
       <div class="al-margin-7 mt-3 al-bg-white p-3">
         <div class="row">
           <div class="col-4 d-flex align-items-center al-border-right">
-            <a-avatar :size="64" src="http://res.cloudinary.com/dhbk/image/upload/v1596342616/gallery/yrpbv9tskrdnqiyitlrk.jpg" />
+            <a-avatar :size="64" :src="shop.thumbnail" />
             <div class="d-flex flex-column pl-2 justify-content-between">
               <h4>{{shop.name}}</h4>
               <nuxt-link :to="`/shop/${shop.slug}`">
@@ -215,8 +215,10 @@
 <script>
 import axios from "axios"
 import moment from 'moment'
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  middleware: 'getState',
   data() {
     return {
       quantity: 1,
@@ -249,12 +251,11 @@ export default {
     async getProduct() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/products/${this.$route.params.id}`)
-        console.log(response)
+        console.log(response);
         if(response.data.status == "200") {
           this.product = response.data.data
           this.category = response.data.data.category
           this.shop = response.data.data.shop
-          console.log(this.shop)
         }
         else {
           this.$notification["error"]({
@@ -296,6 +297,30 @@ export default {
     handleChange(e) {
       this.value = e.target.value;
     },
+
+    addCart(product) {
+      try {
+        if(Cookie.get('user')) {
+          console.log("OK");
+          this.$store.dispatch('cart/addCart', { product, quantity: this.quantity })
+        }
+        else {
+          this.$store.dispatch('cart/cartNoLogin', { product, quantity: this.quantity })
+        }
+        this.$notification["success"]({
+          message: 'ADD CART',
+          description:
+            "Add cart success!"
+        });
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'ADD CART ERROR',
+          description:
+            e.message
+        });
+      }
+    }
   },
 };
 </script>
