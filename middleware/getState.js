@@ -1,10 +1,39 @@
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default function ({ store, redirect }) {
-  if(localStorage.getItem('product')) { 
-    store.commit('cart/addCart', JSON.parse(localStorage.getItem('product')))
+  let user = {}
+  if(Cookie.get('user')) {
+    user = JSON.parse(Cookie.get('user'));
   }
-  if(localStorage.getItem('productNoLogin')) {
-    store.commit('cart/cartNoLogin', JSON.parse(localStorage.getItem('productNoLogin')))
+  let id = String(user.id)
+  if(localStorage.getItem(id)) { 
+    let amount = 0
+    let products = JSON.parse(localStorage.getItem(id))
+    store.commit('cart/addCart', {
+      data: products,
+      state: 'product'
+    })
+    products.forEach(e => {
+      amount += e.products.length
+    });
+    store.commit('cart/changeLength', {
+      data: amount,
+      state: 'product'
+    })
+  }
+  if(localStorage.getItem('noLogin')) {
+    let amount = 0
+    let products = JSON.parse(localStorage.getItem('noLogin'))
+    store.commit('cart/addCart', {
+      data: products,
+      state: 'productNoLogin'
+    })
+    products.forEach(e => {
+      amount += e.products.length
+    });
+    store.commit('cart/changeLength', {
+      data: amount,
+      state: 'productNoLogin'
+    })
   }
 }

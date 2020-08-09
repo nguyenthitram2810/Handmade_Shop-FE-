@@ -206,10 +206,12 @@ export default {
     addCart(product) {
       try {
         if(Cookie.get('user')) {
-          this.$store.dispatch('cart/addCart', { product, quantity: 1 })
+          let user = JSON.parse(Cookie.get('user'));
+          let id = String(user.id)
+          this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
         }
         else {
-          this.$store.dispatch('cart/cartNoLogin', { product, quantity: 1 })
+          this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'productNoLogin', userID: 'noLogin' })
         }
         this.$notification["success"]({
           message: 'ADD CART',

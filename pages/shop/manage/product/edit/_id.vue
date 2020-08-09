@@ -37,7 +37,7 @@
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
-          <a-input :min="0" addon-before="gam" type="number" />
+          <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Tồn kho" prop="quantity">
@@ -106,6 +106,7 @@ export default {
         images: [],
         ship: [],
         restAmount: '',
+        weight: '',
       },
       rules: {
         name: [
@@ -119,6 +120,7 @@ export default {
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
         ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
         images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
+        weight: [{required: true, message: 'Điền trọng lượng sản phẩm', trigger: 'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -152,6 +154,7 @@ export default {
               transportIds: this.productForm.ship,
               gallery: this.productForm.images,
               amount: this.amount,
+              weight: this.productForm.weight,
             }, 
             {
               headers: {
@@ -310,6 +313,7 @@ export default {
           this.productForm.ship = this.getID(data.transports)
           this.getSource(data.gallery)
           this.amount = data.amount
+          this.productForm.weight = data.weight
         }
         else {
           this.error = response.data.message
@@ -336,7 +340,8 @@ export default {
     getID(data) {
       const arr = []
       data.forEach(item => {
-        arr.push(item.id.toString())
+        let id = item.id
+        arr.push(id)
       })
       return arr
     },

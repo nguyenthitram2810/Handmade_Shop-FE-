@@ -28,6 +28,9 @@ export default {
       this.errors = ''
       this.token = this.$route.query.token
       await this.$store.dispatch('auth/verifyRegister', { token: this.token })
+      if(localStorage.getItem('productNoLogin')) {
+        this.$store.dispatch('cart/mergeCart')
+      }
       this.$root.$router.push("/")
       // this.$store.state.auth.us
     }

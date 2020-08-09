@@ -436,7 +436,7 @@
 </template>
 <script>
 export default {
-  
+  middleware: 'getState',
 };
 </script>
 <style lang='scss' scoped>

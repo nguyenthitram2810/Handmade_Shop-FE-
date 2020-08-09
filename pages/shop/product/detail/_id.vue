@@ -198,7 +198,7 @@
             :header="`${comments.length} ${comments.length > 1 ? 'replies' : 'reply'}`"
             item-layout="horizontal"
           >
-            <a-list-item slot="renderItem" slot-scope="item, index">
+            <a-list-item slot="renderItem" slot-scope="item">
               <a-comment
                 :author="item.author"
                 :avatar="item.avatar"
@@ -301,11 +301,12 @@ export default {
     addCart(product) {
       try {
         if(Cookie.get('user')) {
-          console.log("OK");
-          this.$store.dispatch('cart/addCart', { product, quantity: this.quantity })
+          let user = JSON.parse(Cookie.get('user'));
+          let id = String(user.id)
+          this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
         }
         else {
-          this.$store.dispatch('cart/cartNoLogin', { product, quantity: this.quantity })
+          this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity,  state: 'productNoLogin', userID: 'noLogin' })
         }
         this.$notification["success"]({
           message: 'ADD CART',

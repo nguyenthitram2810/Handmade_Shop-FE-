@@ -130,12 +130,13 @@ export default {
     if(Cookie.get('token') || Cookie.get('user')) {
       this.login = true
       this.user = JSON.parse(Cookie.get('user'))
+      let id = String(this.user.id)
+      if(localStorage.getItem(id)) {
+      this.cart = this.$store.state.cart.amountProduct
     }
-    if(localStorage.getItem('product')) {
-      this.cart = this.$store.state.cart.listProduct.length
     }
-    if(localStorage.getItem('productNoLogin')) {
-      this.tempCart = this.$store.state.cart.listProductNoLogin.length
+    if(localStorage.getItem('noLogin')) {
+      this.tempCart = this.$store.state.cart.amountProductNoLogin
     }
   },
 
@@ -148,10 +149,10 @@ export default {
     },
     '$store.state.cart.listProduct' : function(value) {
       console.log(value + "HEyyy");
-      this.cart = this.$store.state.cart.listProduct.length
+      this.cart = this.$store.state.cart.amountProduct
     },
     '$store.state.cart.listProductNoLogin' : function(value) {
-      this.tempCart = this.$store.state.cart.listProductNoLogin.length
+      this.tempCart = this.$store.state.cart.amountProductNoLogin
     }
   },
 
@@ -159,8 +160,8 @@ export default {
     async loggOut () {
       Cookie.remove('user')
       Cookie.remove('token')
-      Cookie.remove('shop')
       await this.$store.dispatch('auth/removeUser')
+      await this.$store.dispatch('cart/removeAll')
     },
 
     showShop() {
