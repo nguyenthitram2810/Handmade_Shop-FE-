@@ -171,6 +171,7 @@ export default {
     async getInfoShop() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
+        console.log(response);
         if(response.data.status == "200") {
           this.shop =  response.data.data[0]
           this.getListCate(this.shop.products)

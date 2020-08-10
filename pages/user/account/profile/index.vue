@@ -32,7 +32,7 @@
             </a-menu-item>
           </a-sub-menu>
           <a-menu-item key="4">
-            <nuxt-link to="/user/purchase/all"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
+            <nuxt-link to="/user/purchase/wait"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
           </a-menu-item>
         </a-menu>
       </div>

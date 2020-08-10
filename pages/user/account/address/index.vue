@@ -32,12 +32,11 @@
             </a-menu-item>
           </a-sub-menu>
           <a-menu-item key="4">
-            <nuxt-link to="/user/purchase/all"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
+            <nuxt-link to="/user/purchase/wait"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
           </a-menu-item>
         </a-menu>
       </div>
     </a-layout-sider>
-
     
     <a-layout style="padding: 12px 12px 12px" class="product">
       <a-layout-content
@@ -91,7 +90,7 @@
             </a-form-model-item>
             
             <a-form-model-item>
-              <a-button type="primary" @click="onSubmit">
+              <a-button :loading="isLoading" type="primary" @click="onSubmit">
                 Create
               </a-button>
             </a-form-model-item>
@@ -106,9 +105,25 @@
               <p class="al-color-gray">Địa Chỉ: </p>
             </div>
             <div class="col-4 d-flex flex-column">
-              <p class="font--bold"> a </p>
-              <p class="font--bold"> {{ addr.phone }} </p>
-              <p class="font--bold"> {{ addr.location }}</p>
+              <p class="font--bold"> {{ addr.name}} </p>
+              <p class="font--bold"> (+84) {{ addr.phone }} </p>
+              <p class="font--bold"> {{ addr.location }}, {{ addr.district.name}}, {{ addr.district.city.name}}</p>
+            </div>
+            <div class="col-6 d-flex justify-content-end">
+              <a-popconfirm
+                title="Are you sure delete this task?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="confirm(addr.id)"
+              >
+                <a-button type="danger">
+                  Delete
+                </a-button>
+              </a-popconfirm>
+
+              <a-button @click="editAddr(addr.id)" class="ml-2 al-btn-success">
+                  Edit
+              </a-button>
             </div>
           </div>
         </div>
@@ -132,6 +147,7 @@ export default {
       }
     };
     return {
+      isLoading: false,
       token: Cookie.get('token'),
       user: this.$store.state.auth.userNow,
       visible: false,
@@ -221,27 +237,38 @@ export default {
     onSubmit() {
       this.$refs.ruleForm.validate(async valid => {
         if (valid) {
+          this.isLoading = true
           try {
-            const response = await axios.post('http://localhost:5000/api/v1/users/addresss', this.form, {
+            const response = await axios.post('http://localhost:5000/api/v1/users/addresss', {
+              name: this.form.name,
+              phone: this. form.phone,
+              districtId: this.form.district,
+              location: this.form.location
+            }, {
               headers: {
                 Authorization: 'Bearer ' + this.token,
               }
             })
+            console.log(response)
+            this.isLoading = false
             if(response.data.status == "200") {
+              this.visible = false
               let addr = response.data.data
-              addr.forEach(e => {
-                this.listAddr.push(e)
-              });
+              this.listAddr.push(addr)
             }
             else {
+              this.visible = true
               this.$notification["error"]({
                 message: 'ADD ADDRESS FAIL',
                 description:
                   response.data.message
               });
             }
+
           }
           catch(e) {
+            this.isLoading = false
+            this.visible = true
             this.$notification["error"]({
               message: 'ADD ADDRESS FAIL',
               description:
@@ -281,7 +308,43 @@ export default {
             e.message
         });
       }
-    }
+    },
+
+    // delete address
+    async confirm(id) {
+      try {
+        console.log(id)
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/addresss?id=${id}`, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response);
+        if(response.data.status == "200") {
+          const index = this.listAddr.findIndex(x => x.id == id)
+          this.data.splice(index, 1)
+          this.$notification['success']({
+            message: 'DELETE ADDRESS',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'DELETE ADDRESS',
+            description:
+              `Error! ${response.data.message}`,
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+          message: 'DELETE ADDRESS',
+          description:
+            `Error! ${e.message}`,
+        });
+      }
+    },
   }
 }
 </script>

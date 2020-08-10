@@ -10,7 +10,7 @@
       <div v-for="(shop, index) in shops" :key="index">
         <a-table :pagination="false" :columns="columns" :data-source="shop.products" :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }" class="border-cover white-theme mb-4">
           <template slot="title">
-            <nuxt-link class="pl-4 al-color-orange" to="/"> <a-icon type="shop" class="pr-3"/>{{ shop.shopName }} </nuxt-link>
+            <nuxt-link class="pl-4 al-color-orange" :to="`/shop/${shop.slug}`"> <a-icon type="shop" class="pr-3"/>{{ shop.shopName }} </nuxt-link>
           </template>
           <span slot="nameAndThumbnail"  slot-scope="text, record">
             <span class="cart-name">{{ record.nameAndThumbnail.name }}</span>
@@ -123,10 +123,10 @@ export default {
       if(Cookie.get('user')) {
         let user = JSON.parse(Cookie.get('user'))
         let id = String(user.id)
-        this.$store.dispatch('cart/changeAmount', { record, state: 'product', userID: id })
+        this.$store.dispatch('cart/changeAmount', { record, state: 'product', userID: id , changeRestAmount: 'no'})
       }
       else {
-        this.$store.dispatch('cart/changeAmount', { record, state: 'productNoLogin', userID: 'noLogin' })
+        this.$store.dispatch('cart/changeAmount', { record, state: 'productNoLogin', userID: 'noLogin', changeRestAmount: 'no' })
       }
     },
 

@@ -28,8 +28,10 @@ export default {
       this.errors = ''
       this.token = this.$route.query.token
       await this.$store.dispatch('auth/verifyRegister', { token: this.token })
-      if(localStorage.getItem('productNoLogin')) {
-        this.$store.dispatch('cart/mergeCart')
+      if(localStorage.getItem('noLogin')) {
+        let user = JSON.parse(Cookie.get('user'));
+        let id = String(user.id)
+        this.$store.dispatch('cart/mergeCart', { userID: id})
       }
       this.$root.$router.push("/")
       // this.$store.state.auth.us

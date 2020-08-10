@@ -340,7 +340,7 @@ export default {
     getID(data) {
       const arr = []
       data.forEach(item => {
-        let id = item.id
+        let id = String(item.id)
         arr.push(id)
       })
       return arr

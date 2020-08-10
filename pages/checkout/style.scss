@@ -5,3 +5,20 @@
 .white-theme {
     background-color: #fff;
 }
+
+.border-cover {
+    border: 1px solid rgb(235, 237, 240);
+}
+
+.cart-name {
+    display: inline-block;
+    width: 200px;
+    margin-right: 20px;
+}
+
+.cart-thumbnail {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    
+}

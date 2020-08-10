@@ -93,7 +93,6 @@ export default {
             scopedSlots: { customRender: 'action' },
           },
         ],
-
         data: [],
       };
   },

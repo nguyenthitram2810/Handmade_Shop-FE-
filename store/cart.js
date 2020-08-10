@@ -73,6 +73,7 @@ export const actions = {
         temp["products"] = [objProduct]
         temp["shopID"] = shop.id
         temp["shopName"] = shop.name
+        temp["slug"] = shop.slug
         arrTemp.push(temp)
       }
       localStorage.setItem(userID, JSON.stringify(arrTemp));
@@ -185,13 +186,16 @@ export const actions = {
     }
   },
 
-  changeAmount({commit}, { record, state, userID }) {
+  changeAmount({commit}, { record, state, userID, changeRestAmount }) {
     try {
       let products = JSON.parse(localStorage.getItem(userID))
       products.forEach(e => {
         e.products.forEach(p => {
           if(p.product.id == record.key) {
             p.count = record.amount
+            if(changeRestAmount == 'yes') {
+              p.product.restAmount = record.amount
+            }
           }
         })
       })
@@ -205,6 +209,7 @@ export const actions = {
       throw e
     }
   },
+
 
   removeAll({commit}) {
     try {
