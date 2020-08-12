@@ -137,6 +137,7 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: ['authentication', 'getState'],
   data() {
     let validatePhone = (rule, value, callback) => {
@@ -314,9 +315,10 @@ export default {
     async confirm(id) {
       try {
         console.log(id)
-        const response = await axios.delete(`http://localhost:5000/api/v1/users/addresss?id=${id}`, {
+        console.log(this.token)
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/address`, {id} , {
           headers: {
-            Authorization: 'Bearer ' + this.token,
+                Authorization: 'Bearer ' + this.token,
           }
         })
         console.log(response);

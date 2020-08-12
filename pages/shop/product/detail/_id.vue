@@ -218,6 +218,7 @@ import moment from 'moment'
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: 'getState',
   data() {
     return {
@@ -302,8 +303,15 @@ export default {
       try {
         if(Cookie.get('user')) {
           let user = JSON.parse(Cookie.get('user'));
-          let id = String(user.id)
-          this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+          if(user.shop.id != product.shop.id) {
+            let id = String(user.id)
+            this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+          }
+          else {
+            throw {
+              message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+            }
+          }
         }
         else {
           this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity,  state: 'productNoLogin', userID: 'noLogin' })

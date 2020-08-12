@@ -59,6 +59,11 @@ export const actions = {
           let listProduct = obj.products
           listProduct.forEach(p => {
             if(p.product.id == product.id) {
+              if((p.count + quantity) > p.product.amount) {
+                throw {
+                  message: "Sản phẩm hết hàng!"
+                }
+              }
               p.count += quantity
               checkProduct++
             }
@@ -130,7 +135,7 @@ export const actions = {
     }
   },
 
-  mergeCart({commit}, { userID }) {
+  mergeCart({commit}, { userID, user }) {
     try {
       let amountProduct = 0
       let arrMain = []
@@ -140,14 +145,23 @@ export const actions = {
       let arrTemp = JSON.parse(localStorage.getItem('noLogin'))
       arrTemp.forEach(temp => {
         let check = 0 
+        let checkShopID = 0
+        if(temp.shopID == user.shop.id) {
+          checkShopID++
+        }
         arrMain.forEach(main => {
-          if(temp.shopID == main.shopID) {
+          if((temp.shopID == main.shopID) && (temp.shopID != user.shop.id)) {
             check++
             temp.products.forEach(p => {
               let checkProduct = 0
               main.products = main.products.filter(mP => {
                 if(mP.product.id == p.product.id) {
-                  mP.count += p.count
+                  if((mP.count + p.count) > mP.product.amount) {
+                    mP.count = mP.product.amount
+                  }
+                  else {
+                    mP.count += p.count
+                  }
                   checkProduct++
                 }
                 return mP
@@ -158,7 +172,7 @@ export const actions = {
             })
           }
         })
-        if(check == 0) {
+        if(check == 0 && checkShopID == 0) {
           arrMain.push(temp)
         }
       })

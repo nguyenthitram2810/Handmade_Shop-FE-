@@ -31,7 +31,7 @@ export default {
       if(localStorage.getItem('noLogin')) {
         let user = JSON.parse(Cookie.get('user'));
         let id = String(user.id)
-        this.$store.dispatch('cart/mergeCart', { userID: id})
+        this.$store.dispatch('cart/mergeCart', { userID: id, user: user,})
       }
       this.$root.$router.push("/")
       // this.$store.state.auth.us

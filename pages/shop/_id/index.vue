@@ -73,7 +73,7 @@
       <div class="row pl-2">
         <div class="col-lg-9 col-md-12"> 
           <div class="row shop_wrapper">
-            <div v-for="product in shop.products" :key="product.id" class="col-lg-3 col-md-3 col-12 ">
+            <div v-for="(product, index) in shop.products" :key="index" class="col-lg-3 col-md-3 col-12 ">
               <article class="single_product">
                 <figure>
                   <div  class="product_thumb">
@@ -110,7 +110,6 @@
                         <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                         <div class="price_box"> 
                           <span class="current_price">₫ {{product.price}}</span>
-                          <!-- <span class="old_price">£74.00</span> -->
                         </div>
                       </div>
                     </div>
@@ -154,6 +153,7 @@ const Cookie = process.client ? require('js-cookie') : undefined
 import axios from "axios"
 
 export default {
+  layout: 'cart',
   middleware: 'getState',
   components: {
     Product,
@@ -208,8 +208,15 @@ export default {
       try {
         if(Cookie.get('user')) {
           let user = JSON.parse(Cookie.get('user'));
-          let id = String(user.id)
-          this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+          if(user.shop.id != product.shopId) {
+            let id = String(user.id)
+            this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+          }
+          else {
+            throw {
+              message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+            }
+          }
         }
         else {
           this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'productNoLogin', userID: 'noLogin' })

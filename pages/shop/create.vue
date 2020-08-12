@@ -21,6 +21,14 @@
           <a-input v-model="createForm.description" type="textarea" />
         </a-form-model-item>
 
+        <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
+          <a-select v-model="createForm.ship" mode="multiple">
+            <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
+              {{ item.brand }}
+            </a-select-option>
+          </a-select>
+        </a-form-model-item>
+
         <div class="al-text-center mt-5 mb-5">
           <h3>THÔNG TIN THANH TOÁN</h3>
           <p>Thông tin thanh toán chính xác</p>
@@ -72,6 +80,7 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: ['authentication', 'checkShopActive'],
   data() {
     return {
@@ -80,6 +89,7 @@ export default {
       listArea: [],
       listBank: [],
       error:'',
+      listTransport: [],
       createForm: {
         nameShop: '',
         description: '',
@@ -88,6 +98,7 @@ export default {
         code: null,
         area: '',
         branch: '',
+        ship: [],
       },
       rules: {
         nameShop: [
@@ -100,6 +111,7 @@ export default {
         code:  [{ required: true, message: 'Nhập mã số thẻ', trigger: 'change' }],
         area:  [{ required: true, message: 'Chọn khu vực', trigger: 'change' }],
         branch:  [{ required: true, message: 'Chọn chi nhánh', trigger: 'change' }],
+        ship: [{ required: true, message: "Chọn đơn vị vận chuyển của shop", trigger: 'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -109,8 +121,9 @@ export default {
   },
 
   mounted() {
-    this.getListBank();
-    this.getListArea();
+    this.getListBank()
+    this.getListArea()
+    this.getListTransport()
   },
 
   methods: {
@@ -128,6 +141,7 @@ export default {
               cardNumber: this.createForm.code,
               districtId: this.createForm.branch,
               thumbnail: this.user.avatar,
+              transportIds: this.createForm.ship,
             }, 
             {
               headers: {
@@ -200,7 +214,30 @@ export default {
       catch(e) {
         this.error = e.message
       }
-    }
+    },
+
+    async getListTransport() {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+        if(response.data.status == "200") {
+          this.listTransport = response.data.data
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET LIST TRANSPORTS ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET LIST TRANSPORTS ERROR',
+          description:
+            e.message
+        });
+      }
+    },
   },
 }
 </script>

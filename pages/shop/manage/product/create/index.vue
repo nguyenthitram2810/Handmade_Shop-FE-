@@ -57,16 +57,6 @@
           </div>
         </a-form-model-item>
 
-        <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
-          <a-select v-model="productForm.ship" mode="multiple">
-            <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
-              {{ item.brand }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-
-        
-
         <a-form-model-item  :wrapper-col="{ span: 14, offset: 4 }">
           <a-button :loading="isLoading" :disabled="isDisabled" type="primary" @click="submitForm('productForm')">
             Submit
@@ -82,6 +72,7 @@ import upload from 'ant-design-vue/lib/upload';
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: 'authentication',
   data() {
     return {
@@ -90,7 +81,6 @@ export default {
       upload: true,
       listCate: [],
       listMaterial: [],
-      listTransport: [],
       showImages:[],
       productForm: {
         name: '',
@@ -100,7 +90,6 @@ export default {
         price: '',
         quantity: '',
         images: [],
-        ship: [],
         weight: '',
       },
       rules: {
@@ -113,7 +102,6 @@ export default {
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
-        ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
         weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}]
       },
       layout: {
@@ -126,7 +114,6 @@ export default {
   mounted() {
     this.getListCate()
     this.getListMaterial()
-    this.getListTransport()
   },
    methods: {
     submitForm(formName) {
@@ -152,7 +139,6 @@ export default {
               price: this.productForm.price,
               amount: this.productForm.quantity,
               materialIds: this.productForm.material,
-              transportIds: this.productForm.ship,
               gallery: this.productForm.images,
               weight: this.productForm.weight,
             }, 
@@ -283,29 +269,6 @@ export default {
       catch(e) {
         this.$notification["error"]({
           message: 'GET LIST MATERIALS ERROR',
-          description:
-            e.message
-        });
-      }
-    },
-
-    async getListTransport() {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
-        if(response.data.status == "200") {
-          this.listTransport = response.data.data
-        }
-        else {
-          this.$notification["error"]({
-            message: 'GET LIST TRANSPORTS ERROR',
-            description:
-              response.data.message
-          });
-        }
-      }
-      catch(e) {
-        this.$notification["error"]({
-          message: 'GET LIST TRANSPORTS ERROR',
           description:
             e.message
         });

@@ -15,7 +15,6 @@
           </a-menu-item>
           <a-menu-item key="2">
             <nuxt-link to="/shop/manage/product/create"> Thêm sản phẩm</nuxt-link>
-            
           </a-menu-item>
           <a-menu-item key="3">
             Sản phẩm vi phạm
@@ -24,7 +23,7 @@
         <a-sub-menu key="order">
           <span slot="title"><a-icon type="snippets" /><span>Quản lý đơn hàng</span></span>
           <a-menu-item key="5">
-            Tất cả
+            <nuxt-link to="/shop/manage/order/list/all"> Tất cả</nuxt-link>
           </a-menu-item>
           <a-menu-item key="6">
             Xử lý đơn hàng loạt

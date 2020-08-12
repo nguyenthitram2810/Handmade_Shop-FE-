@@ -53,9 +53,33 @@
           <a-tab-pane key="4" tab="Đã giao">
           </a-tab-pane>
         </a-tabs>
+        <div v-for="(item, index) in bills" :key="index">
+          <div class="mt-3 p-4 white-theme" >
+            <div>
+              <nuxt-link class=" al-color-orange" :to="`/shop/${item.shop.slug}`"> <a-icon type="shop" class="pr-3"/>{{ item.shop.name }} </nuxt-link>
+            </div>
 
-        <div class="mt-3 p-4 white-theme" v-for="(item, index) in bills" :key="index">
-          
+            <div v-for="(product, index) in item.details" :key="index" class="al-border-top mt-2 py-3 mx-1 row d-flex align-items-center">
+              <div class="col-6 d-flex">
+                <img :src="product.product.thumbnail" alt="" class="cart-thumbnail mr-3" >
+                <div class="d-flex flex-column">
+                  <p class="cart-name font--regular-2"> {{product.name}}</p>
+                  <p> x {{ product.amount}}</p>
+                </div>
+              </div>
+              <div class="col-6 d-flex justify-content-end al-color-orange">
+                ₫ {{ product.cost}}
+              </div>
+            </div>
+          </div>
+
+          <div class="al-border-dotted-top p-4 al-bg-total d-flex justify-content-end align-items-center">
+            <p class="mb-0 mr-3">Tổng số tiền: </p>
+            <p class="mb-0 pr-4 font--25 font--regular-2 al-color-orange">₫ {{ item.totalBillAndShip }}</p>
+            <a-button size="large" class="al-button-cart" icon="shopping-cart">
+                Xem Chi Tiết Đơn Hàng
+            </a-button>
+          </div>
         </div>
       </a-layout-content>
     </a-layout>
@@ -67,53 +91,18 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: ['authentication', 'getState'],
   data() {
     return {
+      token: Cookie.get('token'),
       user: this.$store.state.auth.userNow,
-      bills: [
-        {
-          id: 1,
-          shop: {
-            id: 1,
-            name: "Nabi Shop",
-            slug: "nabi-shop",
-          }, 
-          totalBillAndShip: 500000,
-          products: [
-            {
-              count: 2,
-              product: {
-                id: 1,
-                name: "Áo pull",
-                price: 200000,
-              }
-            }
-          ]
-        },
-
-        {
-          id: 1,
-          shop: {
-            id: 1,
-            name: "Nabi Shop",
-            slug: "nabi-shop",
-          }, 
-          totalBillAndShip: 500000,
-          products: [
-            {
-              count: 2,
-              product: {
-                id: 1,
-                name: "Áo pull",
-                price: 200000,
-              }
-            }
-          ]
-        },
-      ]
+      bills: [],
     }
   }, 
+  mounted() {
+    this.getListOrder()
+  },
   methods: {
     //Chuyển tab
     callback(key) {
@@ -127,6 +116,33 @@ export default {
         this.$router.push('/user/purchase/complete')
       } 
     },
+
+    async getListOrder() {
+      try {
+        const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
+          headers: {
+                Authorization: 'Bearer ' + this.token,
+          }
+        })
+        if(response.data.status == "200") {
+          this.bills = response.data.data
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET ORDER ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET ORDER ERROR',
+          description:
+            e.message
+        });
+      }
+    }
   }
 }
 </script>

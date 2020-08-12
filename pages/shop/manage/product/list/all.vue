@@ -11,6 +11,7 @@
           <a-tab-pane key="3" tab="Hết hàng">
           </a-tab-pane>
         </a-tabs>
+
         <div class="d-flex justify-content-between">
           <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px" @search="onSearch"/>
           <nuxt-link to="/shop/manage/product/create">
@@ -19,7 +20,8 @@
             </a-button>
           </nuxt-link>
         </div>
-        <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
+        
+        <a-table class="pt-4" :columns="columns" :data-source="data" @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
           <span slot="soldAmount" slot-scope="text, record">
             <p>{{ record.restAmount -  record.amount }}</p>
           </span>
@@ -56,12 +58,13 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
-    layout: 'layoutSidebar',
-    middleware: ['authentication'],
-    data() {
-      return {
-        token: Cookie.get("token"),
-        columns: [
+  layout: 'layoutSidebar',
+  middleware: ['authentication', 'getState'],
+  data() {
+    return {
+      loading: false,
+      token: Cookie.get("token"),
+      columns: [
           {
             title: 'Tên sản phẩm',
             dataIndex: 'name',
@@ -92,14 +95,26 @@ export default {
             key: 'action',
             scopedSlots: { customRender: 'action' },
           },
-        ],
-        data: [],
-      };
+      ],
+      data: [],
+      pagination: {},
+    };
   },
   mounted() {
-    this.getAllproduct();
+    this.getAllproduct(1, 10);
   },
   methods: {
+    handleTableChange(pagination, filters, sorter) {
+      this.loading = true
+
+      let pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+
+      this.getAllproduct(pagination.current, 10)
+      this.loading = false
+    },
+
     callback(key) {
       if(key == 2) {
         this.$router.push('/shop/manage/product/list/active')
@@ -109,9 +124,9 @@ export default {
       }
     },
 
-    async getAllproduct() {
+    async getAllproduct(page, amount) {
       try {
-        const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?page=1&amount=10', 
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?page=${page}&amount=${amount}`, 
         {
           headers: {
             Authorization: 'Bearer ' + this.token,
@@ -121,6 +136,12 @@ export default {
         if(response.data.status == "200") {
           if(response.data.data[0]) {
             this.data = response.data.data[0].products
+            let pagination = { ...this.pagination }
+            pagination.total = this.data.length
+            pagination.current = page
+            this.pagination = pagination
+            console.log(this.pagination);
+            this.$router.push({ path: '/shop/manage/product/list/all', query: { page: page, amount: amount, }})
           }
         }
         else {
