@@ -105,7 +105,6 @@ export default {
         }
       },
       '$store.state.cart.listProduct' : function(value) {
-        console.log(value + "HEyyy");
         this.cart = this.$store.state.cart.amountProduct
       },
       '$store.state.cart.listProductNoLogin' : function(value) {

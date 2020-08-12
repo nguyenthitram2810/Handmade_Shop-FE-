@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 mb-3">
+  <div class="pt-3 pb-3"  style="background: #F5F5F5;">
     <div class="container-fluid">
       <div class="user-profile pl-2">
 		    <figure>
@@ -45,19 +45,13 @@
 						<div class="col-lg-10 col-md-9">
 							<ul class="profile-menu">
 								<li>
-									<a class="" href="#">Phổ biến</a>
+									<a :class="{active: newest}"  @click="sortNewest()">Mới nhất</a>
 								</li>
 								<li>
-									<a class="active" href="#">Mới nhất</a>
-								</li>
-								<li>
-									<a class="" href="#">Bán chạy</a>
-								</li>
-								<li>
-									<a class="" href="#">Giá: Thấp đến Cao</a>
+									<a :class="{active: downToUp}" @click="sortDownToUp()">Giá: Thấp đến Cao</a>
 								</li>
                 <li>
-									<a class="" href="#">Giá: Cao đến Thấp</a>
+									<a :class="{active: upToDown}" @click="sortUpToDown()">Giá: Cao đến Thấp</a>
 								</li>
 							</ul>
 							<ol class="folw-detail">
@@ -74,7 +68,7 @@
         <div class="col-lg-9 col-md-12"> 
           <div class="row shop_wrapper">
             <div v-for="(product, index) in shop.products" :key="index" class="col-lg-3 col-md-3 col-12 ">
-              <article class="single_product">
+              <article class="single_product box-shadow--main">
                 <figure>
                   <div  class="product_thumb">
                     <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
@@ -143,6 +137,11 @@
           </a-layout>
         </div>
       </div>
+      <div class="row">
+        <div class="al-text-center col-lg-9 col-md-12">
+          <a-pagination v-model="current" :total="30" show-less-items />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -162,16 +161,20 @@ export default {
     return {
       shop: {},
       listCate: [],
+      newest: true,
+      downToUp: false,
+      upToDown: false,
+      current: 2,
     }
   },
   mounted() {
+    this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'newest' }})
     this.getInfoShop()
   },
   methods: {
     async getInfoShop() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
-        console.log(response);
         if(response.data.status == "200") {
           this.shop =  response.data.data[0]
           this.getListCate(this.shop.products)
@@ -208,14 +211,20 @@ export default {
       try {
         if(Cookie.get('user')) {
           let user = JSON.parse(Cookie.get('user'));
-          if(user.shop.id != product.shopId) {
-            let id = String(user.id)
-            this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+          let id = String(user.id)
+          if(user.shopActive) {
+            if(user.shop.id != product.shopId) {
+              this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+            }
+            else {
+              throw {
+                message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+              }
+            }
           }
           else {
-            throw {
-              message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
-            }
+            console.log("vao day")
+            this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
           }
         }
         else {
@@ -233,6 +242,42 @@ export default {
           description:
             e.message
         });
+      }
+    },
+
+    sortNewest() {
+      try {
+        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'newest' }})
+        this.downToUp = false
+        this.newest = true
+        this.upToDown = false
+      }
+      catch(e) {
+
+      }
+    },
+
+    sortDownToUp() {
+      try {
+        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'priceASC' }})
+        this.downToUp = true
+        this.newest = false
+        this.upToDown = false
+      }
+      catch(e) {
+
+      }
+    },
+
+    sortUpToDown() {
+      try {
+        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'priceDESC' }})
+        this.downToUp = false
+        this.newest = false
+        this.upToDown = true
+      }
+      catch(e) {
+
       }
     }
   }

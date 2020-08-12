@@ -314,9 +314,7 @@ export default {
     // delete address
     async confirm(id) {
       try {
-        console.log(id)
-        console.log(this.token)
-        const response = await axios.delete(`http://localhost:5000/api/v1/users/address`, {id} , {
+        const response = await axios.delete(`http://localhost:5000/api/v1/users/address/${id}`, {
           headers: {
                 Authorization: 'Bearer ' + this.token,
           }
@@ -324,7 +322,7 @@ export default {
         console.log(response);
         if(response.data.status == "200") {
           const index = this.listAddr.findIndex(x => x.id == id)
-          this.data.splice(index, 1)
+          this.listAddr.splice(index, 1)
           this.$notification['success']({
             message: 'DELETE ADDRESS',
             description:

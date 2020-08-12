@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 mb-3">
+  <div class="pt-3 pb-3 al-bg-out ">
     <div class="container-fluid">
       <div class="al-margin-7 al-bg-white p-2 al-height-detail">
         <div class="row">
@@ -303,14 +303,19 @@ export default {
       try {
         if(Cookie.get('user')) {
           let user = JSON.parse(Cookie.get('user'));
-          if(user.shop.id != product.shop.id) {
-            let id = String(user.id)
-            this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+          let id = String(user.id)
+          if(user.shopActive) {
+            if(user.shop.id != product.shop.id) {
+              this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+            }
+            else {
+              throw {
+                message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+              }
+            }
           }
           else {
-            throw {
-              message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
-            }
+            this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
           }
         }
         else {

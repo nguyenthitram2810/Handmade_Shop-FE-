@@ -89,8 +89,8 @@
           <div class="row d-flex align-items-center">
             <span class="col-2">Đơn vị vận chuyển:</span>
             <a-select v-model="shop.ship"  class="col-8" @change="handleChange()">
-              <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
-                {{ item.brand}} (₫ {{ item.fee * shop.totalWeight }})
+              <a-select-option v-for="(item, index) in shop.transports" :key="index" :value="`${item.id}`">
+                {{ item.brand}} (₫ {{ parseInt(item.fee * shop.totalWeight) }})
               </a-select-option>
             </a-select>
           </div>
@@ -167,7 +167,7 @@ const columns = [
 ];
 
 export default {
-  middleware: 'getState',
+  middleware: ['getState', 'authentication'],
   layout: 'cart',
   data() {
     let validatePhone = (rule, value, callback) => {
@@ -207,10 +207,10 @@ export default {
       },
     }
   },
-  created() {
-    this.getListTransport()
-    this.getListAddr()
+  mounted() {
     this.fetchProductsInStorage()
+    //this.getListTransport()
+    this.getListAddr()
   },
 
   computed: {
@@ -242,12 +242,12 @@ export default {
   },
 
   methods: {
-    // Chọn đơn vị vận chuyển
-    async getListTransport() {
+    // Chọn đơn vị vận chuyển OK
+    async getListTransport(id) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+        const response = await axios.get(`http://localhost:5000/api/v1/transports?key=shop&value=${id}`)
         if(response.data.status == "200") {
-          this.listTransport = response.data.data
+          return response.data.data
         }
         else {
           this.$notification["error"]({
@@ -269,9 +269,9 @@ export default {
     handleChange(value) {
       this.shops = this.shops.filter(e => {
         if(e.ship) {
-          this.listTransport.forEach(t => {
+          e.transports.forEach(t => {
             if(t.id == e.ship) {
-              let temp = e.totalWeight * t.fee
+              let temp = parseInt(e.totalWeight * t.fee)
               e["totalShip"] = temp
               e.totalCost = e.totalTemp
               e.totalCost += temp
@@ -285,7 +285,7 @@ export default {
       console.log(this.shops);
     },
 
-    // Lấy danh sách địa chỉ
+    // Lấy danh sách địa chỉ OK
     async getListAddr() {
       try {
         const response = await axios.get("http://localhost:5000/api/v1/users/addresss", {
@@ -314,7 +314,7 @@ export default {
       }
     }, 
     
-    // Form tạo địa chỉ
+    // Form tạo địa chỉ OK
     showDrawer() {
       this.visible = true;
       this.getListAddr()
@@ -419,7 +419,7 @@ export default {
       });
     },
 
-    // Lấy list sản phẩm
+    // Lấy list sản phẩm OK
     fetchProductsInStorage() {
       if(Cookie.get('user')) {
         let user = JSON.parse(Cookie.get('user'))
@@ -442,7 +442,7 @@ export default {
               })
             )
             element["totalWeight"] = element.products.reduce((a, b) => {
-              return a + b.weight
+              return a + (b.weight * b.amount)
             }, 0)
 
             element["totalCost"] = element.products.reduce((a, b) => {
@@ -453,6 +453,10 @@ export default {
             }, 0)
             return element
           });
+          this.shops.forEach(async s => {
+            s["transports"] = await this.getListTransport(s.shopID)
+          })
+          console.log(this.shops)
         }
       }
     },
@@ -493,6 +497,7 @@ export default {
           })
           return obj
         })
+        console.log(shopSubmit)
         const response = await axios.post("http://localhost:5000/api/v1/users/orders", shopSubmit, {
           headers: {
             Authorization: 'Bearer ' + this.token,

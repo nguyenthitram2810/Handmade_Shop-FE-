@@ -219,6 +219,7 @@ export default {
     async getListTransport() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+        console.log(response)
         if(response.data.status == "200") {
           this.listTransport = response.data.data
         }

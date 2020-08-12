@@ -147,6 +147,7 @@ export default {
                 Authorization: 'Bearer ' + token,
               }
             })
+            console.log(response)
             if(response.data.status == "200") {
               this.$router.push("/shop/manage/product/list/all")
             }

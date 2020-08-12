@@ -59,12 +59,14 @@ export const actions = {
           let listProduct = obj.products
           listProduct.forEach(p => {
             if(p.product.id == product.id) {
-              if((p.count + quantity) > p.product.amount) {
+              if((p.count + parseInt(quantity)) > p.product.restAmount) {
+                console.log("vo day r");
                 throw {
                   message: "Sản phẩm hết hàng!"
                 }
               }
-              p.count += quantity
+              console.log("k vo")
+              p.count += parseInt(quantity)
               checkProduct++
             }
           })
