@@ -30,6 +30,10 @@
           <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
         </a-form-model-item>
 
+        <a-form-model-item  has-feedback label="Giảm giá" prop="percent">
+          <a-input :min="0" :max="100" addon-before="%" v-model="productForm.percent" type="number" />
+        </a-form-model-item>
+
         <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
           <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
         </a-form-model-item>
@@ -91,6 +95,8 @@ export default {
         quantity: '',
         images: [],
         weight: '',
+        percent: '',
+
       },
       rules: {
         name: [
@@ -102,7 +108,8 @@ export default {
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
-        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}]
+        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}],
+        percent: [{ required: true, message: 'Điền giảm giá cho sản phẩm', trigger:'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -141,6 +148,8 @@ export default {
               materialIds: this.productForm.material,
               gallery: this.productForm.images,
               weight: this.productForm.weight,
+              percent: this.productForm.percent,
+              reduce: this.productForm.price - parseInt(this.productForm.price/100 * this.productForm.percent)
             }, 
             {
               headers: {

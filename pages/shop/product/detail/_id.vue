@@ -17,7 +17,7 @@
             <h3 class="font--25 al-text-space">{{ product.name }}</h3>
             <div class="d-flex align-items-center mt-2 mb-3">
               <div>
-                <span class="mr-2">1200 Đã bán</span>
+                <span class="mr-2">{{ product.amount - product.restAmount}} Đã bán</span>
                 <span class="mr-2">|</span>
               </div>
               <div class="mb-0">
@@ -29,13 +29,14 @@
               </div>
             </div>
             
-            <div class="mt-2 mb-4 py-1 al-bg-bestseller d-flex align-items-center justify-content-center border-radius--10 w-100-px">
+            <!-- <div class="mt-2 mb-4 py-1 al-bg-bestseller d-flex align-items-center justify-content-center border-radius--10 w-100-px">
               <a-icon class="color-white mr-1" type="dollar-circle" theme="filled" />
               <span class="color-white">Best seller</span>
-            </div>
+            </div> -->
 
-            <div class="w-100 py-3 al-bg-price pl-4 my-2">
-              <h3 class="al-color-price font--25 mr-3">₫{{ product.price }}</h3>
+            <div class="w-100 py-3 al-bg-price pl-4 my-2 d-flex align-items-center">
+              <div class="mr-4 al-line-through">₫ {{ product.price }}</div>
+              <h3 class="al-color-price font--25 mr-3">₫ {{ product.reduce }}</h3>
             </div>
 
             <div class="my-4 al-height-description">

@@ -43,7 +43,7 @@
       <a-layout-content
         :style="{ margin: 0, minHeight: '280px' }"
       >
-        <a-tabs class="white-theme px-4 pt-4" default-active-key="1" @change="callback">
+        <a-tabs class="white-theme px-4 pt-4" default-active-key="2" @change="callback">
           <a-tab-pane key="1" tab="Chờ xác nhận">
           </a-tab-pane>
           <a-tab-pane key="2" tab="Chờ lấy hàng">
@@ -110,13 +110,13 @@ export default {
     }
   }, 
   mounted() {
-    this.getListOrder()
+    // this.getListOrder()
   },
   methods: {
     //Chuyển tab
     callback(key) {
       if(key == 1) {
-        this.$router.push('/user/purchase/waitSend')
+        this.$router.push('/user/purchase/wait')
       }
       if(key == 2) {
         this.$router.push('/user/purchase/waitSend')
@@ -132,33 +132,33 @@ export default {
       } 
     },
 
-    async getListOrder() {
-      try {
-        const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
-          headers: {
-                Authorization: 'Bearer ' + this.token,
-          }
-        })
-        console.log(response)
-        if(response.data.status == "200") {
-          this.bills = response.data.data
-        }
-        else {
-          this.$notification["error"]({
-            message: 'GET ORDER ERROR',
-            description:
-              response.data.message
-          });
-        }
-      }
-      catch(e) {
-        this.$notification["error"]({
-          message: 'GET ORDER ERROR',
-          description:
-            e.message
-        });
-      }
-    }
+    // async getListOrder() {
+    //   try {
+    //     const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
+    //       headers: {
+    //             Authorization: 'Bearer ' + this.token,
+    //       }
+    //     })
+    //     console.log(response)
+    //     if(response.data.status == "200") {
+    //       this.bills = response.data.data
+    //     }
+    //     else {
+    //       this.$notification["error"]({
+    //         message: 'GET ORDER ERROR',
+    //         description:
+    //           response.data.message
+    //       });
+    //     }
+    //   }
+    //   catch(e) {
+    //     this.$notification["error"]({
+    //       message: 'GET ORDER ERROR',
+    //       description:
+    //         e.message
+    //     });
+    //   }
+    // }
   }
 }
 </script>

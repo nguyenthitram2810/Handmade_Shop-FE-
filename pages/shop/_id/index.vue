@@ -73,7 +73,7 @@
                   <div  class="product_thumb">
                     <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
                     <div class="label_product">
-                        <span class="label_sale">-7%</span>
+                        <span class="label_sale">-{{ product.percent}}%</span>
                     </div>
 
                     <div class="action_links">
@@ -103,7 +103,7 @@
                         </div>
                         <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                         <div class="price_box"> 
-                          <span class="current_price">₫ {{product.price}}</span>
+                          <span class="current_price">₫ {{product.reduce}}</span>
                         </div>
                       </div>
                     </div>

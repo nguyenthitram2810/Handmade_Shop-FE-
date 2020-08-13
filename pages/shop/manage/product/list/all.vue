@@ -23,7 +23,7 @@
         
         <a-table class="pt-4" :columns="columns" :data-source="data" @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
           <span slot="soldAmount" slot-scope="text, record">
-            <p>{{ record.restAmount -  record.amount }}</p>
+            <p>{{ record.amount -  record.restAmount }}</p>
           </span>
           <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
             <a-popconfirm
