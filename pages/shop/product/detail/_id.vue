@@ -17,7 +17,7 @@
             <h3 class="font--25 al-text-space">{{ product.name }}</h3>
             <div class="d-flex align-items-center mt-2 mb-3">
               <div>
-                <span class="mr-2">{{ product.amount - product.restAmount}} Đã bán</span>
+                <span class="mr-2">{{ product.sold}} Đã bán</span>
                 <span class="mr-2">|</span>
               </div>
               <div class="mb-0">

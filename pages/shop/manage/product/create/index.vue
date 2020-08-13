@@ -144,7 +144,7 @@ export default {
               categoryId: this.productForm.productType[this.productForm.productType.length - 1],
               description: this.productForm.description,
               price: this.productForm.price,
-              amount: this.productForm.quantity,
+              restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
               gallery: this.productForm.images,
               weight: this.productForm.weight,

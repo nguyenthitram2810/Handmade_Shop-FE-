@@ -91,7 +91,6 @@ export default {
       listCate: [],
       listMaterial: [],
       showImages:[],
-      amount: 0,
       productForm: {
         name: '',
         productType: '',
@@ -147,7 +146,6 @@ export default {
               restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
               gallery: this.productForm.images,
-              amount: this.amount,
               weight: this.productForm.weight,
               percent: this.productForm.percent,
               reduce: this.productForm.price - parseInt(this.productForm.price/100 * this.productForm.percent)
@@ -293,7 +291,6 @@ export default {
           this.productForm.price = data.price
           this.productForm.images = data.gallery
           this.getSource(data.gallery)
-          this.amount = data.amount
           this.productForm.weight = data.weight
           this.productForm.percent = data.percent
         }

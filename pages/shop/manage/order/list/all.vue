@@ -27,33 +27,49 @@
       />
       </div>
 
-      <!-- <a-table class="pt-4" :columns="columns" :data-source="data" @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
-        <span slot="soldAmount" slot-scope="text, record">
-          <p>{{ record.restAmount -  record.amount }}</p>
+      <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
+        <span slot="products" slot-scope="text, record">
+          <div v-for="(item, index) in record.products" :key="index" class="d-flex mt-2">
+            <img :src="item.product.thumbnail" alt="" class="cart-thumbnail mr-3">
+            <div class="d-flex flex-column">
+              <p class="cart-name font--regular-2"> {{item.name}}</p>
+              <b> x {{ item.amount}}</b>
+            </div>
+          </div>
         </span>
+
+        <span slot="totalBillAndShip" slot-scope="text, record">
+          <p>₫ {{ record.totalBillAndShip }}</p>
+        </span>
+
+        <span slot="user" slot-scope="text, record">
+          <b>{{ record.user.name }}</b>
+        </span>
+
         <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
           <a-popconfirm
-            title="Are you sure delete this task?"
+            v-if="record.status == 'pending confirm'"
+            title="Are you sure cancel this order?"
             ok-text="Yes"
             cancel-text="No"
             @confirm="confirm(record.id)"
           >
             <a-button type="danger">
-              Delete
+              Hủy
             </a-button>
           </a-popconfirm>
-          <nuxt-link :to="`/shop/manage/product/edit/${record.id}`"> 
-            <a-button class="al-btn-success">
-              Edit
-            </a-button>
-          </nuxt-link>
+
+          <a-button v-if="record.status != 'cancel'" @click="Accept(record)" class="al-btn-success">
+              Xác nhận
+          </a-button>
+
           <nuxt-link :to="`/shop/product/detail/${record.slug}`"> 
             <a-button type="primary">
               View Detail
             </a-button>
           </nuxt-link>
         </span>
-      </a-table> -->
+      </a-table>
     </a-layout-content>
   </a-layout>
 </template>
@@ -68,8 +84,47 @@ export default {
   data() {
     return {
       token: Cookie.get('token'),
+      columns: [
+          {
+            title: 'Sản phẩm',
+            dataIndex: 'products',
+            key: 'products',
+            scopedSlots: { customRender: 'products' },
+          },
+          {
+            title: 'Tổng đơn hàng',
+            dataIndex: 'totalBillAndShip',
+            key: 'totalBillAndShip',
+            scopedSlots: { customRender: 'totalBillAndShip' },
+          },
+          {
+            title: 'Khách hàng',
+            dataIndex: 'user',
+            key: 'user',
+            scopedSlots: { customRender: 'user' },
+          },
+
+          {
+            title: 'Trạng thái',
+            dataIndex: 'nameStatus',
+            key: 'nameStatus',
+          },
+
+          {
+            title: 'Thao tác',
+            key: 'action',
+            scopedSlots: { customRender: 'action' },
+          },
+      ],
+      data: [],
+      status: ["cancel", "pending_confirm", "pending_received_goods", "delivering", "delivered"]
     }
   }, 
+
+  mounted() {
+    this.getAllOrder()
+  },
+
   methods: {
     callback(key) {
       if(key == 1) {
@@ -91,9 +146,81 @@ export default {
         this.$router.push('/shop/manage/order/list/cancel')
       }
     },
+
     onChange(date, dateString) {
       console.log(date, dateString);
     },
+
+    async getAllOrder() {
+      try {
+        const response = await axios.get("http://localhost:5000/api/v1/shop/orders", {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response)
+        if(response.data.status == "200") {
+          let data = response.data.data
+          this.data = data.map(e => {
+            if(e.status == "pending confirm") {
+              e.nameStatus = "Chờ xác nhận"
+            }
+            if(e.status = "cancel") {
+              e.nameStatus = "Đã hủy"
+            }
+            return e
+          })
+          console.log(this.data)
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET ORDER ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET ORDER ERROR',
+          description:
+            e.message
+        });
+      }
+    },
+
+    async confirm(id) {
+      try {
+        let status = "cancel"
+        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${id}?status=${status}`, { status: status}, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        if(response.data.status == "200") {
+          this.getAllOrder()
+          this.$notification['success']({
+            message: 'CANCEL PRODUCT SUCCESS',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'CANCEL ORDER FAIL',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+          message: 'CANCEL ORDER FAIL',
+          description:
+            e.message
+        });
+      }
+    }
   }
 }
 </script>

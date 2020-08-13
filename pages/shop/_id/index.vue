@@ -55,7 +55,7 @@
 								</li>
 							</ul>
 							<ol class="folw-detail">
-								<li><span>Sản phẩm</span><ins>101</ins></li>
+								<li><span>Sản phẩm</span><ins>{{ total }}</ins></li>
 								<li><span>Đánh giá</span><ins>4.7/5</ins></li>
 								<li><span>Số đánh giá</span><ins>127</ins></li>
 							</ol>
@@ -67,12 +67,12 @@
       <div class="row pl-2">
         <div class="col-lg-9 col-md-12"> 
           <div class="row shop_wrapper">
-            <div v-for="(product, index) in shop.products" :key="index" class="col-lg-3 col-md-3 col-12 ">
+            <div v-for="(product, index) in products" :key="index" class="col-lg-3 col-md-3 col-12 ">
               <article class="single_product box-shadow--main">
                 <figure>
                   <div  class="product_thumb">
                     <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
-                    <div class="label_product">
+                    <div v-if="product.percent > 0" class="label_product">
                         <span class="label_sale">-{{ product.percent}}%</span>
                     </div>
 
@@ -90,7 +90,7 @@
                         </ul>
                     </div>
                   </div>
-                    <div class="product_content grid_content">
+                    <div class="product_content grid_content  al-w-product">
                       <div class="product_price_rating">
                         <div class="product_rating">
                           <ul>
@@ -101,7 +101,7 @@
                             <li><a href="#"><i class="icon-star"></i></a></li>
                           </ul>
                         </div>
-                        <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
+                        <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                         <div class="price_box"> 
                           <span class="current_price">₫ {{product.reduce}}</span>
                         </div>
@@ -122,13 +122,14 @@
               <a-layout-sider width="100%" style="background: #fff">
                 <a-menu
                   mode="inline"
-                  :default-selected-keys="['0']"
+                  :default-selected-keys="['-1']"
                   :style="{ height: '100%', borderRight: 0 }"
+                  @click="handleClick"
                 >
-                  <a-menu-item key="0">
+                  <a-menu-item key="-1">
                     Tất cả sản phẩm
                   </a-menu-item>
-                  <a-menu-item v-for="(cate, index) in listCate" :key="index + 1">
+                  <a-menu-item v-for="cate in listCate" :key="cate.id">
                     {{cate.name}}
                   </a-menu-item>
                 </a-menu>
@@ -137,9 +138,10 @@
           </a-layout>
         </div>
       </div>
+
       <div class="row">
         <div class="al-text-center col-lg-9 col-md-12">
-          <a-pagination v-model="current" :total="30" show-less-items />
+          <a-pagination :page-size.sync="pageSize"  v-model="current" :total="total" @change="onChange" />
         </div>
       </div>
     </div>
@@ -164,20 +166,64 @@ export default {
       newest: true,
       downToUp: false,
       upToDown: false,
-      current: 2,
+      current: 1,
+      total: 0,
+      products: [],
+      pageSize: 12,
+      key: 'all',
+      order: 'createdAt',
+      by: 'desc',
+      value: '',
     }
   },
   mounted() {
-    this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'newest' }})
-    this.getInfoShop()
+    this.getShop()
+    this.getCategories()
+    this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
+    this.getProducts()
   },
   methods: {
-    async getInfoShop() {
+    async getShop() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
+        console.log(response)
         if(response.data.status == "200") {
-          this.shop =  response.data.data[0]
-          this.getListCate(this.shop.products)
+          this.shop =  response.data.data
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET SHOP ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET SHOP ERROR',
+          description:
+            e.message
+        });
+      }
+    },
+
+    async getProducts() {
+      try {
+        console.log(this.current)
+        const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`, {
+          params: {
+            amount: 12,
+            key: this.key,
+            page: this.current, 
+            order: this.order,
+            by: this.by,
+            value: this.value
+          }
+        })
+        console.log(response)
+        if(response.data.status == "200") {
+          this.total = response.data.data.count
+          this.products = response.data.data.rows
         }
         else {
           this.$notification["error"]({
@@ -191,20 +237,42 @@ export default {
         this.$notification["error"]({
           message: 'GET PRODUCT ERROR',
           description:
-            response.data.message
+            e.message
         });
       }
     },
 
-    getListCate(data) {
-      let temp = new Set()
-      data.forEach(e => {
-        let i = temp.size
-        temp.add(e.category.id)
-        if(i < temp.size) {
-          this.listCate.push(e.category)
+    async getCategories() {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        if(response.data.status == "200") {
+          this.listCate = this.getChildren(response.data.data)
         }
+        else {
+          this.$notification["error"]({
+            message: 'GET LIST CATEGORIES ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET LIST CATEGORIES ERROR',
+          description:
+            e.message
+        });
+      }
+    },
+
+    getChildren(data) {
+      let childrenCate = []
+      data.forEach(e => {
+        e.children.forEach(c => {
+          childrenCate.push(c)
+        })
       });
+      return childrenCate
     },
 
     addCart(product) {
@@ -247,7 +315,10 @@ export default {
 
     sortNewest() {
       try {
-        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'newest' }})
+        this.order = 'createdAt'
+        this.by = 'desc'
+        this.getProducts()
+        this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
         this.downToUp = false
         this.newest = true
         this.upToDown = false
@@ -259,7 +330,10 @@ export default {
 
     sortDownToUp() {
       try {
-        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'priceASC' }})
+        this.by = 'asc'
+        this.order = 'reduce'
+        this.getProducts()
+        this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
         this.downToUp = true
         this.newest = false
         this.upToDown = false
@@ -271,7 +345,10 @@ export default {
 
     sortUpToDown() {
       try {
-        this.$router.push({ query: { page: 1, amount: 10, category: 'all', sortBy: 'priceDESC' }})
+        this.by = 'desc'
+        this.order = 'reduce'
+        this.getProducts()
+        this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
         this.downToUp = false
         this.newest = false
         this.upToDown = true
@@ -279,7 +356,32 @@ export default {
       catch(e) {
 
       }
-    }
+    },
+
+    //pagination
+    onChange(pageNumber) {
+      console.log(pageNumber)
+      try {
+        this.current = pageNumber
+        this.getProducts()
+        this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
+      }
+      catch(e) {
+
+      }
+    },
+    //category
+    handleClick(e) {
+      if(e.key == -1) {
+        this.key='all'
+        this.value = ''
+      }
+      else {
+        this.key = 'category'
+        this.value = e.key
+      }
+      this.getProducts()
+    },
   }
 }
 </script>

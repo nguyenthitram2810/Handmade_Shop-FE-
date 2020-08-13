@@ -158,8 +158,8 @@ export const actions = {
               let checkProduct = 0
               main.products = main.products.filter(mP => {
                 if(mP.product.id == p.product.id) {
-                  if((mP.count + p.count) > mP.product.amount) {
-                    mP.count = mP.product.amount
+                  if((mP.count + p.count) > mP.product.restAmount) {
+                    mP.count = mP.product.restAmount
                   }
                   else {
                     mP.count += p.count

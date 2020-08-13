@@ -9,3 +9,16 @@
   .product >>> .ant-tabs-tab:hover {
     color: #FAAC58;
   }
+
+  .cart-thumbnail {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    
+}
+
+.cart-name {
+  display: inline-block;
+  width: 200px;
+  margin-right: 20px;
+}

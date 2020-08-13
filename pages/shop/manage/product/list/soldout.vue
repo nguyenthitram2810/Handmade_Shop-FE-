@@ -21,7 +21,7 @@
         </div>
         <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
           <span slot="soldAmount" slot-scope="text, record">
-            <p>{{ record.amount -  record.restAmount }}</p>
+            <p>{{ record.sold }}</p>
           </span>
           <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
             <a-popconfirm
@@ -120,9 +120,7 @@ export default {
         })
         console.log(response);
         if(response.data.status == "200") {
-          if(response.data.data[0]) {
-            this.data = response.data.data[0].products
-          }
+          this.data = response.data.data.products
         }
         else {
           this.$notification["error"]({

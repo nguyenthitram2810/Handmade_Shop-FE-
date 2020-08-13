@@ -23,7 +23,7 @@
         
         <a-table class="pt-4" :columns="columns" :data-source="data" @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
           <span slot="soldAmount" slot-scope="text, record">
-            <p>{{ record.amount -  record.restAmount }}</p>
+            <p>{{ record.sold}}</p>
           </span>
           <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
             <a-popconfirm
@@ -42,6 +42,7 @@
                 Edit
               </a-button>
             </nuxt-link>
+            
             <nuxt-link :to="`/shop/product/detail/${record.slug}`"> 
               <a-button type="primary">
                 View Detail
@@ -134,22 +135,20 @@ export default {
         })
         console.log(response);
         if(response.data.status == "200") {
-          if(response.data.data[0]) {
-            this.data = response.data.data[0].products
-            let pagination = { ...this.pagination }
-            pagination.total = this.data.length
-            pagination.current = page
-            this.pagination = pagination
-            console.log(this.pagination);
-            this.$router.push({ path: '/shop/manage/product/list/all', query: { page: page, amount: amount, }})
-          }
+          this.data = response.data.data.products
+          let pagination = { ...this.pagination }
+          pagination.total = this.data.length
+          pagination.current = page
+          this.pagination = pagination
+          console.log(this.pagination);
+          this.$router.push({ path: '/shop/manage/product/list/all', query: { page: page, amount: amount, }})
         }
         else {
           this.$notification["error"]({
-          message: 'GET PRODUCT ERROR',
-          description:
-            response.data.message
-        });
+            message: 'GET PRODUCT ERROR',
+            description:
+              response.data.message
+          });
         }
       }
       catch(e) {

@@ -343,6 +343,16 @@ label {
 	text-align: left;
 }
 
+.truncate-2-lines {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	max-height: 4em;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	text-align: center;
+}
+
 .scroll-hidden-all {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
@@ -552,4 +562,8 @@ label {
 
 .al-line-through {
 	text-decoration: line-through;
+}
+
+.al-w-product {
+	min-height: 123px;
 }

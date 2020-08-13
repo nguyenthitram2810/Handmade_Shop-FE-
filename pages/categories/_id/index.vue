@@ -1,17 +1,17 @@
 <template>
   <div class="container-fluid"  style="background: #F5F5F5;">
     <div class="white-theme mt-3 p-4 font--bold font--20">
-      CATEGORY/{{listProducts.name}}
+      CATEGORY/{{ category.name }}
     </div>
 
-    <div v-if="products.length" class="row px-2 my-3">
-      <div v-for="(product, index) in products" :key="index" class="col-lg-2 col-md-3 col-sm-4 px-2">
+    <div v-if="listProducts.length > 0" class="row px-2 my-3">
+      <div v-for="(product, index) in listProducts" :key="index" class="col-lg-2 col-md-3 col-sm-4 px-2 mt-3">
         <article class="single_product box-shadow--main">
           <figure>
             <div  class="product_thumb">
               <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
-              <div class="label_product">
-                  <span class="label_sale">-7%</span>
+              <div v-if="product.percent > 0" class="label_product">
+                  <span class="label_sale">-{{ product.percent}}%</span>
               </div>
               <div class="action_links">
                   <ul>
@@ -26,7 +26,7 @@
                   </ul>
               </div>
             </div>
-            <div class="product_content grid_content">
+            <div class="product_content grid_content px-1 pb-2 al-w-product">
               <div class="product_price_rating">
                 <div class="product_rating">
                   <ul>
@@ -37,9 +37,9 @@
                     <li><a href="#"><i class="icon-star"></i></a></li>
                   </ul>
                 </div>
-                <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
+                <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                 <div class="price_box"> 
-                  <span class="current_price">₫ {{product.price}}</span>
+                  <span class="current_price">₫ {{product.reduce}}</span>
                 </div>
               </div>
             </div>
@@ -50,6 +50,12 @@
 
     <div v-else class="my-5">
       <a-empty class="m-auto"/>
+    </div>
+
+    <div class="row">
+      <div class="al-text-center col-12 mb-3">
+        <a-pagination :page-size.sync="pageSize"  v-model="current" :total="total" @change="onChange"/>
+      </div>
     </div>
   </div>
 </template>
@@ -62,22 +68,27 @@ export default {
   data() {
     return {
       listProducts: [],
-      products: [],
+      total: 0,
+      current: 1,
+      category: {},
+      pageSize: 12,
     }
   },
 
   mounted() {
-    this.getListProducts()
+    this.$router.push({ query: { page: this.current, amount: 12, }})
+    this.getListProducts(this.current)
   },
 
   methods: {
-    async getListProducts() {
+    async getListProducts(page) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/products?key=category&value=${this.$route.params.id}`)
+        const response = await axios.get(`http://localhost:5000/api/v1/products?key=category&value=${this.$route.params.id}&page=${page}&amount=12`)
         console.log(response)
         if(response.data.status == "200") {
-          this.listProducts = response.data.data
-          this.products = this.listProducts.products
+          this.total = response.data.data.count
+          this.listProducts = response.data.data.rows
+          this.category = this.listProducts[0].category
         }
         else {
           this.$notification["error"]({
@@ -94,7 +105,13 @@ export default {
             e.message
         });
       }
-    }
+    }, 
+
+    onChange(pageNumber) {
+      this.current = pageNumber
+      this.$router.push({ query: { page: this.current, amount: 12, }})
+      this.getListProducts(this.current)
+    },
   }
 }
 </script>

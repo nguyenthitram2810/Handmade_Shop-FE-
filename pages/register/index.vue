@@ -129,9 +129,8 @@ export default {
                 validator: validatePass, 
               },
               {
-                min: 10,
-                max: 15,
-                message: 'Độ dài mật khẩu 10 - 15 ký tự(không kể ký tự trắng)'
+                min: 6,
+                message: 'Độ dài mật khẩu > 6 ký tự(không kể ký tự trắng)'
               }
             ],
         checkPass: [

@@ -72,7 +72,7 @@
             <nuxt-link class="pl-4 al-color-orange" :to="`/shop/${shop.slug}`"> <a-icon type="shop" class="pr-3"/>{{ shop.shopName }} </nuxt-link>
           </template>
 
-          <span slot="nameAndThumbnail"  slot-scope="text, record">
+          <span slot="nameAndThumbnail" class="d-flex align-items-center"  slot-scope="text, record">
             <span class="cart-name">{{ record.nameAndThumbnail.name }}</span>
             <img v-bind:src="record.nameAndThumbnail.thumbnail" class="cart-thumbnail">
           </span>
@@ -435,7 +435,7 @@ export default {
                   name: product.name,
                   thumbnail: product.thumbnail,
                 },
-                price: product.price,
+                price: product.reduce,
                 amount: count,
                 restAmount: product.restAmount,
                 weight: product.weight,
