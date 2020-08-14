@@ -55,7 +55,7 @@
               <a-button size="large" class="al-button-cart mr-5" icon="shopping-cart" @click="addCart(product)">
                 Thêm vào giỏ hàng
               </a-button>
-              <a-button size="large" class="al-button-buy px-5">
+              <a-button @click="buyNow(product)" size="large" class="al-button-buy px-5">
                 Mua ngay
               </a-button>
             </div>
@@ -335,6 +335,12 @@ export default {
             e.message
         });
       }
+    },
+
+    buyNow(product) {
+      console.log(product)
+      this.addCart(product)
+      this.$router.push("/cart")
     }
   },
 };

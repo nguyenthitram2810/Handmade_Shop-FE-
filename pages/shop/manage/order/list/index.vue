@@ -3,7 +3,7 @@
     <a-layout-content
       :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-tabs default-active-key="3" @change="callback">
+      <a-tabs :default-active-key="defaultKey" @change="callback">
         <a-tab-pane key="1" tab="Tất cả">
         </a-tab-pane>
         <a-tab-pane key="2" tab="Chờ xác nhận">
@@ -18,14 +18,14 @@
         </a-tab-pane>
       </a-tabs>
 
-      <div class="d-flex align-items-center ">
+      <!-- <div class="d-flex align-items-center ">
         <p class="mb-0 font--regular-2 mr-2">Ngày Đặt Hàng</p>
         <a-range-picker 
         format="YYYY/MM/DD" 
         @change="onChange" 
         :placeholder="['Ngày Bắt Đầu', 'Ngày Kết Thúc']"
       />
-      </div>
+      </div> -->
 
       <a-table class="pt-4" :columns="columns" :data-source="data"  @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
         <span slot="products" slot-scope="text, record">
@@ -48,7 +48,7 @@
 
         <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
           <a-popconfirm
-            v-if="record.status == 'pending confirm'"
+            v-if="record.status == 'pending_confirm'"
             title="Are you sure cancel this order?"
             ok-text="Yes"
             cancel-text="No"
@@ -59,7 +59,7 @@
             </a-button>
           </a-popconfirm>
 
-          <a-button v-if="record.status != 'cancel'" @click="Accept(record)" class="al-btn-success">
+          <a-button v-if="record.status != 'cancel' && record.status != 'delivered' && record.status != 'delivering'" @click="acceptOrder(record)" class="al-btn-success">
               Xác nhận
           </a-button>
 
@@ -83,7 +83,10 @@ export default {
   middleware: ['authentication'],
   data() {
     return {
-      pagination: {},
+      pagination: {
+        current: 1,
+        total: 0
+      },
       loading: false,
       token: Cookie.get('token'),
       columns: [
@@ -119,71 +122,125 @@ export default {
           },
       ],
       data: [],
-      status: ["cancel", "pending_confirm", "pending_received_goods", "delivering", "delivered"]
+      status: ["cancel", "pending_confirm", "pending_received_goods", "delivering", "delivered"],
+      defaultKey: 1,
     }
   }, 
 
   mounted() {
-    this.getAllOrder()
+    this.$router.push({ query: { key: '', page: this.pagination.current, amount: 10} })
+    this.getAllOrder({key : '', page: this.pagination.current, amount: 10 })
   },
 
   methods: {
     handleTableChange(pagination, filters, sorter) {
+      console.log(pagination)
       this.loading = true
 
       let pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
 
-      //this.getAllproduct(pagination.current)
+      let params = this.$route.query
+      params.page = this.pagination.current
+
+      this.$router.push({ query: params})
+      this.getAllOrder(params)
       this.loading = false
     },
 
     callback(key) {
+      this.defaultKey = key
+      let params = {}
       if(key == 1) {
-        this.$router.push('/shop/manage/order/list/all')
+        params = {
+          key: '',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
       if(key == 2) {
-        this.$router.push('/shop/manage/order/list/wait')
+        params = {
+          key: 'pending_confirm',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
       if(key == 3) {
-        this.$router.push('/shop/manage/order/list/waitSend')
+        params = {
+          key: 'pending_received_goods',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
       if(key == 4) {
-        this.$router.push('/shop/manage/order/list/shipping')
+        params = {
+          key: 'delivering',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
       if(key == 5) {
-        this.$router.push('/shop/manage/order/list/complete')
+        params = {
+          key: 'delivered',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
       if(key == 6) {
-        this.$router.push('/shop/manage/order/list/cancel')
+        params = {
+          key: 'cancel',
+          page: 1,
+          amount: 10
+        }
+        this.getAllOrder(params)
       }
+      this.$router.push({ query: params })
     },
 
     onChange(date, dateString) {
       console.log(date, dateString);
     },
 
-    async getAllOrder() {
+    async getAllOrder(params) {
       try {
+        console.log(params)
         const response = await axios.get("http://localhost:5000/api/v1/shop/orders", {
+          params: params,
           headers: {
             Authorization: 'Bearer ' + this.token,
           }
         })
         console.log(response)
         if(response.data.status == "200") {
-          let data = response.data.data
+          let pagination = { ...this.pagination }
+          pagination.total = response.data.data.count
+          pagination.current = params.page
+          this.pagination = pagination
+          let data = response.data.data.rows
           this.data = data.map(e => {
-            if(e.status == "pending confirm") {
+            if(e.status == "pending_confirm") {
               e.nameStatus = "Chờ xác nhận"
             }
-            if(e.status = "cancel") {
+            if(e.status == "cancel") {
               e.nameStatus = "Đã hủy"
+            }
+            if(e.status == "pending_received_goods") {
+              e.nameStatus = "Chờ lấy hàng"
+            }
+            if(e.status == "delivering") {
+              e.nameStatus = "Đang giao"
+            }
+            if(e.status == "delivered") {
+              e.nameStatus = "Đã giao"
             }
             return e
           })
-          console.log(this.data)
         }
         else {
           this.$notification["error"]({
@@ -210,8 +267,10 @@ export default {
             Authorization: 'Bearer ' + this.token,
           }
         })
+        console.log(response)
         if(response.data.status == "200") {
-          this.getAllOrder()
+          let params = this.$route.query
+          this.getAllOrder(params)
           this.$notification['success']({
             message: 'CANCEL PRODUCT SUCCESS',
             description:
@@ -232,6 +291,45 @@ export default {
           description:
             e.message
         });
+      }
+    },
+
+    async acceptOrder(record) {
+      try {
+        console.log(record)
+        let status = ''
+        for(let i =0; i < this.status.length; i++) {
+          if(this.status[i] == record.status) {
+            status = this.status[i+1]
+          }
+        }
+        console.log(status)
+        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response)
+        if(response.data.status == "200") {
+          let params = this.$route.query
+          this.getAllOrder(params)
+          this.$notification['success']({
+            message: 'ACCEPT PRODUCT SUCCESS',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'ACCEPT ORDER FAIL',
+            description:
+              response.data.message
+          });
+        }
+        
+      }
+      catch(e) {
+
       }
     }
   }

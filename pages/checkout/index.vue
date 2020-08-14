@@ -531,7 +531,7 @@ export default {
           else{
             this.$store.dispatch('cart/removeAll')
             localStorage.removeItem(id)
-            this.$router.push("/user/purchase/wait")
+            this.$router.push("/user/purchase")
           }
         }
         else {

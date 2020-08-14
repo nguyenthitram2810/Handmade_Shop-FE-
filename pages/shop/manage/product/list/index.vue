@@ -102,13 +102,12 @@ export default {
         total: 0,
         current: 1,
       },
-      defaultKey: 1,
-      status: '',
+      defaultKey: '',
     };
   },
   mounted() {
-    console.log(this.token)
-    this.status = 'all'
+    this.defaultKey = 1
+    this.$router.push({ query: {page: this.pagination.current, amount: 10} })
     this.getAllproduct({page: this.pagination.current, amount: 10});
   },
   methods: {
@@ -119,21 +118,44 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
 
-      this.getAllproduct(pagination.current)
+      let params = this.$route.query
+      params.page = this.pagination.current
+      console.log(this.pagination);
+      
+      this.$router.push({ query: params })
+      this.getAllproduct(params)
       this.loading = false
     },
 
     callback(key) {
-      this.defaultKey = key
       if(key == 1) {
-
+        let params = {
+          page: 1, 
+          amount: 10,
+        }
+        console.log(params)
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
       }
       if(key == 2) {
-        
+        let params = {
+          page: 1, 
+          amount: 10,
+          key: 'inventory'
+        }
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
       }
       if(key == 3) {
-        
+        let params = {
+          page: 1, 
+          amount: 10,
+          key: 'sold-out'
+        }
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
       }
+      this.defaultKey = key
     },
 
     async getAllproduct(params) {
@@ -145,15 +167,13 @@ export default {
             Authorization: 'Bearer ' + this.token,
           }
         })
-        console.log(response);
         if(response.data.status == "200") {
-          this.data = response.data.data.products
+          this.data = response.data.data.rows
           let pagination = { ...this.pagination }
-          pagination.total = this.data.length
+          pagination.total = response.data.data.count
           pagination.current = params.page
           this.pagination = pagination
-          console.log(this.pagination);
-          this.$router.push({ query: { page: params.page, amount: 10, }})
+          console.log(this.pagination)
         }
         else {
           this.$notification["error"]({
@@ -207,34 +227,23 @@ export default {
     },
 
     async onSearch(value) {
-      try {
-        console.log(value)
-        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?key=search&value=${value}`, {
-          headers: {
-            Authorization: 'Bearer ' + this.token,
-          }
-        })
-        if(response.data.status == "200") {
-          if(response.data.data[0]) {
-            this.data = response.data.data[0].products
-          }
-        }
-        else {
-          this.$notification["error"]({
-            message: 'SEARCH PRODUCT ERROR',
-            description:
-              response.data.message
-          });
-        }
-        console.log(response)
+      console.log(this.$route)
+      let params = {
+        page: 1, 
+        amount: 10, 
+        key: 'search',
+        value: value,
       }
-      catch(e) {
-        this.$notification["error"]({
-          message: 'SEARCH PRODUCT ERROR',
-          description:
-            e.message
-        });
+      if(this.$route.query.filter) {
+        params.filter = this.$route.query.filter
       }
+      if(this.$route.query.key) {
+        if(this.$route.query.key != 'search') {
+          params.filter = this.$route.query.key
+        }
+      }
+      this.getAllproduct(params)
+      this.$router.push({ query: params })
     }
   },
 }

@@ -11,6 +11,7 @@
 <script>
 export default {
   layout: "admin",
+  middleware: 'adminAuthen',
   data() {
     return {
       collapsed: false

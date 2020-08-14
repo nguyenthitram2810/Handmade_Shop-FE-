@@ -1,19 +1,11 @@
 <template>
     <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
       <div class="logo" />
-        <a-menu theme="dark" mode="inline" :default-selected-keys="['sub1']">
-          <a-sub-menu key="sub1">
-            <span slot="title"><a-icon type="user" /><span>User</span></span>
-              <a-menu-item key="3">
-                Tom
-              </a-menu-item>
-              <a-menu-item key="4">
-                Bill
-              </a-menu-item>
-              <a-menu-item key="5">
-                Alex
-              </a-menu-item>
-          </a-sub-menu>
+        <a-menu theme="dark" mode="inline">
+          <a-menu-item key="1">
+            <nuxt-link to="/admin/user"><a-icon type="user" /> User</nuxt-link>
+            <!-- <span slot="title"><a-icon type="user" /><span>User</span></span> -->
+          </a-menu-item>
         </a-menu>
     </a-layout-sider>
 </template>

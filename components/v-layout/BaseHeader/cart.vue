@@ -5,6 +5,7 @@
       v-bind:categories=categories
       v-bind:cart=cart
       v-bind:tempCart=tempCart
+      
     >
     </Header>
 </template>
@@ -67,7 +68,11 @@ export default {
             e.message
         });
       }
-    }
+    },
+
+    // onSearch(value) {
+    //   console.log(value)
+    // }
   }
 }
 </script>

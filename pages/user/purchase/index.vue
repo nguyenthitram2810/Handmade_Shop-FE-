@@ -33,7 +33,7 @@
             </a-menu-item>
           </a-sub-menu>
           <a-menu-item key="4">
-            <nuxt-link to="/user/purchase/wait"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
+            <nuxt-link to="/user/purchase"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
           </a-menu-item>
         </a-menu>
       </div>
@@ -43,7 +43,7 @@
       <a-layout-content
         :style="{ margin: 0, minHeight: '280px' }"
       >
-        <a-tabs class="white-theme px-4 pt-4" default-active-key="4" @change="callback">
+        <a-tabs class="white-theme px-4 pt-4" :default-active-key="defaultKey" @change="callback">
           <a-tab-pane key="1" tab="Chờ xác nhận">
           </a-tab-pane>
           <a-tab-pane key="2" tab="Chờ lấy hàng">
@@ -80,8 +80,14 @@
             <div class="al-border-dotted-top p-4 al-bg-total d-flex justify-content-end align-items-center">
               <p class="mb-0 mr-3">Tổng số tiền: </p>
               <p class="mb-0 pr-4 font--25 font--regular-2 al-color-orange">₫ {{ item.totalBillAndShip }}</p>
-              <a-button size="large" class="al-button-cart" icon="shopping-cart">
+              <nuxt-link :to="`/order/detail/${item.id}`">
+                <a-button size="large" class="al-button-cart mr-2" icon="shopping-cart">
                   Xem Chi Tiết Đơn Hàng
+                </a-button>
+              </nuxt-link>
+
+              <a-button size="large" v-if="item.status == 'delivering'" @click="acceptOrder(item)" class="al-btn-success">
+                Xác nhận
               </a-button>
             </div>
           </div>
@@ -116,61 +122,111 @@ export default {
       pageSize: 5,
       current: 1,
       total: 10,
+      defaultKey : 1,
+      key: 'pending_confirm'
     }
   }, 
   mounted() {
-    // this.getListOrder()
+    this.$router.push({ query: { key: this.key, page: this.current, amount: 10} })
+    this.getListOrder()
   },
   methods: {
     //Chuyển tab
     callback(key) {
+      this.defaultKey = key
+      this.current = 1
       if(key == 1) {
-        this.$router.push('/user/purchase/wait')
+        this.key = 'pending_confirm'
       }
       if(key == 2) {
-        this.$router.push('/user/purchase/waitSend')
+        this.key = 'pending_received_goods'
       }
       if(key == 3) {
-        this.$router.push('/user/purchase/shipping')
+        this.key = 'delivering'
       } 
       if(key == 4) {
-        this.$router.push('/user/purchase/complete')
+        this.key = 'delivered'
       } 
-      if(key == 4) {
-        this.$router.push('/user/purchase/cancel')
+      if(key == 5) {
+        this.key = 'cancel'
       } 
+      this.$router.push({ query: { key: this.key, page: this.current, amount: 10} })
+      this.getListOrder()
     },
 
-    onChange() {
+    async getListOrder() {
+      try {
+        const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
+          params: {
+            key: this.key,
+            page: this.current,
+            amount: 10
+          },
+          headers: {
+                Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response)
+        if(response.data.status == "200") {
+          this.bills = response.data.data.rows
+          this.total = response.data.data.count
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET ORDER ERROR',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification["error"]({
+          message: 'GET ORDER ERROR',
+          description:
+            e.message
+        });
+      }
+    },
 
+    onChange(pageNumber) {
+      this.current = pageNumber
+      this.$router.push({ query: { key: this.key, page: this.current, amount: 10} })
+      this.getListOrder()
+    },
+    async acceptOrder(record) {
+      try {
+        let status = 'delivered'
+        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
+          headers: {
+            Authorization: 'Bearer ' + this.token,
+          }
+        })
+        console.log(response)
+        if(response.data.status == "200") {
+          let params = this.$route.query
+          this.getAllOrder(params)
+          this.$notification['success']({
+            message: 'ACCEPT PRODUCT SUCCESS',
+            description:
+              'Success!',
+          });
+        }
+        else {
+          this.$notification['error']({
+            message: 'ACCEPT ORDER FAIL',
+            description:
+              response.data.message
+          });
+        }
+      }
+      catch(e) {
+        this.$notification['error']({
+            message: 'ACCEPT ORDER FAIL',
+            description:
+              e.message
+          });
+      }
     }
-    // async getListOrder() {
-    //   try {
-    //     const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
-    //       headers: {
-    //             Authorization: 'Bearer ' + this.token,
-    //       }
-    //     })
-    //     console.log(response)
-    //     if(response.data.status == "200") {
-    //       this.bills = response.data.data
-    //     }
-    //     else {
-    //       this.$notification["error"]({
-    //         message: 'GET ORDER ERROR',
-    //         description:
-    //           response.data.message
-    //       });
-    //     }
-    //   }
-    //   catch(e) {
-    //     this.$notification["error"]({
-    //       message: 'GET ORDER ERROR',
-    //       description:
-    //         e.message
-    //     });
-    //   }
-    // }
   }
 }
 </script>

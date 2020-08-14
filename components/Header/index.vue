@@ -18,7 +18,7 @@
       <a-col  v-if="isSignIn" :span="4" :offset="1" class="my-auto">
         <div class="d-flex justify-content-between align-items-center">
           <div v-if="user.shopActive">
-            <nuxt-link to="/shop/manage/product/list/all" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
+            <nuxt-link to="/shop/manage/product/list" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
           </div>
 
           <div v-else>
@@ -125,6 +125,7 @@ export default {
         this.$router.push('/user/account/profile')
       },
       onSearch(value) {
+        //this.$emit('on-search', value)
         this.$router.push({path: '/products', query: { page: 1, amount: 12, key: 'search', value: value}})
       },
     }
