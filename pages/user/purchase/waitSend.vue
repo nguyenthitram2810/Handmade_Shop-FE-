@@ -52,7 +52,7 @@
           </a-tab-pane>
           <a-tab-pane key="4" tab="Đã giao">
           </a-tab-pane>
-          <a-tab-pane key="4" tab="Đã hủy">
+          <a-tab-pane key="5" tab="Đã hủy">
           </a-tab-pane>
         </a-tabs>
 
@@ -90,6 +90,12 @@
         <div v-else class="mt-5">
           <a-empty class="m-auto"/>
         </div>
+
+        <div v-if="bills.length > 0" class="row">
+          <div class="al-text-center col-12 mb-3 mt-3">
+            <a-pagination :page-size.sync="pageSize"  v-model="current" :total="total" @change="onChange"/>
+          </div>
+        </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -107,6 +113,9 @@ export default {
       token: Cookie.get('token'),
       user: this.$store.state.auth.userNow,
       bills: [],
+      pageSize: 5,
+      current: 1,
+      total: 10,
     }
   }, 
   mounted() {
@@ -132,6 +141,9 @@ export default {
       } 
     },
 
+    onChange() {
+
+    }
     // async getListOrder() {
     //   try {
     //     const response = await axios.get("http://localhost:5000/api/v1/users/orders", {

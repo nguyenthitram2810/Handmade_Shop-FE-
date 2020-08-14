@@ -148,32 +148,36 @@ export const actions = {
       arrTemp.forEach(temp => {
         let check = 0 
         let checkShopID = 0
-        if(temp.shopID == user.shop.id) {
-          checkShopID++
-        }
-        arrMain.forEach(main => {
-          if((temp.shopID == main.shopID) && (temp.shopID != user.shop.id)) {
-            check++
-            temp.products.forEach(p => {
-              let checkProduct = 0
-              main.products = main.products.filter(mP => {
-                if(mP.product.id == p.product.id) {
-                  if((mP.count + p.count) > mP.product.restAmount) {
-                    mP.count = mP.product.restAmount
-                  }
-                  else {
-                    mP.count += p.count
-                  }
-                  checkProduct++
-                }
-                return mP
-              })
-              if(checkProduct == 0) {
-                main.products.push(p)
-              }
-            })
+        if(user.shopActive) {
+          if(temp.shopID == user.shop.id) {
+            checkShopID++
           }
-        })
+        }
+        if(checkShopID == 0) {
+          arrMain.forEach(main => {
+            if(temp.shopID == main.shopID) {
+              check++
+              temp.products.forEach(p => {
+                let checkProduct = 0
+                main.products = main.products.filter(mP => {
+                  if(mP.product.id == p.product.id) {
+                    if((mP.count + p.count) > mP.product.restAmount) {
+                      mP.count = mP.product.restAmount
+                    }
+                    else {
+                      mP.count += p.count
+                    }
+                    checkProduct++
+                  }
+                  return mP
+                })
+                if(checkProduct == 0) {
+                  main.products.push(p)
+                }
+              })
+            }
+          })
+        }
         if(check == 0 && checkShopID == 0) {
           arrMain.push(temp)
         }

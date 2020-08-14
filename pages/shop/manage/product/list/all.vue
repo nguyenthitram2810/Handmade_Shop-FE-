@@ -102,7 +102,7 @@ export default {
     };
   },
   mounted() {
-    this.getAllproduct(1, 10);
+    this.getAllproduct(1);
   },
   methods: {
     handleTableChange(pagination, filters, sorter) {
@@ -112,7 +112,7 @@ export default {
       pager.current = pagination.current
       this.pagination = pager
 
-      this.getAllproduct(pagination.current, 10)
+      this.getAllproduct(pagination.current)
       this.loading = false
     },
 
@@ -125,9 +125,9 @@ export default {
       }
     },
 
-    async getAllproduct(page, amount) {
+    async getAllproduct(page) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?page=${page}&amount=${amount}`, 
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?page=${page}&amount=10`, 
         {
           headers: {
             Authorization: 'Bearer ' + this.token,
@@ -141,7 +141,7 @@ export default {
           pagination.current = page
           this.pagination = pagination
           console.log(this.pagination);
-          this.$router.push({ path: '/shop/manage/product/list/all', query: { page: page, amount: amount, }})
+          this.$router.push({ path: '/shop/manage/product/list/all', query: { page: page, amount: 10, }})
         }
         else {
           this.$notification["error"]({
@@ -159,6 +159,7 @@ export default {
         });
       }
     },
+
     async confirm(id) {
       try {
         const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {

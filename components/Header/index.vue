@@ -10,7 +10,7 @@
           </a-col>
 
           <a-col :span="16" class="search_product">
-            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 100%;" />
+            <a-input-search placeholder="Tìm kiếm sản phẩm" size="large" style="width: 100%;" @search="onSearch" />
           </a-col>
         </a-row>
       </a-col>
@@ -123,7 +123,10 @@ export default {
       },
       showUser() {
         this.$router.push('/user/account/profile')
-      }
+      },
+      onSearch(value) {
+        this.$router.push({path: '/products', query: { page: 1, amount: 12, key: 'search', value: value}})
+      },
     }
 }
 </script>

@@ -27,7 +27,7 @@
       />
       </div>
 
-      <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
+      <a-table class="pt-4" :columns="columns" :data-source="data"  @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
         <span slot="products" slot-scope="text, record">
           <div v-for="(item, index) in record.products" :key="index" class="d-flex mt-2">
             <img :src="item.product.thumbnail" alt="" class="cart-thumbnail mr-3">
@@ -83,6 +83,8 @@ export default {
   middleware: ['authentication'],
   data() {
     return {
+      pagination: {},
+      loading: false,
       token: Cookie.get('token'),
       columns: [
           {
@@ -126,6 +128,17 @@ export default {
   },
 
   methods: {
+    handleTableChange(pagination, filters, sorter) {
+      this.loading = true
+
+      let pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+
+      //this.getAllproduct(pagination.current)
+      this.loading = false
+    },
+
     callback(key) {
       if(key == 1) {
         this.$router.push('/shop/manage/order/list/all')

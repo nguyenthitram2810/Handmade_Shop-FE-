@@ -19,7 +19,7 @@
             </a-button>
           </nuxt-link>
         </div>
-        <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
+        <a-table class="pt-4" :columns="columns" :data-source="data"  @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
           <span slot="soldAmount" slot-scope="text, record">
             <p>{{ record.sold }}</p>
           </span>
@@ -60,12 +60,15 @@ export default {
     middleware: ['authentication'],
     data() {
       return {
+        loading: false,
+        pagination: {},
         token: Cookie.get("token"),
         columns: [
           {
             title: 'Tên sản phẩm',
             dataIndex: 'name',
             key: 'name',
+            ellipsis: true,
           },
           {
             title: 'Mô tả sản phẩm',
@@ -98,9 +101,20 @@ export default {
       };
   },
   mounted() {
-    this.getAllproduct();
+    this.getAllproduct(1);
   },
   methods: {
+    handleTableChange(pagination, filters, sorter) {
+      this.loading = true
+
+      let pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+
+      this.getAllproduct(pagination.current)
+      this.loading = false
+    },
+
     callback(key) {
       if(key == 2) {
         this.$router.push('/shop/manage/product/list/active')
@@ -110,9 +124,9 @@ export default {
       }
     },
 
-    async getAllproduct() {
+    async getAllproduct(page) {
       try {
-        const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?key=sold-out&page=1&amount=10', 
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?key=sold-out&page=${page}&amount=10`, 
         {
           headers: {
             Authorization: 'Bearer ' + this.token,
@@ -121,6 +135,12 @@ export default {
         console.log(response);
         if(response.data.status == "200") {
           this.data = response.data.data.products
+          let pagination = { ...this.pagination }
+          pagination.total = this.data.length
+          pagination.current = page
+          this.pagination = pagination
+          console.log(this.pagination);
+          this.$router.push({query: { page: page, amount: 10, }})
         }
         else {
           this.$notification["error"]({
@@ -138,6 +158,7 @@ export default {
         });
       }
     },
+
     async confirm(id) {
       try {
         const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
@@ -170,6 +191,7 @@ export default {
         });
       }
     },
+    
   },
 }
 </script>

@@ -52,7 +52,7 @@
           </a-tab-pane>
           <a-tab-pane key="4" tab="Đã giao">
           </a-tab-pane>
-          <a-tab-pane key="4" tab="Đã hủy">
+          <a-tab-pane key="5" tab="Đã hủy">
           </a-tab-pane>
         </a-tabs>
 
@@ -80,15 +80,23 @@
             <div class="al-border-dotted-top p-4 al-bg-total d-flex justify-content-end align-items-center">
               <p class="mb-0 mr-3">Tổng số tiền: </p>
               <p class="mb-0 pr-4 font--25 font--regular-2 al-color-orange">₫ {{ item.totalBillAndShip }}</p>
-              <a-button size="large" class="al-button-cart" icon="shopping-cart">
+              <nuxt-link :to="`/order/detail/${item.id}`">
+                <a-button size="large" class="al-button-cart" icon="shopping-cart">
                   Xem Chi Tiết Đơn Hàng
-              </a-button>
+                </a-button>
+              </nuxt-link>
             </div>
           </div>
         </div>
         
         <div v-else class="mt-5">
           <a-empty class="m-auto"/>
+        </div>
+
+        <div v-if="bills.length > 0" class="row">
+          <div class="al-text-center col-12 mb-3 mt-3">
+            <a-pagination :page-size.sync="pageSize"  v-model="current" :total="total" @change="onChange"/>
+          </div>
         </div>
       </a-layout-content>
     </a-layout>
@@ -107,6 +115,9 @@ export default {
       token: Cookie.get('token'),
       user: this.$store.state.auth.userNow,
       bills: [],
+      pageSize: 5,
+      current: 1,
+      total: 10,
     }
   }, 
   mounted() {
@@ -158,6 +169,10 @@ export default {
             e.message
         });
       }
+    },
+
+    onChange() {
+
     }
   }
 }
