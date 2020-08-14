@@ -11,7 +11,6 @@
               </div>
               <div class="action_links">
                   <ul>
-                      <li><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
                        <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
                       <li><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                   </ul>

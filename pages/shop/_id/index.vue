@@ -78,7 +78,7 @@
 
                     <div class="action_links">
                         <ul>
-                            <li class="add_to_cart"><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
+                            <!-- <li class="add_to_cart"><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li> -->
                              <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
                             <li class="quick_button"><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                         </ul>
@@ -275,43 +275,43 @@ export default {
       return childrenCate
     },
 
-    addCart(product) {
-      try {
-        if(Cookie.get('user')) {
-          let user = JSON.parse(Cookie.get('user'));
-          let id = String(user.id)
-          if(user.shopActive) {
-            if(user.shop.id != product.shopId) {
-              this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
-            }
-            else {
-              throw {
-                message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
-              }
-            }
-          }
-          else {
-            console.log("vao day")
-            this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
-          }
-        }
-        else {
-          this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'productNoLogin', userID: 'noLogin' })
-        }
-        this.$notification["success"]({
-          message: 'ADD CART',
-          description:
-            "Add cart success!"
-        });
-      }
-      catch(e) {
-        this.$notification["error"]({
-          message: 'ADD CART ERROR',
-          description:
-            e.message
-        });
-      }
-    },
+    // addCart(product) {
+    //   try {
+    //     if(Cookie.get('user')) {
+    //       let user = JSON.parse(Cookie.get('user'));
+    //       let id = String(user.id)
+    //       if(user.shopActive) {
+    //         if(user.shop.id != product.shopId) {
+    //           this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+    //         }
+    //         else {
+    //           throw {
+    //             message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+    //           }
+    //         }
+    //       }
+    //       else {
+    //         console.log("vao day")
+    //         this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'product', userID: id })
+    //       }
+    //     }
+    //     else {
+    //       this.$store.dispatch('cart/addCart', {shop: this.shop, product, quantity: 1, state: 'productNoLogin', userID: 'noLogin' })
+    //     }
+    //     this.$notification["success"]({
+    //       message: 'ADD CART',
+    //       description:
+    //         "Add cart success!"
+    //     });
+    //   }
+    //   catch(e) {
+    //     this.$notification["error"]({
+    //       message: 'ADD CART ERROR',
+    //       description:
+    //         e.message
+    //     });
+    //   }
+    // },
 
     sortNewest() {
       try {
@@ -380,7 +380,9 @@ export default {
         this.key = 'category'
         this.value = e.key
       }
+      this.current = 1
       this.getProducts()
+      this.$router.push({ query: { page: this.current, amount: 12, category: this.key, value: this.value, sortBy: this.order, by: this.by }})
     },
   }
 }

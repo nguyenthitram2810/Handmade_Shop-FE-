@@ -98,12 +98,18 @@ export default {
           },
       ],
       data: [],
-      pagination: {},
+      pagination: {
+        total: 0,
+        current: 1,
+      },
       defaultKey: 1,
+      status: '',
     };
   },
   mounted() {
-    this.getAllproduct(1);
+    console.log(this.token)
+    this.status = 'all'
+    this.getAllproduct({page: this.pagination.current, amount: 10});
   },
   methods: {
     handleTableChange(pagination, filters, sorter) {
@@ -119,18 +125,22 @@ export default {
 
     callback(key) {
       this.defaultKey = key
+      if(key == 1) {
+
+      }
       if(key == 2) {
-        // this.$router.push('/shop/manage/product/list/active')
+        
       }
       if(key == 3) {
-        // this.$router.push('/shop/manage/product/list/soldout')
+        
       }
     },
 
-    async getAllproduct(page) {
+    async getAllproduct(params) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products?page=${page}&amount=10`, 
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products`,
         {
+          params: params,
           headers: {
             Authorization: 'Bearer ' + this.token,
           }
@@ -140,10 +150,10 @@ export default {
           this.data = response.data.data.products
           let pagination = { ...this.pagination }
           pagination.total = this.data.length
-          pagination.current = page
+          pagination.current = params.page
           this.pagination = pagination
           console.log(this.pagination);
-          this.$router.push({ query: { page: page, amount: 10, }})
+          this.$router.push({ query: { page: params.page, amount: 10, }})
         }
         else {
           this.$notification["error"]({
