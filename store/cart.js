@@ -59,7 +59,14 @@ export const actions = {
           let listProduct = obj.products
           listProduct.forEach(p => {
             if(p.product.id == product.id) {
-              p.count += quantity
+              if((p.count + parseInt(quantity)) > p.product.restAmount) {
+                console.log("vo day r");
+                throw {
+                  message: "Sản phẩm hết hàng!"
+                }
+              }
+              console.log("k vo")
+              p.count += parseInt(quantity)
               checkProduct++
             }
           })
@@ -73,6 +80,7 @@ export const actions = {
         temp["products"] = [objProduct]
         temp["shopID"] = shop.id
         temp["shopName"] = shop.name
+        temp["slug"] = shop.slug
         arrTemp.push(temp)
       }
       localStorage.setItem(userID, JSON.stringify(arrTemp));
@@ -129,7 +137,7 @@ export const actions = {
     }
   },
 
-  mergeCart({commit}, { userID }) {
+  mergeCart({commit}, { userID, user }) {
     try {
       let amountProduct = 0
       let arrMain = []
@@ -139,25 +147,38 @@ export const actions = {
       let arrTemp = JSON.parse(localStorage.getItem('noLogin'))
       arrTemp.forEach(temp => {
         let check = 0 
-        arrMain.forEach(main => {
-          if(temp.shopID == main.shopID) {
-            check++
-            temp.products.forEach(p => {
-              let checkProduct = 0
-              main.products = main.products.filter(mP => {
-                if(mP.product.id == p.product.id) {
-                  mP.count += p.count
-                  checkProduct++
-                }
-                return mP
-              })
-              if(checkProduct == 0) {
-                main.products.push(p)
-              }
-            })
+        let checkShopID = 0
+        if(user.shopActive) {
+          if(temp.shopID == user.shop.id) {
+            checkShopID++
           }
-        })
-        if(check == 0) {
+        }
+        if(checkShopID == 0) {
+          arrMain.forEach(main => {
+            if(temp.shopID == main.shopID) {
+              check++
+              temp.products.forEach(p => {
+                let checkProduct = 0
+                main.products = main.products.filter(mP => {
+                  if(mP.product.id == p.product.id) {
+                    if((mP.count + p.count) > mP.product.restAmount) {
+                      mP.count = mP.product.restAmount
+                    }
+                    else {
+                      mP.count += p.count
+                    }
+                    checkProduct++
+                  }
+                  return mP
+                })
+                if(checkProduct == 0) {
+                  main.products.push(p)
+                }
+              })
+            }
+          })
+        }
+        if(check == 0 && checkShopID == 0) {
           arrMain.push(temp)
         }
       })
@@ -185,13 +206,16 @@ export const actions = {
     }
   },
 
-  changeAmount({commit}, { record, state, userID }) {
+  changeAmount({commit}, { record, state, userID, changeRestAmount }) {
     try {
       let products = JSON.parse(localStorage.getItem(userID))
       products.forEach(e => {
         e.products.forEach(p => {
           if(p.product.id == record.key) {
             p.count = record.amount
+            if(changeRestAmount == 'yes') {
+              p.product.restAmount = record.amount
+            }
           }
         })
       })
@@ -205,6 +229,7 @@ export const actions = {
       throw e
     }
   },
+
 
   removeAll({commit}) {
     try {

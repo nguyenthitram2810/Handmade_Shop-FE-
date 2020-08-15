@@ -59,6 +59,35 @@ export const actions = {
     }
   },
 
+  async loginAdmin({ commit }, {password, username}) {
+    try {
+      const response = await axios.post(`http://localhost:5000/api/v1/signin`, {
+        username: username,
+        password: password,
+      })
+      console.log(response);
+      if(response.data.status == "200") {
+        let user = response.data.data.userInfo
+        if(user.roleId != 1) {
+          throw {
+            message: "Bạn không có quyền truy cập trang Admin!"
+          }
+        }
+        else {
+          Cookie.set('user', JSON.stringify(response.data.data.userInfo))
+          Cookie.set('token', response.data.data.token)
+          await commit('setUser', JSON.parse(Cookie.get('user')))
+        }
+      }
+      else {
+        throw response.data
+      }
+    }
+    catch(e) {
+      throw e.message
+    }
+  },
+
   async removeUser({ commit }) {
     try {
       await commit('removeUser')

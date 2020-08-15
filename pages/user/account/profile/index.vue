@@ -32,7 +32,7 @@
             </a-menu-item>
           </a-sub-menu>
           <a-menu-item key="4">
-            <nuxt-link to="/user/purchase/all"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
+            <nuxt-link to="/user/purchase"> <a-icon type="snippets" /> Đơn hàng</nuxt-link>
           </a-menu-item>
         </a-menu>
       </div>
@@ -125,6 +125,7 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: ['authentication', 'getState'],
   data() {
     return {

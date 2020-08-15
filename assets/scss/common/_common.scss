@@ -343,6 +343,16 @@ label {
 	text-align: left;
 }
 
+.truncate-2-lines {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	max-height: 4em;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	text-align: center;
+}
+
 .scroll-hidden-all {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
@@ -524,4 +534,36 @@ label {
 
 .al-color-gray {
 	color: rgba(85,85,85,.8);
+}
+
+.al-border-dotted {
+	border-bottom: 1px dotted #d9d9d9;
+}
+
+.al-border-dotted-top {
+	border-top: 1px dotted #d9d9d9;
+}
+
+.al-bg-total {
+	background-color: #FFFEFB;
+}
+
+.al-text-left {
+	text-align: left;
+}
+
+.al-border-top {
+	border-top: 1px solid #d9d9d9;
+}
+
+.al-bg-out {
+	background-color: #F5F5F5;
+}
+
+.al-line-through {
+	text-decoration: line-through;
+}
+
+.al-w-product {
+	min-height: 123px;
 }

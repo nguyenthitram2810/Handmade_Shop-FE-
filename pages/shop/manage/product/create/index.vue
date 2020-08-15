@@ -30,6 +30,10 @@
           <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
         </a-form-model-item>
 
+        <a-form-model-item  has-feedback label="Giảm giá" prop="percent">
+          <a-input :min="0" :max="100" addon-before="%" v-model="productForm.percent" type="number" />
+        </a-form-model-item>
+
         <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
           <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
         </a-form-model-item>
@@ -57,16 +61,6 @@
           </div>
         </a-form-model-item>
 
-        <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
-          <a-select v-model="productForm.ship" mode="multiple">
-            <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
-              {{ item.brand }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-
-        
-
         <a-form-model-item  :wrapper-col="{ span: 14, offset: 4 }">
           <a-button :loading="isLoading" :disabled="isDisabled" type="primary" @click="submitForm('productForm')">
             Submit
@@ -82,6 +76,7 @@ import upload from 'ant-design-vue/lib/upload';
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: 'authentication',
   data() {
     return {
@@ -90,7 +85,6 @@ export default {
       upload: true,
       listCate: [],
       listMaterial: [],
-      listTransport: [],
       showImages:[],
       productForm: {
         name: '',
@@ -100,8 +94,9 @@ export default {
         price: '',
         quantity: '',
         images: [],
-        ship: [],
         weight: '',
+        percent: '',
+
       },
       rules: {
         name: [
@@ -113,8 +108,8 @@ export default {
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
-        ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
-        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}]
+        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}],
+        percent: [{ required: true, message: 'Điền giảm giá cho sản phẩm', trigger:'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -126,7 +121,6 @@ export default {
   mounted() {
     this.getListCate()
     this.getListMaterial()
-    this.getListTransport()
   },
    methods: {
     submitForm(formName) {
@@ -150,17 +144,19 @@ export default {
               categoryId: this.productForm.productType[this.productForm.productType.length - 1],
               description: this.productForm.description,
               price: this.productForm.price,
-              amount: this.productForm.quantity,
+              restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
-              transportIds: this.productForm.ship,
               gallery: this.productForm.images,
               weight: this.productForm.weight,
+              percent: this.productForm.percent,
+              reduce: this.productForm.price - parseInt(this.productForm.price/100 * this.productForm.percent)
             }, 
             {
               headers: {
                 Authorization: 'Bearer ' + token,
               }
             })
+            console.log(response)
             if(response.data.status == "200") {
               this.$router.push("/shop/manage/product/list/all")
             }
@@ -283,29 +279,6 @@ export default {
       catch(e) {
         this.$notification["error"]({
           message: 'GET LIST MATERIALS ERROR',
-          description:
-            e.message
-        });
-      }
-    },
-
-    async getListTransport() {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
-        if(response.data.status == "200") {
-          this.listTransport = response.data.data
-        }
-        else {
-          this.$notification["error"]({
-            message: 'GET LIST TRANSPORTS ERROR',
-            description:
-              response.data.message
-          });
-        }
-      }
-      catch(e) {
-        this.$notification["error"]({
-          message: 'GET LIST TRANSPORTS ERROR',
           description:
             e.message
         });

@@ -1,0 +1,57 @@
+.al-sidebar .logo {
+    height: 80px;
+    padding: 8px;
+}
+
+.product >>> .ant-tabs-tab-active {
+    color: #f77f00;
+}
+
+.product >>> .ant-tabs-ink-bar {
+  background-color: #f77f00;
+}
+
+.product >>> .ant-tabs-tab:hover {
+  color: #FAAC58;
+}
+
+.ant-menu-submenu-selected {
+    color: #f77f00;
+}
+
+.ant-menu-inline .ant-menu-item::after {
+    border-right: 3px solid #1d3557;
+}
+
+.ant-menu-item-selected {
+    color: #1d3557;
+}
+
+.ant-menu-item:hover {
+    color: #457b9d;
+}
+
+.cover-cart {
+    background-color: #f1f1f1;
+}
+
+.white-theme {
+    background-color: #fff;
+}
+
+.border-cover {
+    border: 1px solid rgb(235, 237, 240);
+}
+
+.cart-name {
+    display: inline-block;
+    width: 200px;
+    margin-right: 20px;
+}
+
+.cart-thumbnail {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    
+}

@@ -48,10 +48,6 @@
               </a-form-model-item>
             </a-form-model>
 
-            <div class="other-links">
-                <span>Đăng ký với</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
-            </div>
-
             <p style="color:red;" class="mt-3 font-15">
               {{error}}
             </p>
@@ -129,9 +125,8 @@ export default {
                 validator: validatePass, 
               },
               {
-                min: 10,
-                max: 15,
-                message: 'Độ dài mật khẩu 10 - 15 ký tự(không kể ký tự trắng)'
+                min: 6,
+                message: 'Độ dài mật khẩu > 6 ký tự(không kể ký tự trắng)'
               }
             ],
         checkPass: [

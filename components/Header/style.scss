@@ -33,7 +33,12 @@
   padding: 1px;
 }
 
-.category >>> .ant-menu-item-selected, .category >>> .ant-menu-item:hover {
+.category >>> .ant-menu-item-selected {
+  color: #ffff;
+  border-bottom: none;
+}
+
+.category >>> .ant-menu-item:hover {
   color: #f77f00;
   border-bottom: 2px solid #f77f00;
 }
@@ -47,7 +52,6 @@
 }
 
 .cover-menu-item {
-  padding-bottom: 10px;
   margin: 0 10px 0 10px;
   width: 200px;
   text-align: center;
@@ -57,4 +61,11 @@
   padding: 0 10px 10px 10px;
   width: 200px;
   text-align: center;
+}
+
+.notification >>> .ant-badge-count {
+  width: 19px;
+  height: 19px;
+  font-size: 11px;
+  padding: 1px;
 }

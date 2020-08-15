@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex flex-column" style="background-color: #f1faee;">
-    <BaseHeader />
+  <div class="d-flex flex-column">
+    <BaseHeaderCart/>
     <a-layout>
       <SideBar />
       <nuxt />
@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import BaseHeader from '~/components/v-layout/BaseHeader'
+import BaseHeaderCart from '~/components/v-layout/BaseHeader/cart'
 import BaseFooter from '~/components/v-layout/BaseFooter'
 import SideBar from '~/components/v-layout/SideBar'
 
 export default {
   name: 'layoutSidebar',
   components: {
-    BaseHeader,
+    BaseHeaderCart,
     BaseFooter,
     SideBar
   }

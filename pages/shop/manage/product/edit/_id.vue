@@ -36,6 +36,10 @@
           <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
         </a-form-model-item>
 
+        <a-form-model-item  has-feedback label="Giảm giá" prop="percent">
+          <a-input :min="0" :max="100" addon-before="%" v-model="productForm.percent" type="number" />
+        </a-form-model-item>
+
         <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
           <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
         </a-form-model-item>
@@ -63,14 +67,6 @@
           </div>
         </a-form-model-item>
 
-        <a-form-model-item has-feedback label="Đơn vị vận chuyển" prop="ship">
-          <a-select v-model="productForm.ship" mode="multiple">
-            <a-select-option v-for="(item, index) in listTransport" :key="index" :value="`${item.id}`">
-              {{ item.brand }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-
         <a-form-model-item :wrapper-col="{ span: 14, offset: 4 }">
           <a-button type="primary" @click="submitForm('productForm')">
             Submit
@@ -85,6 +81,7 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: 'authentication',
   data() {
     return {
@@ -93,9 +90,7 @@ export default {
       token: Cookie.get("token"),
       listCate: [],
       listMaterial: [],
-      listTransport: [],
       showImages:[],
-      amount: 0,
       productForm: {
         name: '',
         productType: '',
@@ -104,9 +99,9 @@ export default {
         price: '',
         quantity: '',
         images: [],
-        ship: [],
         restAmount: '',
         weight: '',
+        percent: ''
       },
       rules: {
         name: [
@@ -118,9 +113,9 @@ export default {
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
         price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
         quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
-        ship: [{ required: true, message: 'Chọn đơn vị vận chuyển', trigger: 'change' }],
         images: [{ required: true, message: 'Chọn ảnh sản phẩm', trigger: 'change' }],
-        weight: [{required: true, message: 'Điền trọng lượng sản phẩm', trigger: 'change'}]
+        weight: [{required: true, message: 'Điền trọng lượng sản phẩm', trigger: 'change'}],
+        percent: [{ required: true, message: 'Điền số phần trăm giảm giá', trigger: 'change'}]
       },
       layout: {
         labelCol: { span: 4 },
@@ -132,7 +127,6 @@ export default {
   mounted() {
     this.getListCate()
     this.getListMaterial()
-    this.getListTransport()
     this.getProduct()
   },
    methods: {
@@ -151,16 +145,17 @@ export default {
               price: this.productForm.price,
               restAmount: parseInt(this.productForm.quantity),
               materialIds: this.productForm.material,
-              transportIds: this.productForm.ship,
               gallery: this.productForm.images,
-              amount: this.amount,
               weight: this.productForm.weight,
+              percent: this.productForm.percent,
+              reduce: this.productForm.price - parseInt(this.productForm.price/100 * this.productForm.percent)
             }, 
             {
               headers: {
                 Authorization: 'Bearer ' + this.token,
               }
             })
+            console.log(response)
             if(response.data.status == "200") {
               this.$router.push("/shop/manage/product/list/all")
             }
@@ -277,21 +272,6 @@ export default {
       }
     },
 
-    async getListTransport() {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
-        if(response.data.status == "200") {
-          this.listTransport = response.data.data
-        }
-        else {
-          this.error = response.data.message
-        }
-      }
-      catch(e) {
-        this.error = e.message
-      }
-    },
-
     async getProduct() {
       try {
         const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products/${this.$route.params.id}`, {
@@ -310,10 +290,9 @@ export default {
           this.productForm.quantity = data.restAmount
           this.productForm.price = data.price
           this.productForm.images = data.gallery
-          this.productForm.ship = this.getID(data.transports)
           this.getSource(data.gallery)
-          this.amount = data.amount
           this.productForm.weight = data.weight
+          this.productForm.percent = data.percent
         }
         else {
           this.error = response.data.message
@@ -340,7 +319,7 @@ export default {
     getID(data) {
       const arr = []
       data.forEach(item => {
-        let id = item.id
+        let id = String(item.id)
         arr.push(id)
       })
       return arr

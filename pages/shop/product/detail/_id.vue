@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-3 mb-3">
+  <div class="pt-3 pb-3 al-bg-out ">
     <div class="container-fluid">
       <div class="al-margin-7 al-bg-white p-2 al-height-detail">
         <div class="row">
@@ -17,7 +17,7 @@
             <h3 class="font--25 al-text-space">{{ product.name }}</h3>
             <div class="d-flex align-items-center mt-2 mb-3">
               <div>
-                <span class="mr-2">1200 Đã bán</span>
+                <span class="mr-2">{{ product.sold}} Đã bán</span>
                 <span class="mr-2">|</span>
               </div>
               <div class="mb-0">
@@ -29,13 +29,14 @@
               </div>
             </div>
             
-            <div class="mt-2 mb-4 py-1 al-bg-bestseller d-flex align-items-center justify-content-center border-radius--10 w-100-px">
+            <!-- <div class="mt-2 mb-4 py-1 al-bg-bestseller d-flex align-items-center justify-content-center border-radius--10 w-100-px">
               <a-icon class="color-white mr-1" type="dollar-circle" theme="filled" />
               <span class="color-white">Best seller</span>
-            </div>
+            </div> -->
 
-            <div class="w-100 py-3 al-bg-price pl-4 my-2">
-              <h3 class="al-color-price font--25 mr-3">₫{{ product.price }}</h3>
+            <div class="w-100 py-3 al-bg-price pl-4 my-2 d-flex align-items-center">
+              <div class="mr-4 al-line-through">₫ {{ product.price }}</div>
+              <h3 class="al-color-price font--25 mr-3">₫ {{ product.reduce }}</h3>
             </div>
 
             <div class="my-4 al-height-description">
@@ -54,7 +55,7 @@
               <a-button size="large" class="al-button-cart mr-5" icon="shopping-cart" @click="addCart(product)">
                 Thêm vào giỏ hàng
               </a-button>
-              <a-button size="large" class="al-button-buy px-5">
+              <a-button @click="buyNow(product)" size="large" class="al-button-buy px-5">
                 Mua ngay
               </a-button>
             </div>
@@ -218,6 +219,7 @@ import moment from 'moment'
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
+  layout: 'cart',
   middleware: 'getState',
   data() {
     return {
@@ -303,7 +305,19 @@ export default {
         if(Cookie.get('user')) {
           let user = JSON.parse(Cookie.get('user'));
           let id = String(user.id)
-          this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+          if(user.shopActive) {
+            if(user.shop.id != product.shop.id) {
+              this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+            }
+            else {
+              throw {
+                message: "Bạn không thể mua sản phẩm của cửa hàng mình!"
+              }
+            }
+          }
+          else {
+            this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity, state: 'product', userID: id })
+          }
         }
         else {
           this.$store.dispatch('cart/addCart', { shop: this.shop, product, quantity: this.quantity,  state: 'productNoLogin', userID: 'noLogin' })
@@ -321,6 +335,12 @@ export default {
             e.message
         });
       }
+    },
+
+    buyNow(product) {
+      console.log(product)
+      this.addCart(product)
+      this.$router.push("/cart")
     }
   },
 };

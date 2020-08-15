@@ -20,8 +20,8 @@
               <p>Alibabu - Thiên đường mua sắm</p>
 
               <div class="page-links">
-                  <nuxt-link to="/login" class="active">Đăng nhập</nuxt-link>
-                  <nuxt-link to="/register">Đăng ký</nuxt-link>
+                  <nuxt-link to="/admin/login" class="active">Đăng nhập</nuxt-link>
+                  <nuxt-link to="/admin/register">Đăng ký</nuxt-link>
               </div>
 
               <a-form-model ref="loginForm" :model="loginForm" :rules="rules">
@@ -37,27 +37,8 @@
                   <a-button  :loading="isDisabled" class="ibtn" @click="loginSubmit">
                    Đăng nhập
                   </a-button>
-                  <nuxt-link to="#">Quên mật khẩu?</nuxt-link>
                 </a-form-model-item>
               </a-form-model>
-
-              <!-- <form @submit="loginSubmit">
-                  <input v-model="username" class="form-control" type="text" placeholder="Địa chỉ Email" required>
-                  <input v-model="password" class="form-control" type="password" placeholder="Mật khẩu" required>
-                  <input type="checkbox" id="chk1"><label for="chk1">Lưu đăng nhập</label>
-                  <div class="form-button">
-                      <button id="submit" type="submit" class="ibtn">Đăng nhập</button> 
-                      <nuxt-link to="#">Quên mật khẩu?</nuxt-link>
-                  </div>
-              </form> -->
-
-              <div class="other-links">
-                  <span>Đăng nhập với</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
-              </div>
-
-              <p style="color:red;" class="mt-3 font-15">
-                {{error}}
-              </p>
             </div>
           </div>
         </div>
@@ -71,7 +52,7 @@ const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   layout: 'fullpage',
-  middleware: 'notAuthentication',
+  middleware: 'adminNotAuthen',
   data() {
     let validatePass = (rule, value, callback) => {
       if (value.trim() === '') {
@@ -104,9 +85,8 @@ export default {
             validator: validatePass, 
           },
           {
-            min: 10,
-            max: 15,
-            message: 'Độ dài mật khẩu 10 - 15 ký tự(không kể ký tự trắng)'
+            min: 6,
+            message: 'Độ dài mật khẩu > 6 ký tự(không kể ký tự trắng)'
           }
         ],
       }
@@ -120,17 +100,17 @@ export default {
           event.preventDefault()
           this.isDisabled = true
           try {
-            await this.$store.dispatch('auth/login', {username: this.loginForm.username, password: this.loginForm.password})
-            if(localStorage.getItem('noLogin')) {
-              let user = JSON.parse(Cookie.get('user'));
-              let id = String(user.id)
-              this.$store.dispatch('cart/mergeCart', { userID: id})
-            }
-            this.$root.$router.push("/")
+            await this.$store.dispatch('auth/loginAdmin', {username: this.loginForm.username, password: this.loginForm.password})
+            let user = JSON.parse(Cookie.get('user'));
+            this.$root.$router.push("/admin")
           }
           catch(e) {
             this.isDisabled = false
-            this.error = e
+            this.$notification["error"]({
+                message: 'LOGIN ERROR',
+                description:
+                  e
+            });
           }
         } else {
           return false;

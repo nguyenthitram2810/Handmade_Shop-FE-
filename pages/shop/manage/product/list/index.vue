@@ -3,7 +3,7 @@
       <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
       >
-        <a-tabs default-active-key="2" @change="callback">
+        <a-tabs :default-active-key="defaultKey" @change="callback">
           <a-tab-pane key="1" tab="Tất cả">
           </a-tab-pane>
           <a-tab-pane key="2" tab="Còn hàng" force-render>
@@ -11,17 +11,19 @@
           <a-tab-pane key="3" tab="Hết hàng">
           </a-tab-pane>
         </a-tabs>
+
         <div class="d-flex justify-content-between">
-          <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px"/>
+          <a-input-search placeholder="Nhập tên sản phẩm" style="width: 400px" @search="onSearch"/>
           <nuxt-link to="/shop/manage/product/create">
             <a-button  icon="plus" class="bg-button-orange al-color-white">
               Thêm sản phẩm
             </a-button>
           </nuxt-link>
         </div>
-        <a-table class="pt-4" :columns="columns" :data-source="data" bordered>
+        
+        <a-table class="pt-4" :columns="columns" :data-source="data" @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
           <span slot="soldAmount" slot-scope="text, record">
-            <p>{{ record.restAmount -  record.amount }}</p>
+            <p>{{ record.sold}}</p>
           </span>
           <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
             <a-popconfirm
@@ -40,6 +42,7 @@
                 Edit
               </a-button>
             </nuxt-link>
+            
             <nuxt-link :to="`/shop/product/detail/${record.slug}`"> 
               <a-button type="primary">
                 View Detail
@@ -56,12 +59,13 @@ import axios from "axios"
 const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
-    layout: 'layoutSidebar',
-    middleware: ['authentication'],
-    data() {
-      return {
-        token: Cookie.get("token"),
-        columns: [
+  layout: 'layoutSidebar',
+  middleware: ['authentication', 'getState'],
+  data() {
+    return {
+      loading: false,
+      token: Cookie.get("token"),
+      columns: [
           {
             title: 'Tên sản phẩm',
             dataIndex: 'name',
@@ -92,36 +96,84 @@ export default {
             key: 'action',
             scopedSlots: { customRender: 'action' },
           },
-        ],
-
-        data: [],
-      };
+      ],
+      data: [],
+      pagination: {
+        total: 0,
+        current: 1,
+      },
+      defaultKey: '',
+    };
   },
   mounted() {
-    this.getAllproduct();
+    this.defaultKey = 1
+    this.$router.push({ query: {page: this.pagination.current, amount: 10} })
+    this.getAllproduct({page: this.pagination.current, amount: 10});
   },
   methods: {
+    handleTableChange(pagination, filters, sorter) {
+      this.loading = true
+
+      let pager = { ...this.pagination }
+      pager.current = pagination.current
+      this.pagination = pager
+
+      let params = this.$route.query
+      params.page = this.pagination.current
+      console.log(this.pagination);
+      
+      this.$router.push({ query: params })
+      this.getAllproduct(params)
+      this.loading = false
+    },
+
     callback(key) {
       if(key == 1) {
-        this.$router.push('/shop/manage/product/list/all')
+        let params = {
+          page: 1, 
+          amount: 10,
+        }
+        console.log(params)
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
+      }
+      if(key == 2) {
+        let params = {
+          page: 1, 
+          amount: 10,
+          key: 'inventory'
+        }
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
       }
       if(key == 3) {
-        this.$router.push('/shop/manage/product/list/soldout')
+        let params = {
+          page: 1, 
+          amount: 10,
+          key: 'sold-out'
+        }
+        this.$router.push({ query: params })
+        this.getAllproduct(params)
       }
+      this.defaultKey = key
     },
-    async getAllproduct() {
+
+    async getAllproduct(params) {
       try {
-        const response = await axios.get('http://localhost:5000/api/v1/users/shop/products?key=inventory&page=1&amount=10', 
+        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products`,
         {
+          params: params,
           headers: {
             Authorization: 'Bearer ' + this.token,
           }
         })
-        console.log(response);
         if(response.data.status == "200") {
-          if(response.data.data[0]) {
-            this.data = response.data.data[0].products
-          }
+          this.data = response.data.data.rows
+          let pagination = { ...this.pagination }
+          pagination.total = response.data.data.count
+          pagination.current = params.page
+          this.pagination = pagination
+          console.log(this.pagination)
         }
         else {
           this.$notification["error"]({
@@ -139,6 +191,7 @@ export default {
         });
       }
     },
+
     async confirm(id) {
       try {
         const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
@@ -172,6 +225,26 @@ export default {
         });
       }
     },
+
+    async onSearch(value) {
+      console.log(this.$route)
+      let params = {
+        page: 1, 
+        amount: 10, 
+        key: 'search',
+        value: value,
+      }
+      if(this.$route.query.filter) {
+        params.filter = this.$route.query.filter
+      }
+      if(this.$route.query.key) {
+        if(this.$route.query.key != 'search') {
+          params.filter = this.$route.query.key
+        }
+      }
+      this.getAllproduct(params)
+      this.$router.push({ query: params })
+    }
   },
 }
 </script>
