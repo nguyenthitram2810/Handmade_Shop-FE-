@@ -1,10 +1,10 @@
 <template>
   <div class="mx-4 mt-3" >
     <a-carousel autoplay>
-      <div><h3>1</h3></div>
-      <div><h3>2</h3></div>
-      <div><h3>3</h3></div>
-      <div><h3>4</h3></div>
+      <div><img class="al-w-100 al-height-auto" src="http://laz-img-cdn.alicdn.com/images/ims-web/TB16qXYhRBh1e4jSZFhXXcC9VXa.jpg_1200x1200Q100.jpg_.webp" alt=""></div>
+      <div><img class="al-w-100 al-height-auto" src="http://laz-img-cdn.alicdn.com/images/ims-web/TB1ZfXBRBr0gK0jSZFnXXbRRXXa.jpg_1200x1200.jpg" alt=""></div>
+      <div><img class="al-w-100 al-height-auto" src="http://laz-img-cdn.alicdn.com/images/ims-web/TB1rVKLfggP7K4jSZFqXXamhVXa.jpg_1200x1200Q100.jpg_.webp" alt=""></div>
+      <div><img class="al-w-100 al-height-auto" src="http://laz-img-cdn.alicdn.com/images/ims-web/TB1cNG3dCslXu8jSZFuXXXg7FXa.jpg_1200x1200Q100.jpg_.webp" alt=""></div>
     </a-carousel>
 
     <div class="mt-3 ">
