@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid"  style="background: #F5F5F5;">
     <div v-if="listProducts.length > 0" class="white-theme mt-3 p-4 font--bold font--20">
-      CATEGORY/{{ category.name }}
+      CATEGORY/<span>{{ category.name}}</span>
     </div>
 
     <div v-if="listProducts.length > 0" class="row px-2 my-3">
@@ -85,9 +85,11 @@ export default {
         const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/products?key=category&value=${this.$route.params.id}&page=${page}&amount=12`)
         console.log(response)
         if(response.data.status == "200") {
-          this.total = response.data.data.count
-          this.listProducts = response.data.data.rows
-          this.category = this.listProducts[0].category
+          if(response.data.data.count > 0) {
+            this.total = response.data.data.count
+            this.listProducts = response.data.data.rows
+            this.category = this.listProducts[0].category
+          }
         }
         else {
           this.$notification["error"]({
