@@ -182,7 +182,7 @@ export default {
   methods: {
     async getListCity() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/cities`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities`)
         if(response.data.status == "200") {
           this.listCity = response.data.data
         }
@@ -206,7 +206,7 @@ export default {
     async changeCity() {
       try {
         this.form.district = []
-        const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.form.city}/districts`)
+        const response =  await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities/${this.form.city}/districts`)
         if(response.data.status == "200") {
         this.listDistrict = response.data.data
         }
@@ -240,7 +240,7 @@ export default {
         if (valid) {
           this.isLoading = true
           try {
-            const response = await axios.post('http://localhost:5000/api/v1/users/addresss', {
+            const response = await axios.post('http://whispering-reef-26272.herokuapp.com/api/v1/users/addresss', {
               name: this.form.name,
               phone: this. form.phone,
               districtId: this.form.district,
@@ -285,7 +285,7 @@ export default {
 
     async getListAddr() {
       try {
-        const response = await axios.get("http://localhost:5000/api/v1/users/addresss", {
+        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/users/addresss", {
           headers: {
                 Authorization: 'Bearer ' + this.token,
           }
@@ -314,7 +314,7 @@ export default {
     // delete address
     async confirm(id) {
       try {
-        const response = await axios.delete(`http://localhost:5000/api/v1/users/address/${id}`, {
+        const response = await axios.delete(`http://whispering-reef-26272.herokuapp.com/api/v1/users/address/${id}`, {
           headers: {
                 Authorization: 'Bearer ' + this.token,
           }

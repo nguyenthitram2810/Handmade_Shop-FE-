@@ -34,7 +34,7 @@
           </a-dropdown>
 
           <div v-if="user.shopActive">
-            <nuxt-link to="/shop/manage/product/list/all" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
+            <nuxt-link to="/shop/manage/product/list" class="al-text-color"><img src="/images/online-shopping.svg" alt="" width="20px"></nuxt-link>
           </div>
 
           <div v-else>

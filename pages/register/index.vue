@@ -146,7 +146,7 @@ export default {
           event.preventDefault()
           this.isDisabled = true
           try {
-            const response = await axios.post(`http://localhost:5000/api/v1/signup`, {
+            const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/signup`, {
               username: this.registerForm.username.trim(),
               name: this.registerForm.name.trim(),
               password: this.registerForm.password.trim(),

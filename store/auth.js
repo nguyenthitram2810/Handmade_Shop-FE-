@@ -21,7 +21,7 @@ export const mutations = {
 export const actions = {
   async verifyRegister({ commit }, { token }) {
     try {
-      const response = await axios.get(`http://localhost:5000/api/v1/users/mail/verify?token=${token}`)
+      const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/users/mail/verify?token=${token}`)
       console.log(response)
       if(response.data.status == "200") {
         Cookie.set('user', JSON.stringify(response.data.data.userInfo))
@@ -40,7 +40,7 @@ export const actions = {
   
   async login({ commit }, {password, username}) {
     try {
-      const response = await axios.post(`http://localhost:5000/api/v1/signin`, {
+      const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/signin`, {
         username: username,
         password: password,
       })
@@ -61,7 +61,7 @@ export const actions = {
 
   async loginAdmin({ commit }, {password, username}) {
     try {
-      const response = await axios.post(`http://localhost:5000/api/v1/signin`, {
+      const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/signin`, {
         username: username,
         password: password,
       })

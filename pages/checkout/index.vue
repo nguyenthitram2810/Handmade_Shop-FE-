@@ -245,7 +245,7 @@ export default {
     // Chọn đơn vị vận chuyển OK
     async getListTransport(id) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports?key=shop&value=${id}`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/transports?key=shop&value=${id}`)
         if(response.data.status == "200") {
           return response.data.data
         }
@@ -288,7 +288,7 @@ export default {
     // Lấy danh sách địa chỉ OK
     async getListAddr() {
       try {
-        const response = await axios.get("http://localhost:5000/api/v1/users/addresss", {
+        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/users/addresss", {
           headers: {
                 Authorization: 'Bearer ' + this.token,
           }
@@ -327,7 +327,7 @@ export default {
 
     async getListCity() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/cities`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities`)
         if(response.data.status == "200") {
           this.listCity = response.data.data
         }
@@ -351,7 +351,7 @@ export default {
     async changeCity() {
       try {
         this.form.district = []
-        const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.form.city}/districts`)
+        const response =  await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities/${this.form.city}/districts`)
         if(response.data.status == "200") {
         this.listDistrict = response.data.data
         }
@@ -377,7 +377,7 @@ export default {
         if (valid) {
           this.isLoading = true
           try {
-            const response = await axios.post('http://localhost:5000/api/v1/users/addresss', {
+            const response = await axios.post('http://whispering-reef-26272.herokuapp.com/api/v1/users/addresss', {
               name: this.form.nameUser,
               phone: this. form.phone,
               districtId: this.form.district,
@@ -425,7 +425,7 @@ export default {
         let user = JSON.parse(Cookie.get('user'))
         let id = String(user.id)
         if(localStorage.getItem(id)) {
-          this.shops = JSON.parse(localStorage.getItem(id))
+          this.shops = JSON.parse(localStorage.getItem('buyProduct'))
           this.shops = this.shops.filter(element => {
             let products = element.products
             element.products = products.map(({count, product}) => 
@@ -498,7 +498,7 @@ export default {
           return obj
         })
         console.log(shopSubmit)
-        const response = await axios.post("http://localhost:5000/api/v1/users/orders", shopSubmit, {
+        const response = await axios.post("http://whispering-reef-26272.herokuapp.com/api/v1/users/orders", shopSubmit, {
           headers: {
             Authorization: 'Bearer ' + this.token,
           }

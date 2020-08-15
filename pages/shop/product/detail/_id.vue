@@ -20,13 +20,13 @@
                 <span class="mr-2">{{ product.sold}} Đã bán</span>
                 <span class="mr-2">|</span>
               </div>
-              <div class="mb-0">
+              <!-- <div class="mb-0">
                 <a-icon  style="color: #f77f00" type="star" theme="filled"/>
                 <a-icon  style="color: #f77f00" type="star" theme="filled"/>
                 <a-icon  style="color: #f77f00" type="star" theme="filled"/>
                 <a-icon  style="color: #f77f00" type="star" theme="filled"/>
                 <a-icon type="star" />
-              </div>
+              </div> -->
             </div>
             
             <!-- <div class="mt-2 mb-4 py-1 al-bg-bestseller d-flex align-items-center justify-content-center border-radius--10 w-100-px">
@@ -252,7 +252,7 @@ export default {
     },
     async getProduct() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/products/${this.$route.params.id}`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/products/${this.$route.params.id}`)
         console.log(response);
         if(response.data.status == "200") {
           this.product = response.data.data

@@ -78,8 +78,13 @@ export default {
           },
           {
             title: 'Giá (VNĐ)',
-            dataIndex: 'price',
-            key: 'price',
+            dataIndex: 'reduce',
+            key: 'reduce',
+          },
+          {
+            title: 'Giảm giá(%)',
+            dataIndex: 'percent',
+            key: 'percent',
           },
           {
             title: 'Kho hàng',
@@ -160,7 +165,7 @@ export default {
 
     async getAllproduct(params) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/users/shop/products`,
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/users/shop/products`,
         {
           params: params,
           headers: {
@@ -194,7 +199,7 @@ export default {
 
     async confirm(id) {
       try {
-        const response = await axios.delete(`http://localhost:5000/api/v1/users/shop/products/${id}`, {
+        const response = await axios.delete(`http://whispering-reef-26272.herokuapp.com/api/v1/users/shop/products/${id}`, {
           headers: {
             Authorization: 'Bearer ' + this.token,
           }

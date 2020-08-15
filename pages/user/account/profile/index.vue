@@ -176,7 +176,7 @@ export default {
         const data = new FormData()
         data.append('image', event.target.files[0])
         const token = Cookie.get("token")
-        const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
+        const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/gallery`, data, 
         {
           headers: {
             Authorization: 'Bearer ' + token,

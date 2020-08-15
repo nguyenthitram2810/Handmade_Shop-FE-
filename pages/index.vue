@@ -19,14 +19,14 @@
               <figure>
                 <div  class="product_thumb">
                   <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
-                  <div class="label_product">
-                      <span class="label_sale">-7%</span>
+                  <div v-if="product.percent > 0" class="label_product">
+                      <span class="label_sale">-{{product.percent}}%</span>
                   </div>
 
                   <div class="action_links">
                       <ul>
-                          <li><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li>
-                           <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
+                          <!-- <li><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li> -->
+                           <!-- <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>     -->
                           <li><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                       </ul>
                   </div>
@@ -38,9 +38,9 @@
                   </div>
                 </div>
 
-                <div class="product_content grid_content">
+                <div class="product_content grid_content al-w-product">
                   <div class="product_price_rating">
-                    <div class="product_rating">
+                    <!-- <div class="product_rating">
                       <ul>
                         <li><a href="#"><i class="icon-star"></i></a></li>
                         <li><a href="#"><i class="icon-star"></i></a></li>
@@ -48,8 +48,8 @@
                         <li><a href="#"><i class="icon-star"></i></a></li>
                         <li><a href="#"><i class="icon-star"></i></a></li>
                       </ul>
-                    </div>
-                    <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
+                    </div> -->
+                    <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                     <div class="price_box"> 
                       <span class="current_price">₫ {{product.price}}</span>
                     </div>
@@ -74,14 +74,14 @@
               <figure>
                 <div  class="product_thumb">
                   <nuxt-link class="primary_img" :to="`/shop/product/detail/${product.slug}`"><img :src="product.thumbnail" width="100%" alt=""></nuxt-link>
-                  <div class="label_product">
-                      <span class="label_sale">-7%</span>
+                  <div v-if="product.percent > 0" class="label_product">
+                      <span class="label_sale">-{{product.percent}}%</span>
                   </div>
 
                   <div class="action_links">
                       <ul>
                           <!-- <li><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li> -->
-                           <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
+                           <!-- <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>     -->
                           <li><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                       </ul>
                   </div>
@@ -93,9 +93,9 @@
                   </div>
                 </div>
 
-                <div class="product_content grid_content">
+                <div class="product_content grid_content al-w-product">
                   <div class="product_price_rating">
-                    <div class="product_rating">
+                    <!-- <div class="product_rating">
                       <ul>
                         <li><a href="#"><i class="icon-star"></i></a></li>
                         <li><a href="#"><i class="icon-star"></i></a></li>
@@ -103,10 +103,10 @@
                         <li><a href="#"><i class="icon-star"></i></a></li>
                         <li><a href="#"><i class="icon-star"></i></a></li>
                       </ul>
-                    </div>
-                    <h4 class="product_name"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
+                    </div> -->
+                    <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                     <div class="price_box"> 
-                      <span class="current_price">₫ {{product.price}}</span>
+                      <span class="current_price">₫ {{product.reduce}}</span>
                     </div>
                   </div>
                 </div>
@@ -122,184 +122,65 @@
   </div>
 </template>
 <script>
+import axios from "axios"
 export default {
-  middleware: 'getState',
+  middleware: ['getState','loadState'],
   layout: 'cart',
   data() {
     return {
-      newProducts: [
-        {
-          id: 1,
-          name: "Áo pull J2TEAM",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo',
-          price: 120000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-      ],
+      newProducts: [],
+      popularProducts: [],
+    }
+  },
+  mounted() {
+    this.getNewProduct()
+    this.getPopularProduct()
+  },
 
-      popularProducts: [
-        {
-          id: 1,
-          name: "Áo pull J2TEAM",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo',
-          price: 120000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-        {
-          id: 2,
-          name: "Chiếu trúc",
-          thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTfTK0N0iseFntGW7CWT4e0qcpE7eqj2ZBKIw&usqp=CAU',
-          slug: 'alo-alo-123',
-          price: 128000,
-        },
-      ],
+  methods: {
+    async getPopularProduct() {
+      try {
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/products?key=best-seller`)
+        if(response.data.status == "200") {
+          this.popularProducts = response.data.data
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET POPULAR PRODUCT ERROR',
+            description:
+              response.data.message
+          });
+        }
+      } catch (e) {
+        this.$notification["error"]({
+            message: 'GET POPULAR PRODUCT ERROR',
+            description:
+              e.message
+          });
+      }
+    },
+
+    async getNewProduct() {
+      try {
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/products?order=createdAt&amount=12`)
+        console.log(response)
+        if(response.data.status == "200") {
+          this.newProducts = response.data.data.rows
+        }
+        else {
+          this.$notification["error"]({
+            message: 'GET POPULAR PRODUCT ERROR',
+            description:
+              response.data.message
+          });
+        }
+      } catch (e) {
+        this.$notification["error"]({
+            message: 'GET POPULAR PRODUCT ERROR',
+            description:
+              e.message
+          });
+      }
     }
   }
 };

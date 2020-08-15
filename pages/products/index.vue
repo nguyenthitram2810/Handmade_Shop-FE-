@@ -11,7 +11,7 @@
               </div>
               <div class="action_links">
                   <ul>
-                       <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
+                       <!-- <li><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>     -->
                       <li><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                   </ul>
               </div>
@@ -23,7 +23,7 @@
             </div>
             <div class="product_content grid_content px-1 pb-2 al-w-product">
               <div class="product_price_rating">
-                <div class="product_rating">
+                <!-- <div class="product_rating">
                   <ul>
                     <li><a href="#"><i class="icon-star"></i></a></li>
                     <li><a href="#"><i class="icon-star"></i></a></li>
@@ -31,7 +31,7 @@
                     <li><a href="#"><i class="icon-star"></i></a></li>
                     <li><a href="#"><i class="icon-star"></i></a></li>
                   </ul>
-                </div>
+                </div> -->
                 <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                 <div class="price_box"> 
                   <span class="current_price">₫ {{product.reduce}}</span>
@@ -77,7 +77,7 @@ export default {
   methods: {
     async getListProducts(page) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/products?key=search&value=${this.$route.query.value}&page=${page}&amount=12`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/products?key=search&value=${this.$route.query.value}&page=${page}&amount=12`)
         console.log(response)
         if(response.data.status == "200") {
           this.total = response.data.data.count

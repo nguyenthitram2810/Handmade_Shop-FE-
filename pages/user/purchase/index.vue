@@ -156,7 +156,7 @@ export default {
 
     async getListOrder() {
       try {
-        const response = await axios.get("http://localhost:5000/api/v1/users/orders", {
+        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/users/orders", {
           params: {
             key: this.key,
             page: this.current,
@@ -196,7 +196,7 @@ export default {
     async acceptOrder(record) {
       try {
         let status = 'delivered'
-        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
+        const response = await axios.patch(`http://whispering-reef-26272.herokuapp.com/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
           headers: {
             Authorization: 'Bearer ' + this.token,
           }
@@ -204,7 +204,7 @@ export default {
         console.log(response)
         if(response.data.status == "200") {
           let params = this.$route.query
-          this.getAllOrder(params)
+          this.getListOrder(params)
           this.$notification['success']({
             message: 'ACCEPT PRODUCT SUCCESS',
             description:

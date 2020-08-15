@@ -3,8 +3,11 @@
       <div class="logo" />
         <a-menu theme="dark" mode="inline">
           <a-menu-item key="1">
-            <nuxt-link to="/admin/user"><a-icon type="user" /> User</nuxt-link>
-            <!-- <span slot="title"><a-icon type="user" /><span>User</span></span> -->
+            <a @click="pushUser()"><a-icon type="user" /> User</a>
+          </a-menu-item>
+
+          <a-menu-item key="2">
+            <a @click="pushShop()"><a-icon type="shop" /> Shop</a>
           </a-menu-item>
         </a-menu>
     </a-layout-sider>
@@ -12,7 +15,15 @@
 
 <script>
 export default {
-  props: ["collapsed"]
+  props: ["collapsed"],
+  methods: {
+    pushUser() {
+      this.$router.push({path: '/admin/user', query: { page: 1, amount: 10}})
+    },
+    pushShop() {
+      this.$router.push({path: '/admin/shop', query: { page: 1, amount: 10}})
+    }
+  }
 }
 </script>
 

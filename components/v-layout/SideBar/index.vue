@@ -16,9 +16,9 @@
           <a-menu-item key="2">
             <nuxt-link to="/shop/manage/product/create"> Thêm sản phẩm</nuxt-link>
           </a-menu-item>
-          <a-menu-item key="3">
+          <!-- <a-menu-item key="3">
             Sản phẩm vi phạm
-          </a-menu-item>
+          </a-menu-item> -->
         </a-sub-menu>
         <a-sub-menu key="order">
           <span slot="title"><a-icon type="snippets" /><span>Quản lý đơn hàng</span></span>
@@ -26,7 +26,7 @@
             <nuxt-link to="/shop/manage/order/list"> Tất cả</nuxt-link>
           </a-menu-item>
         </a-sub-menu>
-        <a-sub-menu key="revenue">
+        <!-- <a-sub-menu key="revenue">
           <span slot="title"><a-icon type="wallet" /><span>Tài chính</span></span>
           <a-menu-item key="8">
             Doanh thu
@@ -46,7 +46,7 @@
           <a-menu-item key="12">
             Địa chỉ
           </a-menu-item>
-        </a-sub-menu>
+        </a-sub-menu> -->
       </a-menu>
     </div>
   </a-layout-sider>

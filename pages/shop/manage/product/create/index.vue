@@ -27,19 +27,19 @@
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Giá cả" prop="price">
-          <a-input :min="0" addon-before="VNĐ" v-model="productForm.price" type="number" />
+          <a-input-number :min="1" addon-before="VNĐ" v-model="productForm.price" class="al-w-100 "/>
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Giảm giá" prop="percent">
-          <a-input :min="0" :max="100" addon-before="%" v-model="productForm.percent" type="number" />
+          <a-input-number :min="1" :max="100" addon-before="%" v-model="productForm.percent" class="al-w-100 " />
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Trọng lượng" prop="weight">
-          <a-input :min="0" addon-before="gam" v-model="productForm.weight" type="number" />
+          <a-input-number :min="0" addon-before="gam" v-model="productForm.weight" class="al-w-100 "/>
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Số lượng" prop="quantity">
-          <a-input :min="0" v-model="productForm.quantity" type="number" />
+          <a-input-number :min="0" v-model="productForm.quantity" class="al-w-100 "/>
         </a-form-model-item>
 
         <a-form-model-item label="Ảnh sản phẩm" prop="images">
@@ -106,10 +106,18 @@ export default {
         productType: [{ required: true, message: 'Chọn loại sản phẩm', trigger: 'change' }],
         description: [{ required: true, message: 'Điền mô tả sản phẩm', trigger: 'change' }],
         material: [{ required: true, message: 'Chọn vật liệu', trigger: 'change' }],
-        price: [{ required: true, message: 'Điền giá sản phẩm', trigger: 'change' }],
-        quantity: [{ required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' }],
-        weight: [{ required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'}],
-        percent: [{ required: true, message: 'Điền giảm giá cho sản phẩm', trigger:'change'}]
+        price: [
+          { required: true, message: 'Điền giá sản phẩm', trigger: 'change' },
+        ],
+        quantity: [
+          { required: true, message: 'Điền số lượng sản phẩm', trigger: 'change' },
+        ],
+        weight: [
+          { required: true, message: 'Điền trọng lượng sản phẩm', trigger:'change'},
+        ],
+        percent: [
+          { required: true, message: 'Điền giảm giá cho sản phẩm', trigger:'change'},
+        ]
       },
       layout: {
         labelCol: { span: 4 },
@@ -137,7 +145,7 @@ export default {
             const user = JSON.parse(Cookie.get("user"))
             console.log(user);
             console.log(user.shop);
-            const response = await axios.post(`http://localhost:5000/api/v1/users/shop/products`, 
+            const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/users/shop/products`, 
             {
               shopId: parseInt(user.shop.id),
               name: this.productForm.name,
@@ -158,7 +166,7 @@ export default {
             })
             console.log(response)
             if(response.data.status == "200") {
-              this.$router.push("/shop/manage/product/list/all")
+              this.$router.push("/shop/manage/product/list")
             }
             else {
               this.isLoading = false
@@ -197,7 +205,7 @@ export default {
           data.append('image', event.target.files[i]);
         }
         const token = Cookie.get("token")
-        const response = await axios.post(`http://localhost:5000/api/v1/gallery`, data, 
+        const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/gallery`, data, 
         {
           headers: {
             Authorization: 'Bearer ' + token,
@@ -241,7 +249,7 @@ export default {
 
     async getListCate() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/categories`)
         if(response.data.status == "200") {
           this.listCate = this.mappingData(response.data.data)
         }
@@ -264,7 +272,7 @@ export default {
 
     async getListMaterial() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/materials`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/materials`)
         if(response.data.status == "200") {
         this.listMaterial = response.data.data
         }

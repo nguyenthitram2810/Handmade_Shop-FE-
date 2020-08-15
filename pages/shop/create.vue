@@ -133,7 +133,7 @@ export default {
       await this.$refs[formName].validate(async valid => {
         if (valid) {
           try {
-            const response = await axios.post(`http://localhost:5000/api/v1/users/shop`, {
+            const response = await axios.post(`http://whispering-reef-26272.herokuapp.com/api/v1/users/shop`, {
               name: this.createForm.nameShop,
               description: this.createForm.description,
               bankAccount: this.createForm.name,
@@ -155,7 +155,7 @@ export default {
               this.user.shop = response.data.data
               Cookie.remove('user')
               this.$store.dispatch('auth/setUser', { user: this.user })
-              this.$router.push("/shop/manage/product/list/all")
+              this.$router.push("/shop/manage/product/list")
             }
             else {
               this.error = response.data.message
@@ -172,7 +172,7 @@ export default {
 
     async getListBank() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/payments/banks`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/payments/banks`)
         console.log(response)
         if(response.data.status == "200") {
           this.listBank = response.data.data
@@ -188,7 +188,7 @@ export default {
 
     async getListArea() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/cities`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities`)
         if(response.data.status == "200") {
           this.listArea = response.data.data
         }
@@ -203,7 +203,7 @@ export default {
 
     async handleChange() {
       try {
-        const response =  await axios.get(`http://localhost:5000/api/v1/cities/${this.createForm.area}/districts`)
+        const response =  await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/cities/${this.createForm.area}/districts`)
         if(response.data.status == "200") {
         this.listBranch = response.data.data
         }
@@ -218,7 +218,7 @@ export default {
 
     async getListTransport() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/transports`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/transports`)
         console.log(response)
         if(response.data.status == "200") {
           this.listTransport = response.data.data

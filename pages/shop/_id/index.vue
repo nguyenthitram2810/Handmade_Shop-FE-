@@ -3,23 +3,23 @@
     <div class="container-fluid">
       <div class="user-profile pl-2">
 		    <figure>
-		    	<div class="edit-pp">
+		    	<!-- <div class="edit-pp">
 		    		<label class="fileContainer">
 		    			<i class="fa fa-camera"></i>
 		    			<input type="file">
 		    		</label>
-		    	</div>
+		    	</div> -->
 
 		    	<img src="/images/profile-image.jpg" alt="">
 
-		    	<ol class="pit-rate">
+		    	<!-- <ol class="pit-rate">
 		    		<li class="rated"><i class="fa fa-star"></i></li>
 		    		<li class="rated"><i class="fa fa-star"></i></li>
 		    		<li class="rated"><i class="fa fa-star"></i></li>
 		    		<li class="rated"><i class="fa fa-star"></i></li>
 		    		<li class=""><i class="fa fa-star"></i></li>
 		    		<li><span>4.7/5</span></li>
-		    	</ol>
+		    	</ol> -->
 		    </figure>
 				
 				<div class="profile-section">
@@ -28,12 +28,12 @@
 							<div class="profile-author">
 								<div class="profile-author-thumb">
 									<img alt="author" :src="shop.thumbnail">
-									<div class="edit-dp">
+									<!-- <div class="edit-dp">
 										<label class="fileContainer">
 											<i class="fa fa-camera"></i>
 											<input type="file">
 										</label>
-									</div>
+									</div> -->
 								</div>
 									
 								<div class="author-content">
@@ -54,10 +54,10 @@
 									<a :class="{active: upToDown}" @click="sortUpToDown()">Giá: Cao đến Thấp</a>
 								</li>
 							</ul>
-							<ol class="folw-detail">
+							<ol class="folw-detail ml-5">
 								<li><span>Sản phẩm</span><ins>{{ total }}</ins></li>
-								<li><span>Đánh giá</span><ins>4.7/5</ins></li>
-								<li><span>Số đánh giá</span><ins>127</ins></li>
+								<!-- <li><span>Đánh giá</span><ins>4.7/5</ins></li>
+								<li><span>Số đánh giá</span><ins>127</ins></li> -->
 							</ol>
 						</div>
 					</div>
@@ -79,7 +79,7 @@
                     <div class="action_links">
                         <ul>
                             <!-- <li class="add_to_cart"><a @click="addCart(product)" title="Add to cart"><i class="icon-shopping-bag"></i></a></li> -->
-                             <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>    
+                             <!-- <li class="wishlist"><a href="#" title="Add to Wishlist"><i class="icon-heart"></i></a></li>     -->
                             <li class="quick_button"><nuxt-link :to="`/shop/product/detail/${product.slug}`"  title="quick view"> <i class="icon-eye"></i></nuxt-link></li>
                         </ul>
                     </div>
@@ -92,7 +92,7 @@
                   </div>
                     <div class="product_content grid_content  al-w-product">
                       <div class="product_price_rating">
-                        <div class="product_rating">
+                        <!-- <div class="product_rating">
                           <ul>
                             <li><a href="#"><i class="icon-star"></i></a></li>
                             <li><a href="#"><i class="icon-star"></i></a></li>
@@ -100,7 +100,7 @@
                             <li><a href="#"><i class="icon-star"></i></a></li>
                             <li><a href="#"><i class="icon-star"></i></a></li>
                           </ul>
-                        </div>
+                        </div> -->
                         <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                         <div class="price_box"> 
                           <span class="current_price">₫ {{product.reduce}}</span>
@@ -185,7 +185,7 @@ export default {
   methods: {
     async getShop() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/shop/${this.$route.params.id}/products`)
         console.log(response)
         if(response.data.status == "200") {
           this.shop =  response.data.data
@@ -210,7 +210,7 @@ export default {
     async getProducts() {
       try {
         console.log(this.current)
-        const response = await axios.get(`http://localhost:5000/api/v1/shop/${this.$route.params.id}/products`, {
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/shop/${this.$route.params.id}/products`, {
           params: {
             amount: 12,
             key: this.key,
@@ -244,7 +244,7 @@ export default {
 
     async getCategories() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/categories`)
         if(response.data.status == "200") {
           this.listCate = this.getChildren(response.data.data)
         }

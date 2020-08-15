@@ -5,8 +5,24 @@
     >
       <a-table class="pt-4" :columns="columns" :data-source="data"  @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
         <span slot="status" slot-scope="text, record">
-          <a-switch v-if="admin.id != record.id" v-model="record.status" @change="onChange(record)"/>
-          <span v-else>{{ String(record.status)}}</span>
+          <a-switch v-model="record.status" @change="onChange(record)"/>
+        </span>
+        <span class="d-flex justify-content-between" slot="action" slot-scope="text, record">
+          <a-popconfirm
+          class="mr-2"
+            title="Are you sure cancel this order?"
+            ok-text="Yes"
+            cancel-text="No"
+            @confirm="confirm(record.id)"
+          >
+            <a-button type="danger">
+              Xóa
+            </a-button>
+          </a-popconfirm>
+
+          <a-button @click="editUser(record)"  type="primary">
+            Sửa
+          </a-button>
         </span>
       </a-table>
     </a-layout-content>
@@ -26,24 +42,27 @@ export default {
       isDisabled: false,
       isLoading: false,
       token: Cookie.get('token'),
-      admin: JSON.parse(Cookie.get('user')),
       collapsed: false,
       columns: [
           {
-            title: 'Họ tên',
+            title: 'Tên cửa hàng',
             dataIndex: 'name',
             key: 'name',
           },
           {
             title: 'Ảnh đại diện',
-            dataIndex: 'avatar',
-            key: 'avatar',
-            scopedSlots: { customRender: 'avatar' },
+            dataIndex: 'thumbnail',
+            key: 'thumbnail',
           },
           {
-            title: 'Email',
-            dataIndex: 'username',
-            key: 'email',
+            title: 'Slug',
+            dataIndex: 'slug',
+            key: 'slug',
+          },
+          {
+            title: 'Mô tả',
+            dataIndex: 'description',
+            key: 'description',
           },
           {
             title: 'Trạng thái hoạt động',
@@ -63,26 +82,27 @@ export default {
   }, 
   created() {
     this.params = this.$route.query
-    this.getAllUser()
+    this.getAllShop()
   },
   methods: {
     handleTableChange(pagination, filters, sorter) {
+      console.log(pagination)
+
       let pager = { ...this.pagination }
       pager.current = pagination.current
       this.pagination = pager
 
       let params = this.$route.query
       params.page = this.pagination.current
-
-      this.$router.push({ query: params})
       this.params = params
-      this.getAllUser()
+      this.$router.push({ query: this.params})
+      this.getAllShop()
     },
 
-    async getAllUser() {
+    async getAllShop() {
       try {
         this.loading = true
-        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/users?order=updatedAt", {
+        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/shops?order=updatedAt", {
           params: this.params,
           headers: {
             Authorization: 'Bearer ' + this.token,
@@ -116,7 +136,7 @@ export default {
 
     async onChange(record) {
       try {
-        const response = await axios.patch(`http://whispering-reef-26272.herokuapp.com/api/v1/users/${record.id}`, {status: record.status}, {
+        const response = await axios.patch(`http://whispering-reef-26272.herokuapp.com/api/v1/shops/${record.id}`, {status: record.status}, {
           params: {
             status: record.status,
           },
@@ -126,7 +146,7 @@ export default {
         })
         console.log(response)
         if(response.data.status == "200") {
-          this.getAllUser()
+          this.getAllShop()
           this.$notification["success"]({
             message: 'UPDATE STATUS SUCCESS',
             description:

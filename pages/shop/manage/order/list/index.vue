@@ -18,15 +18,6 @@
         </a-tab-pane>
       </a-tabs>
 
-      <!-- <div class="d-flex align-items-center ">
-        <p class="mb-0 font--regular-2 mr-2">Ngày Đặt Hàng</p>
-        <a-range-picker 
-        format="YYYY/MM/DD" 
-        @change="onChange" 
-        :placeholder="['Ngày Bắt Đầu', 'Ngày Kết Thúc']"
-      />
-      </div> -->
-
       <a-table class="pt-4" :columns="columns" :data-source="data"  @change="handleTableChange" :loading="loading" :pagination="pagination" bordered>
         <span slot="products" slot-scope="text, record">
           <div v-for="(item, index) in record.products" :key="index" class="d-flex mt-2">
@@ -63,7 +54,7 @@
               Xác nhận
           </a-button>
 
-          <nuxt-link :to="`/shop/product/detail/${record.slug}`"> 
+          <nuxt-link :to="`/shop/manage/order/detail/${record.id}`"> 
             <a-button type="primary">
               View Detail
             </a-button>
@@ -210,7 +201,7 @@ export default {
     async getAllOrder(params) {
       try {
         console.log(params)
-        const response = await axios.get("http://localhost:5000/api/v1/shop/orders", {
+        const response = await axios.get("http://whispering-reef-26272.herokuapp.com/api/v1/shop/orders", {
           params: params,
           headers: {
             Authorization: 'Bearer ' + this.token,
@@ -261,8 +252,9 @@ export default {
 
     async confirm(id) {
       try {
+        
         let status = "cancel"
-        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${id}?status=${status}`, { status: status}, {
+        const response = await axios.patch(`http://whispering-reef-26272.herokuapp.com/api/v1/user/orders/${id}?status=${status}`, { status: status}, {
           headers: {
             Authorization: 'Bearer ' + this.token,
           }
@@ -304,7 +296,7 @@ export default {
           }
         }
         console.log(status)
-        const response = await axios.patch(`http://localhost:5000/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
+        const response = await axios.patch(`http://whispering-reef-26272.herokuapp.com/api/v1/user/orders/${record.id}?status=${status}`, { status: status}, {
           headers: {
             Authorization: 'Bearer ' + this.token,
           }

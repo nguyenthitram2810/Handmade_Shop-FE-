@@ -41,7 +41,7 @@
           <div class="d-flex align-items-center">
             <p class="mb-0 mr-3" style="color: rgba(0, 0, 0, 0.65);">Tổng tiền hàng: </p>
             <p class="mb-0 pr-4 font--35 font--regular-2">{{ getTotal }}</p>
-            <a-button :disabled="selectedRowKeys.length <= 0" size="large" class="al-button-buy px-5" @click="onSubmit">
+            <a-button :disabled="getStatus" size="large" class="al-button-buy px-5" @click="onSubmit">
               Mua ngay
             </a-button>
           </div>
@@ -116,6 +116,14 @@ export default {
         })
       });
       return total
+    },
+    getStatus() {
+      if(this.shops.length == 0 || this.selectedRowKeys.length <= 0) {
+        return true
+      }
+      else {
+        return false
+      }
     }
   },
   methods: {
@@ -225,6 +233,32 @@ export default {
     onSubmit() {
       try {
         if(Cookie.get('user')) {
+          let user = JSON.parse(Cookie.get('user'))
+          let id = String(user.id)
+          let shop = JSON.parse(localStorage.getItem(id))
+          console.log(shop)
+          let buyProducts = []
+          shop.forEach(sh => {
+            let obj = {}
+            let check = 0
+            obj.products = []
+            sh.products.forEach(p => {
+              let ids = this.selectedRowKeys
+              ids.forEach(i => {
+                if(p.product.id == i) {
+                  obj.products.push(p)
+                  check++
+                }
+              })
+            })
+            if(check != 0) {
+              obj.shopID = sh.shopID
+              obj.shopName = sh.shopName
+              obj.slug = sh.slug
+              buyProducts.push(obj)
+            }
+          })
+          localStorage.setItem('buyProduct', JSON.stringify(buyProducts));
           this.$root.$router.push("/checkout")
         }
         else {

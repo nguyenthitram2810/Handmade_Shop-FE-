@@ -92,7 +92,7 @@ export default {
   methods: {
     async getOrder() {
       try {
-        let key = 'client'
+        let key = 'manage'
         const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/users/orders/${this.$route.params.id}?key=${key}`, {
           headers: {
             Authorization: 'Bearer ' + this.token,

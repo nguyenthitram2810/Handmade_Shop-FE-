@@ -5,7 +5,6 @@
       v-bind:categories=categories
       v-bind:cart=cart
       v-bind:tempCart=tempCart
-      
     >
     </Header>
 </template>
@@ -49,7 +48,7 @@ export default {
   methods: {
     async getCategories() {
       try {
-        const response = await axios.get(`http://localhost:5000/api/v1/categories`)
+        const response = await axios.get(`http://whispering-reef-26272.herokuapp.com/api/v1/categories`)
         if(response.data.status == "200") {
           this.categories = response.data.data
         }
@@ -69,7 +68,7 @@ export default {
         });
       }
     },
-
+    
     // onSearch(value) {
     //   console.log(value)
     // }
