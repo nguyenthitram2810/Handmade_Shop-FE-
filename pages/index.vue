@@ -63,7 +63,7 @@
     </div>
 
     <div class="mt-3 ">
-      <p class="font--bold al-text-color font--20">Phổ biến</p>
+      <p class="font--bold al-text-color font--20">Bán chạy</p>
     </div>
 
     <div class="row pl-1 mt-3">
@@ -107,6 +107,9 @@
                     <h4 class="product_name truncate-2-lines"><nuxt-link :to="`/shop/product/detail/${product.slug}`">{{product.name}}</nuxt-link></h4>
                     <div class="price_box"> 
                       <span class="current_price">₫ {{product.reduce}}</span>
+                    </div>
+                    <div>
+                      Đã bán {{product.sold}}
                     </div>
                   </div>
                 </div>
