@@ -117,6 +117,7 @@ export default {
       });
       return total
     },
+
     getStatus() {
       if(this.shops.length == 0 || this.selectedRowKeys.length <= 0) {
         return true
@@ -126,6 +127,7 @@ export default {
       }
     }
   },
+  
   methods: {
     amountChange(record) {
       if(Cookie.get('user')) {

@@ -229,8 +229,7 @@ export const actions = {
       throw e
     }
   },
-
-
+  
   removeAll({commit}) {
     try {
       commit('removeAll');

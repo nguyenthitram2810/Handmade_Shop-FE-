@@ -43,7 +43,7 @@
             <a-select-option v-for="(bank, index) in listBank" :key="index" :value="`${bank.id}`">
               {{bank.name}}
             </a-select-option>
-          </a-select>
+          </a-select>select-
         </a-form-model-item>
 
         <a-form-model-item  has-feedback label="Mã số thẻ" prop="code">
@@ -120,7 +120,7 @@ export default {
     };
   },
 
-  mounted() {
+  created() {
     this.getListBank()
     this.getListArea()
     this.getListTransport()
