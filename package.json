@@ -12,9 +12,6 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
     "heroku-postbuild": "npm run build"
   },
-  "engines": {
-    "node": "12.18.1"
-  },
   "dependencies": {
     "@nuxtjs/auth": "^4.8.4",
     "@nuxtjs/axios": "^5.3.6",
