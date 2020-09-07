@@ -11,8 +11,6 @@
       <div class="row">
         <div class="img-holder">
             <div class="bg"></div>
-            <div class="info-holder">
-            </div>
         </div>
 
         <div class="form-holder">
@@ -26,19 +24,25 @@
                   <nuxt-link to="/register">Đăng ký</nuxt-link>
               </div>
 
-              <form @submit="loginSubmit">
-                  <input v-model="username" class="form-control" type="text" placeholder="Địa chỉ Email" required>
-                  <input v-model="password" class="form-control" type="password" placeholder="Mật khẩu" required>
-                  <input type="checkbox" id="chk1"><label for="chk1">Lưu đăng nhập</label>
-                  <div class="form-button">
-                      <button id="submit" type="submit" class="ibtn">Đăng nhập</button> 
-                      <nuxt-link to="#">Quên mật khẩu?</nuxt-link>
-                  </div>
-              </form>
+              <a-form-model ref="loginForm" :model="loginForm" :rules="rules">
+                <a-form-model-item has-feedback prop="username"  class="m-0 form-validate">
+                  <a-input :disabled="isDisabled" v-model="loginForm.username" autocomplete="off" placeholder="Địa chỉ Email"/>
+                </a-form-model-item>
 
-              <div class="other-links">
-                  <span>Đăng nhập với</span><a href="#">Facebook</a><a href="#">Google</a><a href="#">Linkedin</a>
-              </div>
+                <a-form-model-item has-feedback prop="password" class="m-0 form-validate" >
+                  <a-input :disabled="isDisabled" type="password" v-model="loginForm.password" autocomplete="off" placeholder="Mật khẩu"/>
+                </a-form-model-item>
+
+                <a-form-model-item  class="form-button mb-0 mt-2">
+                  <a-button  :loading="isDisabled" class="ibtn" @click="loginSubmit">
+                   Đăng nhập
+                  </a-button>
+                </a-form-model-item>
+              </a-form-model>
+
+              <p style="color:red;" class="mt-3 font-15">
+                {{error}}
+              </p>
             </div>
           </div>
         </div>
@@ -48,41 +52,74 @@
 
 <script>
 import axios from "axios";
+const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   layout: 'fullpage',
+  middleware: 'notAuthentication',
   data() {
+    let validatePass = (rule, value, callback) => {
+      if (value.trim() === '') {
+        callback(new Error('Nhập mật khẩu'));
+      } else {
+        callback();
+      }
+    };
     return {
-      username: '',
-      password: '',
-      errors: [],
+      isDisabled: false,
+      error: '',
+      loginForm: {
+        username: '',
+        password: '',
+      },
+      rules: {
+        username:  [
+          {
+            type: 'email',
+            message: 'Email không hợp lệ',
+          },
+          {
+            required: true,
+            message: 'Nhập địa chỉ email',
+          },
+        ],
+        password: [
+          { 
+            required: true,
+            validator: validatePass, 
+          },
+          {
+            min: 6,
+            message: 'Độ dài mật khẩu > 6 ký tự(không kể ký tự trắng)'
+          }
+        ],
+      }
     }
   },
-
-  mounted() {
-    if(localStorage.getItem("token")) {
-      this.$root.$router.push("/");
-    }
-  },
-
   methods: {
-    loginSubmit(event) {
-      event.preventDefault();
-      axios.post(`http://localhost:5000/api/v1/signin`, {
-        username: this.username,
-        name: this.name,
-        password: this.password,
-      })
-      .then(response => {
-        const user = JSON.stringify(response.data.results.userInfo);
-        localStorage.setItem('user', user);
-        localStorage.setItem('token', response.data.results.token)
-        this.$root.$router.push("/")
-       })
-      .catch(e => {
-        console.log(e.message);
-        this.errors.push(e)
-      })
+    async loginSubmit(event) {
+      this.$refs.loginForm.validate(async valid => {
+        if (valid) {
+          this.errors = ''
+          event.preventDefault()
+          this.isDisabled = true
+          try {
+            await this.$store.dispatch('auth/login', {username: this.loginForm.username, password: this.loginForm.password})
+            if(localStorage.getItem('noLogin')) {
+              let user = JSON.parse(Cookie.get('user'));
+              let id = String(user.id)
+              this.$store.dispatch('cart/mergeCart', { userID: id, user: user, })
+            }
+            this.$root.$router.push("/")
+          }
+          catch(e) {
+            this.isDisabled = false
+            this.error = e
+          }
+        } else {
+          return false;
+        }
+      });
     }
   },
 }
@@ -90,5 +127,4 @@ export default {
 
 <style lang='scss' scoped>
 @import url("./style.scss");
-@import url("./theme.scss");
 </style>

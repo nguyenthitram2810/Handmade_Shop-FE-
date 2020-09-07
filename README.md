@@ -1,4 +1,4 @@
-# nuxtjs-boilerplate-with-ant-design
+# Alibabu
 
 > Start NuxtJS from scratch
 

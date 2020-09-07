@@ -120,6 +120,9 @@ font-size: get-rem(35);
 .font--20 {
 font-size: get-rem(20);
 }
+.font--17 {
+font-size: get-rem(17);
+}
 .font--18 {
 font-size: get-rem(18);
 }
@@ -527,4 +530,12 @@ height: 140px;
 
 .overflow-visible {
 	overflow: visible !important;
+}
+
+.w-60-px {
+	width: 60px;
+}
+
+.w-100-px {
+	width: 100px;
 }

@@ -1,0 +1,71 @@
+.header {
+    box-shadow: 0 4px 8px #f0f1f2 !important;
+    background-color: #fff;
+}
+
+.font_brand {
+  font-family: 'Yellowtail', cursive;
+  font-size: 25px;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #f77f00;
+}
+
+.logo {
+  width: 100px;
+  height: auto;
+}
+
+.brand-title {
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 30px;
+}
+
+.user-dropdown {
+  color: #000;
+}
+
+.notification >>> .ant-badge-count {
+  width: 19px;
+  height: 19px;
+  font-size: 11px;
+  padding: 1px;
+}
+
+.category >>> .ant-menu-item-selected {
+  color: #ffff;
+  border-bottom: none;
+}
+
+.category >>> .ant-menu-item:hover {
+  color: #f77f00;
+  border-bottom: 2px solid #f77f00;
+}
+
+.cart {
+  color: #f77f00;
+  font-family: 'Yellowtail', cursive;
+  display: inline;
+  font-size: 32px;
+  margin: 20px;
+}
+
+.cover-menu-item {
+  margin: 0 10px 0 10px;
+  width: 200px;
+  text-align: center;
+}
+
+.first-menu-item {
+  padding: 0 10px 10px 10px;
+  width: 200px;
+  text-align: center;
+}
+
+.notification >>> .ant-badge-count {
+  width: 19px;
+  height: 19px;
+  font-size: 11px;
+  padding: 1px;
+}

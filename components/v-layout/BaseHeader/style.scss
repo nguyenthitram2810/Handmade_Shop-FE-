@@ -1,5 +1,5 @@
 .header {
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+    box-shadow: 0 2px 8px #f0f1f2 !important;
     background-color: #fff;
 }
 
@@ -31,4 +31,13 @@
   height: 19px;
   font-size: 11px;
   padding: 1px;
+}
+
+.category >>> .ant-menu-item-selected, .category >>> .ant-menu-item:hover {
+  color: #f77f00;
+  border-bottom: 2px solid #f77f00;
+}
+
+.cover-menu-item {
+ padding: 10px 20px;
 }

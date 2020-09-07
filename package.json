@@ -1,5 +1,5 @@
 {
-  "name": "nuxtjs-boilerplate-with-ant-design",
+  "name": "Alibabu",
   "version": "1.0.0",
   "description": "Start NuxtJS from scratch",
   "author": "duongvietminhtri",
@@ -21,7 +21,9 @@
     "antd": "^4.3.5",
     "axios": "^0.19.2",
     "cookie-universal-nuxt": "^2.0.18",
+    "cookieparser": "^0.1.0",
     "jquery": "^3.5.1",
+    "js-cookie": "^2.2.1",
     "moment": "^2.24.0",
     "nuxt": "^2.13.1",
     "vee-validate": "^3.2.1",
